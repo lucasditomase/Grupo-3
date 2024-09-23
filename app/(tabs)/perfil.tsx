@@ -1,11 +1,11 @@
 import { Text, View } from "react-native";
 
-const ProgresoScreen = () => {
+const PerfilScreen = () => {
     return (
         <View>
-            <Text>Progreso</Text>
+            <Text>Perfil</Text>
         </View>
     )
 }
 
-export default ProgresoScreen
+export default PerfilScreen
