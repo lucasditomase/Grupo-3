@@ -1,5 +1,6 @@
 import React from "react";
-import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Image, Pressable } from "react-native";
+import { Link } from 'expo-router';
 
 const HabitosScreen = () => {
     return (
@@ -7,11 +8,18 @@ const HabitosScreen = () => {
             <View style={{...styles.header, flexDirection: 'row'}}>
                 <Text style={styles.headerTitle}>Hábitos</Text>
                 <Image style={styles.habitosFilter}  
-                                source={require('../../assets/images/bars-filter.png')} 
-                            />
+                    source={require('../../assets/images/bars-filter.png')} 
+                />
             </View>
-            
-            <ScrollView>
+
+            <Link href="/" asChild>
+                <Pressable>
+                    <Text style={styles.addButtonText}>+</Text>
+                </Pressable>
+            </Link>
+
+
+            <ScrollView>       
                 <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
                     <View style={styles.habitosIconContainer}>
                         <Image style={styles.habitosIconMedidas}  
@@ -88,15 +96,15 @@ const styles = StyleSheet.create({
     habitosContainer: {
         flex: 1,
         height: 100,
-        borderWidth: 1, // Agrega un borde al container
-        borderColor: 'black', // Color del borde
+        borderWidth: 1,
+        borderColor: 'black',
     },
     habitosIconContainer: {
         flex: 1,
-        backgroundColor: 'lightgray', // Puedes mantener el fondo rojo para que el icono resalte
+        backgroundColor: 'lightgray', 
         justifyContent: 'center',
         alignItems: 'center',
-        height: 98, // Ajusta la altura según tus necesidades
+        height: 98, //Cantidad justa para que se vea el borde
     },
     habitosIconMedidas: {
         width: 85,
@@ -116,6 +124,13 @@ const styles = StyleSheet.create({
         top: '180%',
         transform: [{ translateY: -15 }],
     },
+addButtonText: {
+    color: 'black',
+    fontSize: 60,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 5,
+},
 });
 
 
