@@ -11,8 +11,9 @@ const HabitosScreen = () => {
                     source={require('../../assets/images/bars-filter.png')} 
                 />
             </View>
+            {/* Aca va la pantalla para agregar habitos  */}
+            <Link href="/" asChild> 
 
-            <Link href="/" asChild>
                 <Pressable>
                     <Text style={styles.addButtonText}>+</Text>
                 </Pressable>
