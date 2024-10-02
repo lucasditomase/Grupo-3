@@ -10,36 +10,18 @@ const HabitosScreen = () => {
     //     name: '',
     // });
 
+    // const habito = {
+    //     id: 0,
+    //     nombre: ''
+    // }
+
     const onPressButton = () => {
         setModalVisible(true)
-        storeData('Task', 'Tarea')
-        retrieveData('Task')
+        //storeData('Task', 'Tarea')
+        //retrieveData('Task')
     }
 
-    const storeData = async (key: String, value: String) => {
-        try {
-            await AsyncStorage.setItem(key, value);
-            alert('Data successfully saved')
-        }
-        catch (error) {
-            // Error saving data
-            alert(error)
-        }
-    };
-
-    const retrieveData = async (key: String) => {
-        try {
-            const value = await AsyncStorage.getItem(key);
-            if (value !== null) {
-                // We have data!!
-                //console.log(value);
-                alert(value)
-            }
-        }
-        catch (error) {
-            // Error retrieving data
-        }
-    };
+    // x
 
     const [nombre, onChangeNombre] = React.useState('Nombre del habito');
     const [frecuencia, onChangeFrecuencia] = React.useState('Frecuencia');
@@ -47,8 +29,34 @@ const HabitosScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
 
+    //const [habitos, setHabitos] = useState([]);
+    // const habitos = useState({
+    //     id: 0,
+    //     nombre: ''
+    // });
 
-    let habitos = []
+
+    const habitos = [
+        {
+            id: 1,
+            nombre: 'a'
+        },
+        {
+            id: 2,
+            nombre: 'b'
+        },
+        {
+            id: 3,
+            nombre: 'c'
+        }
+    ]
+
+    // const [habitos] = useState({
+    //     id: 0,
+    //     nombre: ''
+    // });
+
+    //let habitos: { nombre: string; id: number; }[] = []
 
     return (
         <View style={{ flex: 1 }}>
@@ -100,11 +108,29 @@ const HabitosScreen = () => {
                                 //storeData('Task', 'Tarea')
                                 //const valor = retrieveData('Task')
                                 //alert(valor)
+
+
                                 const habito = {
+                                    id: 439857934857,
                                     nombre: nombre
                                 }
 
                                 habitos.push(habito)
+
+                                //alert(habito.nombre)
+
+
+                                // setHabitos([
+                                //     ...habitos,
+
+                                //     {
+                                //         nombre: nombre,
+                                //         id: 439857934857
+                                //     }
+
+                                // ]);
+
+                                //alert(habitos[0].nombre)
                             }}>
                             <Text style={styles.textStyle}>Guardar</Text>
                         </Pressable>
@@ -173,6 +199,21 @@ const HabitosScreen = () => {
                         <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
                     </View>
                 </View>
+
+
+
+                <View>
+                    <ul>
+                        {
+                            habitos.map(habito => (
+                                <li key={habito.id}>{habito.nombre}</li>
+                            ))
+                        }
+                    </ul>
+                </View>
+
+
+
             </ScrollView>
         </View >
     )
