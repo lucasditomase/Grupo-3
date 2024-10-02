@@ -1,11 +1,12 @@
-import React from "react";
-import { Text, View, StyleSheet, ScrollView, Image, Pressable } from "react-native";
+import React, { useState } from "react";
+import { Text, View, StyleSheet, ScrollView, Image, Pressable, Modal, Alert, TextInput } from "react-native";
 import { Link } from 'expo-router';
 import { AsyncStorage } from 'react-native';
 
 const HabitosScreen = () => {
 
     const onPressButton = () => {
+        setModalVisible(true)
         storeData('Task', 'Tarea')
         retrieveData('Task')
     }
@@ -33,12 +34,65 @@ const HabitosScreen = () => {
         }
     };
 
+    const [nombre, onChangeNombre] = React.useState('Nombre del habito');
+    const [frecuencia, onChangeFrecuencia] = React.useState('Frecuencia');
+
+    const [modalVisible, setModalVisible] = useState(false);
+
 
     return (
         <View style={{ flex: 1 }}>
             <Pressable style={styles.button} onPress={onPressButton}>
                 <Text style={styles.buttonText}>Agregar nuevo habito +</Text>
             </Pressable>
+
+
+
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    setModalVisible(!modalVisible);
+                }}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+
+                        <TextInput
+                            editable
+                            multiline
+                            numberOfLines={4}
+                            onChangeText={text => onChangeNombre(text)}
+                            value={nombre}
+                            style={{
+                                padding: 10,
+                                width: 500,
+                                borderColor: "gray",
+                                borderWidth: 1,
+                            }}
+                        />
+
+
+
+
+                        <Pressable
+                            style={[
+                                styles.button,
+                                styles.buttonClose
+                            ]}
+                            onPress={() => setModalVisible(!modalVisible)}>
+                            <Text style={styles.textStyle}>Guardar</Text>
+                        </Pressable>
+
+                    </View>
+                </View>
+            </Modal >
+
+
+
+
 
             <ScrollView>
                 <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
@@ -97,7 +151,7 @@ const HabitosScreen = () => {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </View >
     )
 }
 
@@ -160,6 +214,49 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         letterSpacing: 0.25,
         color: 'white',
+    },
+
+
+
+
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        width: 900,
+        height: 600
+    },
+
+    buttonOpen: {
+        backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+        backgroundColor: '#2196F3',
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
     },
 });
 
