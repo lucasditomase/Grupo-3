@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, Image } from 'react-native';
 const PerfilScreen = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Perfil</Text>
+
             <Image 
                 source={require('../../assets/images/user.png')} 
                 style={styles.profileImage} 
