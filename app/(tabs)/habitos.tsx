@@ -4,6 +4,7 @@ import { Link } from 'expo-router';
 //import { AsyncStorage } from 'react-native';
 //import AsyncStorage from '@react-native-community/async-storage';
 
+
 const HabitosScreen = () => {
 
     // const [habito, setPerson] = useState({
@@ -14,6 +15,15 @@ const HabitosScreen = () => {
     //     id: 0,
     //     nombre: ''
     // }
+
+    const generateRandomNumber = () => {
+        const min = 1;
+        const max = 100;
+        const randomNumber =
+            Math.floor(Math.random() * (max - min + 1)) + min;
+        //this.setState({ randomNumber });
+        return randomNumber
+    };
 
     const onPressButton = () => {
         setModalVisible(true)
@@ -36,20 +46,24 @@ const HabitosScreen = () => {
     // });
 
 
-    const habitos = [
-        {
-            id: 1,
-            nombre: 'a'
-        },
-        {
-            id: 2,
-            nombre: 'b'
-        },
-        {
-            id: 3,
-            nombre: 'c'
-        }
-    ]
+    // const habitos = [
+    //     {
+    //         id: 1,
+    //         nombre: 'a'
+    //     },
+    //     {
+    //         id: 2,
+    //         nombre: 'b'
+    //     },
+    //     {
+    //         id: 3,
+    //         nombre: 'c'
+    //     }
+    // ]
+
+    const [habitos, setTheArray] = useState([{
+        id: 0, nombre: ''
+    }])
 
     // const [habitos] = useState({
     //     id: 0,
@@ -111,11 +125,13 @@ const HabitosScreen = () => {
 
 
                                 const habito = {
-                                    id: 439857934857,
+                                    id: generateRandomNumber(),
                                     nombre: nombre
                                 }
 
-                                habitos.push(habito)
+                                setTheArray([...habitos, habito]);
+
+                                //habitos.push(habito)
 
                                 //alert(habito.nombre)
 
@@ -205,7 +221,7 @@ const HabitosScreen = () => {
                 <View>
                     <ul>
                         {
-                            habitos.map(habito => (
+                            habitos.filter(item => item.id != 0).map(habito => (
                                 <li key={habito.id}>{habito.nombre}</li>
                             ))
                         }
