@@ -1,90 +1,173 @@
-import React from "react";
-import { Text, View, StyleSheet, ScrollView, Image, Pressable } from "react-native";
+import React, { useState } from "react";
+import { Text, View, StyleSheet, ScrollView, Image, Pressable, Modal, Alert, TextInput } from "react-native";
 import { Link } from 'expo-router';
+import { AsyncStorage } from 'react-native';
 
 const HabitosScreen = () => {
+
+    const onPressButton = () => {
+        setModalVisible(true)
+        storeData('Task', 'Tarea')
+        retrieveData('Task')
+    }
+
+    const storeData = async (key: String, value: any) => {
+        try {
+            await AsyncStorage.setItem(key, value);
+        }
+        catch (error) {
+            // Error saving data
+        }
+    };
+
+    const retrieveData = async (key: String) => {
+        try {
+            const value = await AsyncStorage.getItem(key);
+            if (value !== null) {
+                // We have data!!
+                console.log(value);
+                //alert(value)
+            }
+        }
+        catch (error) {
+            // Error retrieving data
+        }
+    };
+
+    const [nombre, onChangeNombre] = React.useState('Nombre del habito');
+    const [frecuencia, onChangeFrecuencia] = React.useState('Frecuencia');
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+
     return (
         <View style={{ flex: 1 }}>
-            <View style={{...styles.header, flexDirection: 'row'}}>
-                <Text style={styles.headerTitle}>Hábitos</Text>
-                <Image style={styles.habitosFilter}  
-                    source={require('../../assets/images/bars-filter.png')} 
-                />
-            </View>
-            {/* Aca va la pantalla para agregar habitos  */}
-            <Link href="/" asChild> 
-
-                <Pressable>
-                    <Text style={styles.addButtonText}>+</Text>
-                </Pressable>
-            </Link>
+            <Pressable style={styles.button} onPress={onPressButton}>
+                <Text style={styles.buttonText}>Agregar nuevo habito +</Text>
+            </Pressable>
 
 
-            <ScrollView>       
-                <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
-                    <View style={styles.habitosIconContainer}>
-                        <Image style={styles.habitosIconMedidas}  
-                                source={require('../../assets/images/dumbbell-fitness.png')} 
-                            />
-                    </View>
-                    <View style={styles.habitosTextosContainer}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Gimnasio</Text>
-                        <Text style={{fontSize: 16}}>Frecuencia: Diario</Text>
-                    </View>
-                </View>
-                <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
-                    <View style={styles.habitosIconContainer}>
-                        <Image style={styles.habitosIconMedidas}  
-                                source={require('../../assets/images/meditation.png')} 
-                            />
-                    </View>
-                    <View style={styles.habitosTextosContainer}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Meditacion</Text>
-                        <Text style={{fontSize: 16}}>Frecuencia: Diario</Text>
-                    </View>
-                </View>
-                <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
-                    <View style={styles.habitosIconContainer}>
-                        <Image style={styles.habitosIconMedidas}  
-                                source={require('../../assets/images/coins.png')} 
-                            />
-                    </View>
-                    <View style={styles.habitosTextosContainer}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Pagar servicios</Text>
-                        <Text style={{fontSize: 16}}>Frecuencia: Mensual</Text>
-                    </View>
-                </View>
-                <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
-                    <View style={styles.habitosIconContainer}>
-                        <Image style={styles.habitosIconMedidas}  
-                                source={require('../../assets/images/notebook-alt.png')} 
-                            />
-                    </View>
-                    <View style={styles.habitosTextosContainer}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Revisar mi agenda para la semana</Text>
-                        <Text style={{fontSize: 16}}>Frecuencia: Semanal</Text>
+
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                    setModalVisible(!modalVisible);
+                }}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+
+                        <TextInput
+                            editable
+                            multiline
+                            numberOfLines={4}
+                            onChangeText={text => onChangeNombre(text)}
+                            value={nombre}
+                            style={{
+                                padding: 10,
+                                width: 500,
+                                borderColor: "gray",
+                                borderWidth: 1,
+                            }}
+                        />
+
+
+
+
+                        <Pressable
+                            style={[
+                                styles.button,
+                                styles.buttonClose
+                            ]}
+                            onPress={() => setModalVisible(!modalVisible)}>
+                            <Text style={styles.textStyle}>Guardar</Text>
+                        </Pressable>
+
                     </View>
                 </View>
-                <View style={[styles.habitosContainer, {flexDirection: 'row'}]}>
+            </Modal >
+
+
+
+
+
+            <ScrollView>
+                <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
                     <View style={styles.habitosIconContainer}>
-                        <Image style={styles.habitosIconMedidas}  
-                                source={require('../../assets/images/glass.png')} 
-                            />
+                        <Image style={styles.habitosIconMedidas}
+                            source={require('../../assets/images/dumbbell-fitness.png')}
+                        />
                     </View>
                     <View style={styles.habitosTextosContainer}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold'}}>Tomar 2 litros de agua</Text>
-                        <Text style={{fontSize: 16}}>Frecuencia: Diario</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Gimnasio</Text>
+                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
+                    </View>
+                </View>
+                <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
+                    <View style={styles.habitosIconContainer}>
+                        <Image style={styles.habitosIconMedidas}
+                            source={require('../../assets/images/meditation.png')}
+                        />
+                    </View>
+                    <View style={styles.habitosTextosContainer}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Meditacion</Text>
+                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
+                    </View>
+                </View>
+                <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
+                    <View style={styles.habitosIconContainer}>
+                        <Image style={styles.habitosIconMedidas}
+                            source={require('../../assets/images/coins.png')}
+                        />
+                    </View>
+                    <View style={styles.habitosTextosContainer}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Pagar servicios</Text>
+                        <Text style={{ fontSize: 16 }}>Frecuencia: Mensual</Text>
+                    </View>
+                </View>
+                <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
+                    <View style={styles.habitosIconContainer}>
+                        <Image style={styles.habitosIconMedidas}
+                            source={require('../../assets/images/notebook-alt.png')}
+                        />
+                    </View>
+                    <View style={styles.habitosTextosContainer}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Revisar mi agenda para la semana</Text>
+                        <Text style={{ fontSize: 16 }}>Frecuencia: Semanal</Text>
+                    </View>
+                </View>
+                <View style={[styles.habitosContainer, { flexDirection: 'row' }]}>
+                    <View style={styles.habitosIconContainer}>
+                        <Image style={styles.habitosIconMedidas}
+                            source={require('../../assets/images/glass.png')}
+                        />
+                    </View>
+                    <View style={styles.habitosTextosContainer}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Tomar 2 litros de agua</Text>
+                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
                     </View>
                 </View>
             </ScrollView>
-        </View>
+        </View >
     )
 }
 
-//Despues lo definimos mejor viendo alguna palera de colores
+//Despues lo definimos mejor viendo alguna paleta de colores
 const styles = StyleSheet.create({
+    button: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 4,
+        elevation: 3,
+        backgroundColor: 'black'
+    },
     header: {
-        backgroundColor: 'gray', 
+        backgroundColor: 'gray',
         padding: 30,
         paddingTop: 50,
         alignItems: 'center',
@@ -102,7 +185,7 @@ const styles = StyleSheet.create({
     },
     habitosIconContainer: {
         flex: 1,
-        backgroundColor: 'lightgray', 
+        backgroundColor: 'lightgray',
         justifyContent: 'center',
         alignItems: 'center',
         height: 98, //Cantidad justa para que se vea el borde
@@ -125,13 +208,56 @@ const styles = StyleSheet.create({
         top: '180%',
         transform: [{ translateY: -15 }],
     },
-addButtonText: {
-    color: 'black',
-    fontSize: 60,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 5,
-},
+    buttonText: {
+        fontSize: 16,
+        lineHeight: 21,
+        fontWeight: 'bold',
+        letterSpacing: 0.25,
+        color: 'white',
+    },
+
+
+
+
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        width: 900,
+        height: 600
+    },
+
+    buttonOpen: {
+        backgroundColor: '#F194FF',
+    },
+    buttonClose: {
+        backgroundColor: '#2196F3',
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
 });
 
 
