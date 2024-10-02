@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Text, View, StyleSheet, ScrollView, Image, Pressable, Modal, Alert, TextInput } from "react-native";
 import { Link } from 'expo-router';
-import { AsyncStorage } from 'react-native';
+//import { AsyncStorage } from 'react-native';
+//import AsyncStorage from '@react-native-community/async-storage';
 
 const HabitosScreen = () => {
+
+    // const [habito, setPerson] = useState({
+    //     name: '',
+    // });
 
     const onPressButton = () => {
         setModalVisible(true)
@@ -11,12 +16,14 @@ const HabitosScreen = () => {
         retrieveData('Task')
     }
 
-    const storeData = async (key: String, value: any) => {
+    const storeData = async (key: String, value: String) => {
         try {
             await AsyncStorage.setItem(key, value);
+            alert('Data successfully saved')
         }
         catch (error) {
             // Error saving data
+            alert(error)
         }
     };
 
@@ -25,8 +32,8 @@ const HabitosScreen = () => {
             const value = await AsyncStorage.getItem(key);
             if (value !== null) {
                 // We have data!!
-                console.log(value);
-                //alert(value)
+                //console.log(value);
+                alert(value)
             }
         }
         catch (error) {
@@ -39,6 +46,9 @@ const HabitosScreen = () => {
 
     const [modalVisible, setModalVisible] = useState(false);
 
+
+
+    let habitos = []
 
     return (
         <View style={{ flex: 1 }}>
@@ -82,7 +92,20 @@ const HabitosScreen = () => {
                                 styles.button,
                                 styles.buttonClose
                             ]}
-                            onPress={() => setModalVisible(!modalVisible)}>
+                            onPress={() => {
+                                setModalVisible(!modalVisible)
+                                //habito.name = nombre
+                                //alert(habito.name)
+
+                                //storeData('Task', 'Tarea')
+                                //const valor = retrieveData('Task')
+                                //alert(valor)
+                                const habito = {
+                                    nombre: nombre
+                                }
+
+                                habitos.push(habito)
+                            }}>
                             <Text style={styles.textStyle}>Guardar</Text>
                         </Pressable>
 
