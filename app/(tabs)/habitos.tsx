@@ -1,37 +1,24 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, ScrollView, Image, Pressable, Modal, Alert, TextInput } from "react-native";
-import { Link } from 'expo-router';
-//import { AsyncStorage } from 'react-native';
-//import AsyncStorage from '@react-native-community/async-storage';
+import {
+    Text, View, StyleSheet, ScrollView,
+    Image, Pressable, Modal, Alert, TextInput, Button
+} from "react-native";
 
+import {
+    Picker
+} from "@react-native-picker/picker";
+
+
+
+import { Link } from 'expo-router';
+
+import ProgressCircle from './ProgressCircle';
 
 const HabitosScreen = () => {
 
-    // const [habito, setPerson] = useState({
-    //     name: '',
-    // });
-
-    // const habito = {
-    //     id: 0,
-    //     nombre: ''
-    // }
-
-    const generateRandomNumber = () => {
-        const min = 1;
-        const max = 100;
-        const randomNumber =
-            Math.floor(Math.random() * (max - min + 1)) + min;
-        //this.setState({ randomNumber });
-        return randomNumber
-    };
-
     const onPressButton = () => {
         setModalVisible(true)
-        //storeData('Task', 'Tarea')
-        //retrieveData('Task')
     }
-
-    // x
 
     const [nombre, onChangeNombre] = React.useState('Nombre del habito');
     const [frecuencia, onChangeFrecuencia] = React.useState('Frecuencia');
@@ -39,49 +26,38 @@ const HabitosScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
 
 
-    //const [habitos, setHabitos] = useState([]);
-    // const habitos = useState({
-    //     id: 0,
-    //     nombre: ''
-    // });
+    //const [modalVisible, setModalVisible] = useState(false);
+    const [inputText, setInputText] = useState('');
+
+    const handleOpenModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
 
 
-    // const habitos = [
-    //     {
-    //         id: 1,
-    //         nombre: 'a'
-    //     },
-    //     {
-    //         id: 2,
-    //         nombre: 'b'
-    //     },
-    //     {
-    //         id: 3,
-    //         nombre: 'c'
-    //     }
-    // ]
+    const [pokemon, setPokemon] = useState();
 
-    const [habitos, setTheArray] = useState([{
-        id: 0, nombre: ''
-    }])
+    const pokemons = ['Gimnasio', 'Meditacion', 'Pagos', 'Agenda', 'Alimentos'];
 
-    // const [habitos] = useState({
-    //     id: 0,
-    //     nombre: ''
-    // });
-
-    //let habitos: { nombre: string; id: number; }[] = []
+    const handleValueChange = (itemValue, itemIndex) => setPokemon(itemValue)
 
     return (
         <View style={{ flex: 1 }}>
-            <Pressable style={styles.button} onPress={onPressButton}>
-                <Text style={styles.buttonText}>Agregar nuevo habito +</Text>
-            </Pressable>
+
+            <View>
+                <Pressable style={styles.button} onPress={onPressButton}>
+                    <Text style={styles.buttonText}>Agregar nuevo habito</Text>
+                </Pressable>
+            </View>
 
 
 
 
-            <Modal
+
+            {/* <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
@@ -100,8 +76,9 @@ const HabitosScreen = () => {
                             value={nombre}
                             style={{
                                 padding: 10,
-                                width: 500,
-                                borderColor: "gray",
+                                //width: 500,
+                                borderColor: "teal",
+                                borderRadius: 10,
                                 borderWidth: 1,
                             }}
                         />
@@ -114,46 +91,47 @@ const HabitosScreen = () => {
                                 styles.button,
                                 styles.buttonClose
                             ]}
-                            onPress={() => {
-                                setModalVisible(!modalVisible)
-                                //habito.name = nombre
-                                //alert(habito.name)
-
-                                //storeData('Task', 'Tarea')
-                                //const valor = retrieveData('Task')
-                                //alert(valor)
-
-
-                                const habito = {
-                                    id: generateRandomNumber(),
-                                    nombre: nombre
-                                }
-
-                                setTheArray([...habitos, habito]);
-
-                                //habitos.push(habito)
-
-                                //alert(habito.nombre)
-
-
-                                // setHabitos([
-                                //     ...habitos,
-
-                                //     {
-                                //         nombre: nombre,
-                                //         id: 439857934857
-                                //     }
-
-                                // ]);
-
-                                //alert(habitos[0].nombre)
-                            }}>
+                            onPress={() => setModalVisible(!modalVisible)}>
                             <Text style={styles.textStyle}>Guardar</Text>
                         </Pressable>
 
                     </View>
                 </View>
-            </Modal >
+            </Modal > */}
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={handleCloseModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+
+                        <Text style={styles.label}>Selecciona nombre</Text>
+
+                        <TextInput
+                            style={styles.input}
+                            value={inputText}
+                            onChangeText={setInputText}
+                            placeholder="Nombre del habito"
+                        />
+
+                        <Text style={styles.label}>Selecciona categoria</Text>
+
+                        <Picker
+                            selectedValue={pokemon}
+                            onValueChange={handleValueChange}>
+                            {
+                                pokemons.map(pokemon => <Picker.Item key={pokemon} label={pokemon} value={pokemon} />)
+                            }
+                        </Picker>
+
+
+                        <Button title="Guardar" onPress={handleCloseModal} />
+                    </View>
+                </View>
+            </Modal>
 
 
 
@@ -215,21 +193,6 @@ const HabitosScreen = () => {
                         <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
                     </View>
                 </View>
-
-
-
-                <View>
-                    <ul>
-                        {
-                            habitos.filter(item => item.id != 0).map(habito => (
-                                <li key={habito.id}>{habito.nombre}</li>
-                            ))
-                        }
-                    </ul>
-                </View>
-
-
-
             </ScrollView>
         </View >
     )
@@ -237,14 +200,20 @@ const HabitosScreen = () => {
 
 //Despues lo definimos mejor viendo alguna paleta de colores
 const styles = StyleSheet.create({
+    fixToText: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: 'black'
+        paddingVertical: 10,
+        //paddingHorizontal: 5,
+        marginHorizontal: 100,
+        marginVertical: 20,
+        borderRadius: 10,
+        //elevation: 5,
+        backgroundColor: 'teal'
     },
     header: {
         backgroundColor: 'gray',
@@ -305,29 +274,29 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 22,
     },
-    modalView: {
-        margin: 20,
+    modalView2: {
+        //margin: 20,
         backgroundColor: 'white',
         borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        width: 900,
-        height: 600
+        //padding: 35,
+        //alignItems: 'center',
+        // shadowColor: '#000',
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
+        // shadowOpacity: 0.25,
+        // shadowRadius: 4,
+        // elevation: 5,
+        //width: 400,
+        //height: 600
     },
 
     buttonOpen: {
-        backgroundColor: '#F194FF',
+        backgroundColor: 'teal',
     },
     buttonClose: {
-        backgroundColor: '#2196F3',
+        backgroundColor: 'teal',
     },
     textStyle: {
         color: 'white',
@@ -338,6 +307,56 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
+
+
+
+
+
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+    },
+    modalView: {
+        width: '80%',
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    label: {
+        fontSize: 18,
+        marginBottom: 10,
+    },
+    input: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 20,
+        paddingHorizontal: 10,
+    },
+
+
+    pickerStyles: {
+        width: '70%',
+        backgroundColor: 'gray',
+        color: 'white'
+    }
+
 });
 
 
