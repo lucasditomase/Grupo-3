@@ -35,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Hábitos',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'heart' : 'heart-outline'} color={color} />
+            <TabBarIcon name={focused ? 'arrow-back' : 'heart-outline'} color={color} />
           ),
         }}
       />
