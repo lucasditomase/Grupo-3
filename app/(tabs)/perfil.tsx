@@ -1,29 +1,61 @@
-import React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet, Image, TextInput } from 'react-native';
 
 const PerfilScreen = () => {
+
+    const [inputText1, setInputText1] = useState('');
+    const [inputText2, setInputText2] = useState('');
+    const [inputText3, setInputText3] = useState('');
+    const [inputText4, setInputText4] = useState('');
+
     return (
         <View style={styles.container}>
 
-            <Image 
-                source={require('../../assets/images/user.png')} 
-                style={styles.profileImage} 
+
+
+            <Image
+                source={require('../../assets/images/user.png')}
+                style={styles.profileImage}
             />
             <View style={styles.infoContainer}>
                 <Text style={styles.label}>Nombre:</Text>
-                <Text style={styles.value}>Juan</Text>
+                {/* <Text style={styles.value}>Juan</Text> */}
+                <TextInput
+                    style={styles.value}
+                    value={inputText1}
+                    onChangeText={setInputText1}
+                    placeholder="Juan"
+                />
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.label}>Apellido:</Text>
-                <Text style={styles.value}>Pérez</Text>
+                {/* <Text style={styles.value}>Pérez</Text> */}
+                <TextInput
+                    style={styles.value}
+                    value={inputText2}
+                    onChangeText={setInputText2}
+                    placeholder="Pérez"
+                />
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.label}>Edad:</Text>
-                <Text style={styles.value}>30</Text>
+                {/* <Text style={styles.value}>30</Text> */}
+                <TextInput
+                    style={styles.value}
+                    value={inputText3}
+                    onChangeText={setInputText3}
+                    placeholder="30"
+                />
             </View>
             <View style={styles.infoContainer}>
                 <Text style={styles.label}>Email:</Text>
-                <Text style={styles.value}>juan.perez@email.com</Text>
+                {/* <Text style={styles.value}>juan.perez@email.com</Text> */}
+                <TextInput
+                    style={styles.value}
+                    value={inputText4}
+                    onChangeText={setInputText4}
+                    placeholder="juan.perez@email.com"
+                />
             </View>
         </View>
     );
