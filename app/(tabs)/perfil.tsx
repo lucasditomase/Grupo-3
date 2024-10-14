@@ -1,108 +1,52 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, Image, TextInput } from 'react-native';
+import perfilScreenStyles from '../styles/perfilStyles';
+import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const PerfilScreen = () => {
-
     const [inputText1, setInputText1] = useState('');
     const [inputText2, setInputText2] = useState('');
     const [inputText3, setInputText3] = useState('');
     const [inputText4, setInputText4] = useState('');
 
     return (
-        <View style={styles.container}>
-
-
-
+        <View style={perfilScreenStyles.container}>
             <Image
                 source={require('../../assets/images/user.png')}
-                style={styles.profileImage}
-            />
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Nombre:</Text>
-                {/* <Text style={styles.value}>Juan</Text> */}
+                style={perfilScreenStyles.profileImage} />
+            <View style={perfilScreenStyles.infoContainer}>
+                <Text style={perfilScreenStyles.label}>Nombre:</Text>
                 <TextInput
-                    style={styles.value}
-                    value={inputText1}
                     onChangeText={setInputText1}
                     placeholder="Juan"
-                />
+                    style={perfilScreenStyles.value}
+                    value={inputText1} />
             </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Apellido:</Text>
-                {/* <Text style={styles.value}>Pérez</Text> */}
+            <View style={perfilScreenStyles.infoContainer}>
+                <Text style={perfilScreenStyles.label}>Apellido:</Text>
                 <TextInput
-                    style={styles.value}
-                    value={inputText2}
                     onChangeText={setInputText2}
                     placeholder="Pérez"
-                />
+                    style={perfilScreenStyles.value}
+                    value={inputText2} />
             </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Edad:</Text>
-                {/* <Text style={styles.value}>30</Text> */}
+            <View style={perfilScreenStyles.infoContainer}>
+                <Text style={perfilScreenStyles.label}>Edad:</Text>
                 <TextInput
-                    style={styles.value}
-                    value={inputText3}
                     onChangeText={setInputText3}
                     placeholder="30"
-                />
+                    style={perfilScreenStyles.value}
+                    value={inputText3} />
             </View>
-            <View style={styles.infoContainer}>
-                <Text style={styles.label}>Email:</Text>
-                {/* <Text style={styles.value}>juan.perez@email.com</Text> */}
+            <View style={perfilScreenStyles.infoContainer}>
+                <Text style={perfilScreenStyles.label}>Email:</Text>
                 <TextInput
-                    style={styles.value}
-                    value={inputText4}
                     onChangeText={setInputText4}
                     placeholder="juan.perez@email.com"
-                />
+                    style={perfilScreenStyles.value}
+                    value={inputText4} />
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        //backgroundColor: '#e0f7fa',
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        alignSelf: 'center',
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#00796b',
-    },
-    infoContainer: {
-        flexDirection: 'row',
-        marginBottom: 15,
-        padding: 10,
-        backgroundColor: '#ffffff',
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    label: {
-        fontWeight: 'bold',
-        fontSize: 18,
-        width: 120,
-        color: '#004d40',
-    },
-    value: {
-        fontSize: 18,
-        color: '#004d40',
-    }
-});
 
 export default PerfilScreen;
