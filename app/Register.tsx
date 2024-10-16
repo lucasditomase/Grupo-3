@@ -1,7 +1,19 @@
-// /app/register.tsx
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { Text, View, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { AuthContext } from './context/AuthContext';
+
+// Define the shape of the API response
+interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    nombre: string;
+    apellido: string;
+  };
+}
 
 const RegistrarseScreen = () => {
   const [nombre, setNombre] = useState('');
@@ -9,13 +21,38 @@ const RegistrarseScreen = () => {
   const [edad, setEdad] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const router = useRouter();
+  const { login } = useContext(AuthContext);
 
-  const handleRegister = () => {
-    console.log('User registered:', { nombre, apellido, edad, email, password });
+  const handleRegister = async () => {
+    if (!nombre || !apellido || !edad || !email || !password) {
+      alert("Please fill all fields.");
+      return;
+    }
 
-    // Navigate to main app after registration
-    router.push('/(tabs)');
+    try {
+      // Specify that response.data will have type AuthResponse
+      const response = await axios.post<AuthResponse>('http://localhost:3000/register', {
+        nombre,
+        apellido,
+        edad: parseInt(edad),
+        email,
+        password,
+      });
+
+      const { token, user } = response.data;
+
+      // Log in the user using AuthContext
+      login(token, user);
+
+      Alert.alert("Success", "Registration successful!");
+      router.push('/(tabs)');
+    } catch (error: any) {
+      console.error("Registration Error:", error);
+      const errorMessage = error.response?.data?.error || "Registration failed.";
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   return (
@@ -57,6 +94,7 @@ const RegistrarseScreen = () => {
           onChangeText={setEmail}
           placeholder="Email"
           keyboardType="email-address"
+          autoCapitalize="none"
         />
       </View>
       <View style={styles.infoContainer}>
@@ -78,6 +116,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#f0f0f0',
   },
   title: {
     fontSize: 28,
@@ -87,27 +126,19 @@ const styles = StyleSheet.create({
     color: '#00796b',
   },
   infoContainer: {
-    flexDirection: 'row',
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    marginBottom: 16,
   },
   label: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    width: 120,
-    color: '#004d40',
+    fontSize: 16,
+    color: '#00796b',
   },
   value: {
     fontSize: 18,
-    color: '#004d40',
-    flex: 1,
+    borderWidth: 1,
+    borderColor: '#004d40',
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#ffffff',
   },
 });
 

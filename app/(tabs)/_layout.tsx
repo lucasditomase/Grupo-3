@@ -1,12 +1,30 @@
-// /app/(tabs)/layout.tsx
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { useRouter } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
+  const { isAuthenticated } = useContext(AuthContext);
+  const router = useRouter();
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace('/login');
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
+      </View>
+    );
+  }
 
   return (
     <Tabs

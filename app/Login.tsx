@@ -1,20 +1,53 @@
-// /app/login.tsx
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { AuthContext } from './context/AuthContext';
+
+// Define the shape of the API response
+interface AuthResponse {
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    nombre: string;
+    apellido: string;
+  };
+}
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const router = useRouter();
+  const { login } = useContext(AuthContext);
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    console.log('Bandera')
+    if (!email || !password) {
+      alert("Error");
+      return;
+    }
 
-    // Navigate to main app after login
-    router.push('/(tabs)');
+    try {
+      // Specify that response.data will have type AuthResponse
+      const response = await axios.post<AuthResponse>('http://localhost:3000/login', {
+        email,
+        password,
+      });
+
+      const { token, user } = response.data;
+
+      // Log in the user using AuthContext
+      login(token, user);
+
+      Alert.alert("Success", "Login successful!");
+      router.push('/(tabs)');
+    } catch (error: any) {
+      console.error("Login Error:", error);
+      const errorMessage = error.response?.data?.error || "Login failed.";
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   return (
@@ -45,18 +78,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
+    backgroundColor: '#f0f0f0',
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
     textAlign: 'center',
+    color: '#00796b',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#004d40',
     borderWidth: 1,
+    borderRadius: 8,
     marginBottom: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
+    backgroundColor: '#ffffff',
   },
 });
 

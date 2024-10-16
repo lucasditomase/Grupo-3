@@ -1,4 +1,5 @@
-// /app/index.tsx (StarterPage)
+// /app/index.tsx
+
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -20,10 +21,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#e0f7fa', 
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     marginBottom: 20,
+    color: '#00796b',
+    fontWeight: 'bold',
   },
 });
 
