@@ -1,13 +1,16 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+// /app/_layout.tsx
 import 'react-native-reanimated';
-
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from '@react-navigation/native';
+import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useEffect } from 'react';
+import { useFonts } from 'expo-font';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -28,8 +31,23 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerShown: false, // Hide headers for all screens by default
+        }}
+      >
+        {/* Authentication Screens */}
+        <Stack.Screen name="index" options={{ title: 'Welcome' }} />
+        <Stack.Screen name="login" options={{ title: 'Log In' }} />
+        <Stack.Screen name="register" options={{ title: 'Register' }} />
+
+        {/* Main Application Tabs */}
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
+        />
+
+        {/* Not Found Screen */}
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

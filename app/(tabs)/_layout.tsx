@@ -1,8 +1,8 @@
-import { Tabs } from 'expo-router';
+// /app/(tabs)/layout.tsx
 import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { Tabs } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
@@ -20,13 +20,21 @@ export default function TabLayout() {
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Progreso',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'} color={color} />
+            <TabBarIcon
+              name={
+                focused
+                  ? 'checkmark-circle'
+                  : 'checkmark-circle-outline'
+              }
+              color={color}
+            />
           ),
         }}
       />

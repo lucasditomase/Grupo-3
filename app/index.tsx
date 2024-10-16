@@ -1,15 +1,16 @@
+// /app/index.tsx (StarterPage)
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const StarterPage: React.FC = () => {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome</Text>
-      <Button title="Register" />
-      <Button title="Log In" />
+      <Button title="Register" onPress={() => router.push('/register')} />
+      <Button title="Log In" onPress={() => router.push('/login')} />
     </View>
   );
 };
