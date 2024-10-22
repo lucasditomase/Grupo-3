@@ -25,7 +25,7 @@ const Login = () => {
   const handleLogin = async () => {
     console.log('Bandera')
     if (!email || !password) {
-      alert("Error");
+      alert("Error - Email y contraseña son requeridos.");
       return;
     }
 
