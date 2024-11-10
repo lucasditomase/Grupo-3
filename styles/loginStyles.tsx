@@ -25,8 +25,8 @@ const loginScreenStyles = StyleSheet.create({
         marginBottom: 15,
     },
     buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

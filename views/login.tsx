@@ -20,21 +20,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) =>
 
     const handleLogin = () => {
         if (email === '' && password === '') {
-            Alert.alert('Success', 'You have logged in successfully!');
             setEmail('');
             setPassword('');
             onLoginSuccess();
         } else {
-            Alert.alert('Error', 'Invalid email or password.');
+            Alert.alert('Error', 'Correo o clave incorrecta.');
         }
     };
 
     return (
         <View style={loginScreenStyles.container}>
-            <Text style={loginScreenStyles.title}>Login</Text>
+            <Text style={loginScreenStyles.title}>Debes autenticarte para continuar</Text>
             <TextInput
                 style={loginScreenStyles.input}
-                placeholder="Email"
+                placeholder="Correo"
                 placeholderTextColor="#aaa"
                 value={email}
                 onChangeText={setEmail}
@@ -43,15 +42,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) =>
             />
             <TextInput
                 style={loginScreenStyles.input}
-                placeholder="Password"
+                placeholder="Clave"
                 placeholderTextColor="#aaa"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={true}
             />
             <View style={loginScreenStyles.buttonContainer}>
-                <Button title="Login" onPress={handleLogin} />
-                <Button title="Cancel" onPress={onClose} color="red" />
+                <Button title="Iniciar sesion" onPress={handleLogin} />
             </View>
         </View>
     );
