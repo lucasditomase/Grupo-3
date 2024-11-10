@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import habitosScreenStyles from '../../styles/habitoStyles';
 import modalStyles from '../../styles/modalStyles';
-import { Button, Image, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import themeDark from '../../themes/themeDark';
+import themeLight from '../../themes/themeLight';
+import { Button, Image, Modal, Pressable, ScrollView, Text, TextInput, View, useColorScheme } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [pokemon, setPokemon] = useState();
+    const colorScheme = useColorScheme();
     const handleValueChange = (itemValue: any, itemIndex: any) => setPokemon(itemValue)
+    const isDarkMode = colorScheme === 'dark';
     const pokemons = ['Gimnasio', 'Meditacion', 'Pagos', 'Agenda', 'Alimentos'];
+
     const handleCloseModal = () => {
         setModalVisible(false);
     };
@@ -19,7 +24,7 @@ const HabitosScreen = () => {
 
     return (
         <View style={{ flex: 1 }}>
-            <View>
+            <View style={[isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
                 <Pressable style={habitosScreenStyles.button} onPress={onPressButton}>
                     <Text style={habitosScreenStyles.buttonText}>Agregar nuevo habito</Text>
                 </Pressable>
@@ -47,7 +52,7 @@ const HabitosScreen = () => {
                     </View>
                 </View>
             </Modal>
-            <ScrollView>
+            <ScrollView style={[isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
                 <View style={[habitosScreenStyles.habitosContainer, { flexDirection: 'row' }]}>
                     <View style={habitosScreenStyles.habitosIconContainer}>
                         <Image style={habitosScreenStyles.habitosIconMedidas}

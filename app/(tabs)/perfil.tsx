@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import perfilScreenStyles from '../../styles/perfilStyles';
-import { Image, Text, TextInput, View } from 'react-native';
+import themeDark from '../../themes/themeDark';
+import themeLight from '../../themes/themeLight';
+import { Image, Text, TextInput, View, useColorScheme } from 'react-native';
 
 const PerfilScreen = () => {
     const [inputText1, setInputText1] = useState('');
     const [inputText2, setInputText2] = useState('');
     const [inputText3, setInputText3] = useState('');
     const [inputText4, setInputText4] = useState('');
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === 'dark';
 
     return (
-        <View style={perfilScreenStyles.container}>
+        <View style={[perfilScreenStyles.container, isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
             <Image
                 source={require('../../assets/images/user.png')}
                 style={perfilScreenStyles.profileImage} />

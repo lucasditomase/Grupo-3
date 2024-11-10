@@ -1,11 +1,16 @@
 import ProgressCircle from '../../components/views/circulos';
 import progresoScreenStyles from '../../styles/progresoStyles';
-import { Text, View } from "react-native";
+import themeDark from '../../themes/themeDark';
+import themeLight from '../../themes/themeLight';
 import { Link } from 'expo-router';
+import { Text, View, useColorScheme } from "react-native";
 
 const ProgresoScreen = () => {
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === 'dark';
+
     return (
-        <View>
+        <View style={[isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
             <View style={{
                 marginVertical: 50,
                 justifyContent: 'center',
