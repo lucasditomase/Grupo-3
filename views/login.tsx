@@ -2,15 +2,22 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button } from "react-native";
 import loginScreenStyles from "../styles/loginStyles";
 
-const LoginScreen = () => {
+interface LoginScreenProps {
+    onClose: () => void;
+    onLoginSuccess: () => void;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) => {
     const [edad, setEdad] = useState("");
     const [email, setEmail] = useState("");
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(false);
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
 
     const handleLogin = () => {
         console.log("Login with:", email, password);
+        onLoginSuccess();
+        onClose();
     };
 
     const handleSignUp = () => {
@@ -45,7 +52,7 @@ const LoginScreen = () => {
                 </View>
             ) : (
                 <View>
-                    <Text style={loginScreenStyles.title}>Registrarse</Text>
+                    <Text style={loginScreenStyles.title}>Necesitas una cuenta para continuar</Text>
                     <TextInput
                         style={loginScreenStyles.input}
                         placeholder="Usuario"
