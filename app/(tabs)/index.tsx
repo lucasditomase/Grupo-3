@@ -1,6 +1,7 @@
-import ProgressCircle from '../views/circulos';
-import progresoScreenStyles from '../styles/progresoStyles';
-import { StyleSheet, Text, View } from "react-native";
+import ProgressCircle from '../../components/views/circulos';
+import progresoScreenStyles from '../../styles/progresoStyles';
+import { Text, View } from "react-native";
+import { Link } from 'expo-router';
 
 const ProgresoScreen = () => {
     return (
@@ -20,6 +21,7 @@ const ProgresoScreen = () => {
             }}>
                 <ProgressCircle size={200} strokeWidth={20} progress={25} color="teal" />
                 <Text style={progresoScreenStyles.label}>35% completado</Text>
+                <Link href={'/_sitemap'}>Hola</Link>
             </View >
         </View >
     )

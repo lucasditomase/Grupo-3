@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import perfilScreenStyles from '../styles/perfilStyles';
-import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
+import perfilScreenStyles from '../../styles/perfilStyles';
+import { Image, Text, TextInput, View } from 'react-native';
 
 const PerfilScreen = () => {
     const [inputText1, setInputText1] = useState('');

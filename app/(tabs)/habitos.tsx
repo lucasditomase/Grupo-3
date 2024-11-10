@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import habitosScreenStyles from '../styles/habitoStyles';
-import modalStyles from '../styles/modalStyles';
-import { Button, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import habitosScreenStyles from '../../styles/habitoStyles';
+import modalStyles from '../../styles/modalStyles';
+import { Button, Image, Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
 const HabitosScreen = () => {
