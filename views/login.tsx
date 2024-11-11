@@ -1,27 +1,46 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button } from "react-native";
-import loginScreenStyles from "../styles/loginStyles";
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button } from 'react-native';
+import loginScreenStyles from '../styles/loginStyles';
+import { registerUser, loginUser } from './AuthService';
 
-const LoginScreen = () => {
-    const [edad, setEdad] = useState("");
-    const [email, setEmail] = useState("");
-    const [isLogin, setIsLogin] = useState(true);
-    const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
+interface LoginScreenProps {
+    onClose: () => void;
+    onLoginSuccess: () => void;
+}
 
-    const handleLogin = () => {
-        console.log("Login with:", email, password);
+const LoginScreen: React.FC<LoginScreenProps> = ({
+    onClose,
+    onLoginSuccess,
+}) => {
+    const [email, setEmail] = useState('');
+    const [isLogin, setIsLogin] = useState(false);
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
+
+    const handleLogin = async () => {
+        const success = await loginUser(email, password);
+        if (success) {
+            onLoginSuccess();
+            onClose();
+        }
     };
 
-    const handleSignUp = () => {
-        console.log("Sign up with:", username, edad, email, password);
+    const handleSignUp = async () => {
+        const success = await registerUser(username, email, password);
+        // if (success) {
+        //     handleLogin();
+        //     onLoginSuccess();
+        //     onClose();
+        // }
     };
 
     return (
         <View style={loginScreenStyles.container}>
             {isLogin ? (
                 <View>
-                    <Text style={loginScreenStyles.title}>Debes autenticarte para continuar</Text>
+                    <Text style={loginScreenStyles.title}>
+                        Debes autenticarte para continuar
+                    </Text>
                     <TextInput
                         style={loginScreenStyles.input}
                         placeholder="Correo"
@@ -45,7 +64,9 @@ const LoginScreen = () => {
                 </View>
             ) : (
                 <View>
-                    <Text style={loginScreenStyles.title}>Registrarse</Text>
+                    <Text style={loginScreenStyles.title}>
+                        Necesitas una cuenta para continuar
+                    </Text>
                     <TextInput
                         style={loginScreenStyles.input}
                         placeholder="Usuario"
@@ -53,14 +74,6 @@ const LoginScreen = () => {
                         value={username}
                         onChangeText={setUsername}
                         autoCapitalize="none"
-                    />
-                    <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Edad"
-                        placeholderTextColor="#aaa"
-                        value={edad}
-                        onChangeText={setEdad}
-                        keyboardType="numeric"
                     />
                     <TextInput
                         style={loginScreenStyles.input}
@@ -85,7 +98,11 @@ const LoginScreen = () => {
                 </View>
             )}
             <Button
-                title={isLogin ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
+                title={
+                    isLogin
+                        ? '¿No tienes cuenta? Regístrate'
+                        : '¿Ya tienes cuenta? Inicia sesión'
+                }
                 onPress={() => setIsLogin(!isLogin)}
             />
         </View>
