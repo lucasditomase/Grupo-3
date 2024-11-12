@@ -24,27 +24,18 @@ const sendLoginRequest = async (email: string, password: string) => {
 };
 
 const handleLoginResponse = async (response: Response) => {
-    switch (response.status) {
-        case 200:
-            const data = await response.json();
-            alert('Inicio de sesión exitoso');
-            localStorage.setItem('token', data.token);
-            return true;
-        case 400:
-            handleErrorResponse(response);
-            return false;
-        case 500:
-            alert('Error del servidor, intenta más tarde.');
-            return false;
-        default:
-            alert(
-                'Error desconocido, verifica tu conexión o intenta más tarde.'
-            );
-            return false;
+    if (response.status === 200) {
+        const data = await response.json();
+        alert('Inicio de sesión exitoso');
+        localStorage.setItem('token', data.token);
+        return true;
+    } else {
+        const errorData = await response.json();
+        alert(
+            `Error ${response.status}: ${
+                errorData.message || 'Ocurrió un error'
+            }`
+        );
+        return false;
     }
-};
-
-const handleErrorResponse = async (response: Response) => {
-    const data = await response.json();
-    alert('Error en el inicio de sesión: ' + data.message);
 };
