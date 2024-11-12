@@ -31,18 +31,17 @@ const sendRegisterRequest = async (
 };
 
 const handleRegisterResponse = async (response: Response) => {
-    switch (response.status) {
-        case 200:
-            alert('Registro exitoso');
-            return true;
-        case 400:
-            handleErrorResponse(response);
-        case 500:
-            alert('Error del servidor, intenta más tarde.');
-        default:
-            alert(
-                'Error desconocido, verifica tu conexión o intenta más tarde.'
-            );
+
+    if (response.status === 200) {
+        alert('Registro exitoso');
+        return true;
+    }
+    if (response.status === 400) {
+        await handleErrorResponse(response);
+    } else if (response.status === 500) {
+        alert('Error del servidor, intenta más tarde.');
+    } else {
+        alert('Error desconocido, verifica tu conexión o intenta más tarde.');
     }
     return false;
 };
