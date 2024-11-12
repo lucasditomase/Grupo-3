@@ -7,7 +7,6 @@ interface LoginScreenProps {
     onClose: () => void;
     onLoginSuccess: () => void;
 }
-<<<<<<< HEAD
 
 const LoginScreen: React.FC<LoginScreenProps> = ({
     onClose,
@@ -33,26 +32,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             onLoginSuccess();
             onClose();
         }
-=======
-
-const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) => {
-    const [email, setEmail] = useState("");
-    const [isLogin, setIsLogin] = useState(false);
-    const [nacimientoDia, setDay] = useState("");
-    const [nacimientoMes, setMonth] = useState("");
-    const [nacimientoAnio, setYear] = useState("");
-    const [password, setPassword] = useState("");
-    const [username, setUsername] = useState("");
-
-    const handleLogin = () => {
-        console.log("Login with:", email, password);
-        onLoginSuccess();
-        onClose();
-    };
-
-    const handleSignUp = () => {
-        console.log("Sign up with:", username, nacimientoDia, nacimientoMes, nacimientoAnio, email, password);
->>>>>>> lucas
     };
 
     return (
@@ -85,13 +64,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) =>
                 </View>
             ) : (
                 <View>
-<<<<<<< HEAD
                     <Text style={loginScreenStyles.title}>
                         Necesitas una cuenta para continuar
                     </Text>
-=======
-                    <Text style={loginScreenStyles.title}>Necesitas una cuenta para continuar</Text>
->>>>>>> lucas
                     <TextInput
                         style={loginScreenStyles.input}
                         placeholder="Usuario"
@@ -100,39 +75,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onClose, onLoginSuccess }) =>
                         onChangeText={setUsername}
                         autoCapitalize="none"
                     />
-<<<<<<< HEAD
-=======
-                    <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 10, }}>{"Fecha de nacimiento"}</Text>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <TextInput
-                            style={[loginScreenStyles.input, { flex: 1, marginRight: 5 }]}
-                            placeholder="Dia"
-                            placeholderTextColor="#aaa"
-                            keyboardType="numeric"
-                            value={nacimientoDia}
-                            onChangeText={setDay}
-                            maxLength={2}
-                        />
-                        <TextInput
-                            style={[loginScreenStyles.input, { flex: 1, marginHorizontal: 5 }]}
-                            placeholder="Mes"
-                            placeholderTextColor="#aaa"
-                            keyboardType="numeric"
-                            value={nacimientoMes}
-                            onChangeText={setMonth}
-                            maxLength={2}
-                        />
-                        <TextInput
-                            style={[loginScreenStyles.input, { flex: 1, marginLeft: 5 }]}
-                            placeholder="Anio"
-                            placeholderTextColor="#aaa"
-                            keyboardType="numeric"
-                            value={nacimientoAnio}
-                            onChangeText={setYear}
-                            maxLength={4}
-                        />
-                    </View>
->>>>>>> lucas
                     <TextInput
                         style={loginScreenStyles.input}
                         placeholder="Correo"
