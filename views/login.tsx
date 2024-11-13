@@ -29,7 +29,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     };
 
     const handleSignUp = async () => {
-        const success = await registerUser(username, email, password);
+        const success = await registerUser(
+            username,
+            email,
+            password,
+            nacimientoDia,
+            nacimientoMes,
+            nacimientoAnio
+        );
         if (success) {
             handleLogin();
             onLoginSuccess();

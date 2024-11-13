@@ -1,4 +1,4 @@
-import { validateInput } from './authUtil';
+import { validateInput } from './validationUtil';
 
 export const loginUser = async (email: string, password: string) => {
     if (!validateInput(email, password)) {
