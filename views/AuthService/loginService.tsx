@@ -1,4 +1,4 @@
-import { validateInput } from './authUtil';
+import { validateInput } from './validationUtil';
 
 export const loginUser = async (email: string, password: string) => {
     if (!validateInput(email, password)) {
@@ -24,7 +24,6 @@ const sendLoginRequest = async (email: string, password: string) => {
 };
 
 const handleLoginResponse = async (response: Response) => {
-
     if (response.status === 200) {
         const data = await response.json();
         alert('Inicio de sesión exitoso');
