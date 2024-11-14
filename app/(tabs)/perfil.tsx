@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import perfilScreenStyles from '../styles/perfilStyles';
 import { Image, StyleSheet, Text, TextInput, View } from 'react-native';
 
+
 const PerfilScreen = () => {
     const [inputText1, setInputText1] = useState('');
     const [inputText2, setInputText2] = useState('');
     const [inputText3, setInputText3] = useState('');
     const [inputText4, setInputText4] = useState('');
-
     return (
         <View style={perfilScreenStyles.container}>
+
             <Image
                 source={require('../../assets/images/user.png')}
                 style={perfilScreenStyles.profileImage} />

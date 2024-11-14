@@ -25,4 +25,4 @@ const ProgresoScreen = () => {
     )
 }
 
-export default ProgresoScreen
+export default ProgresoScreen;
