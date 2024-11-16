@@ -72,8 +72,6 @@ const HabitosScreen = () => {
         </View>
     );
 
-
-
     return (
         <View style={{ flex: 1 }}>
             <View
@@ -243,7 +241,6 @@ const HabitosScreen = () => {
         </View>
     );
 };
-
 export default HabitosScreen;
 
 

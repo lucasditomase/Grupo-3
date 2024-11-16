@@ -15,7 +15,6 @@ const PerfilScreen = () => {
     const [inputText4, setInputText4] = useState('');
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
-
     const [image, setImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
 
@@ -98,7 +97,6 @@ const PerfilScreen = () => {
             setUploading(false);
         }
     };
-
     return (
         <View style={[perfilScreenStyles.container, isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
             <Image
