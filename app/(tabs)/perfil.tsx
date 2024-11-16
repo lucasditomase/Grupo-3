@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import perfilScreenStyles from '../../styles/perfilStyles';
 import themeDark from '../../themes/themeDark';
 import themeLight from '../../themes/themeLight';
-import { Image, Text, TextInput, View, useColorScheme } from 'react-native';
+import { Image, Text, TextInput, View, useColorScheme, Button } from 'react-native';
+import { useGlobalContext } from '../../views/contexts/useGlobalContext';
 
 const PerfilScreen = () => {
     const [inputText1, setInputText1] = useState('');
@@ -11,6 +12,12 @@ const PerfilScreen = () => {
     const [inputText4, setInputText4] = useState('');
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+
+    const { globalData, setGlobalData } = useGlobalContext();
+
+    const updateUser = () => {
+        setGlobalData({ ...globalData, user: { name: 'John Doe', age: 30 } });
+    };
 
     return (
         <View style={[perfilScreenStyles.container, isDarkMode ? themeDark.darkBackground : themeLight.lightBackground]}>
@@ -49,6 +56,9 @@ const PerfilScreen = () => {
                     style={perfilScreenStyles.value}
                     value={inputText4} />
             </View>
+            <Text>User: {globalData.user ? globalData.user.name : 'No user logged in'}</Text>
+            <Text>Theme: {globalData.theme}</Text>
+            <Button title="Login User" onPress={updateUser} />
         </View>
     );
 };
