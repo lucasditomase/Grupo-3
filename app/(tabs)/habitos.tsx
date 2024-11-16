@@ -13,8 +13,25 @@ import {
     TextInput,
     View,
     useColorScheme,
+    StyleSheet,
 } from 'react-native';
+
 import { Picker } from '@react-native-picker/picker';
+
+import { SwipeListView } from 'react-native-swipe-list-view';
+
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+type HabitoItem = {
+    key: string;
+    text: string;
+    category: string;
+    icon: string;
+};
 
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
@@ -32,6 +49,28 @@ const HabitosScreen = () => {
     const onPressButton = () => {
         setModalVisible(true);
     };
+
+    const data = [
+        { key: '1', text: 'Item 1', category: 'Category 1', icon: 'favorite' },
+        { key: '2', text: 'Item 2', category: 'Category 2', icon: 'directions-run' },
+    ];
+
+    const renderItem = (data: { item: HabitoItem }) => (
+        <View style={styles.rowFront}>
+            <MaterialIcons name={data.item.icon} size={100} color="red" />
+            <Icon name={data.item.icon} size={100} color="red" />
+            <FontAwesome name={data.item.icon} size={100} color="red" />
+            <Text>{data.item.text + ' ' + data.item.category}</Text>
+        </View>
+    );
+
+
+    const renderHiddenItem = () => (
+        <View style={styles.rowBack}>
+            <Text style={styles.backText}>Action 1</Text>
+            <Text style={styles.backText}>Action 2</Text>
+        </View>
+    );
 
     return (
         <View style={{ flex: 1 }}>
@@ -85,6 +124,13 @@ const HabitosScreen = () => {
                     </View>
                 </View>
             </Modal>
+            <SwipeListView
+                data={data}
+                renderItem={renderItem}
+                renderHiddenItem={renderHiddenItem}
+                leftOpenValue={75}
+                rightOpenValue={-75}
+            />
             <ScrollView
                 style={[
                     isDarkMode
@@ -195,5 +241,25 @@ const HabitosScreen = () => {
         </View>
     );
 };
-
 export default HabitosScreen;
+
+
+const styles = StyleSheet.create({
+    rowFront: {
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        padding: 20,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backText: {
+        color: 'white',
+    },
+});
