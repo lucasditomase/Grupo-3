@@ -15,7 +15,6 @@ import {
     useColorScheme,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { useGlobalContext } from '../../views/contexts/useGlobalContext';
 
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
@@ -34,17 +33,8 @@ const HabitosScreen = () => {
         setModalVisible(true);
     };
 
-    const { globalData, setGlobalData } = useGlobalContext();
-
-    const updateUser = () => {
-        setGlobalData({ ...globalData, user: { name: 'John Doe', age: 30 } });
-    };
-
     return (
         <View style={{ flex: 1 }}>
-            <Text>User: {globalData.user ? globalData.user.name : 'No user logged in'}</Text>
-            <Text>Theme: {globalData.theme}</Text>
-            <Button title="Login User" onPress={updateUser} />
             <View
                 style={[
                     isDarkMode
