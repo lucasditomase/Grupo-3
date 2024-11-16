@@ -20,9 +20,17 @@ import { Picker } from '@react-native-picker/picker';
 
 import { SwipeListView } from 'react-native-swipe-list-view';
 
-type ListItem = {
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+type HabitoItem = {
     key: string;
     text: string;
+    category: string;
+    icon: string;
 };
 
 const HabitosScreen = () => {
@@ -43,13 +51,16 @@ const HabitosScreen = () => {
     };
 
     const data = [
-        { key: '1', text: 'Item 1' },
-        { key: '2', text: 'Item 2' },
+        { key: '1', text: 'Item 1', category: 'Category 1', icon: 'favorite' },
+        { key: '2', text: 'Item 2', category: 'Category 2', icon: 'directions-run' },
     ];
 
-    const renderItem = (data: { item: ListItem }) => (
+    const renderItem = (data: { item: HabitoItem }) => (
         <View style={styles.rowFront}>
-            <Text>{data.item.text}</Text>
+            <MaterialIcons name={data.item.icon} size={100} color="red" />
+            <Icon name={data.item.icon} size={100} color="red" />
+            <FontAwesome name={data.item.icon} size={100} color="red" />
+            <Text>{data.item.text + ' ' + data.item.category}</Text>
         </View>
     );
 
