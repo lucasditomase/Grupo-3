@@ -13,8 +13,17 @@ import {
     TextInput,
     View,
     useColorScheme,
+    StyleSheet,
 } from 'react-native';
+
 import { Picker } from '@react-native-picker/picker';
+
+import { SwipeListView } from 'react-native-swipe-list-view';
+
+type ListItem = {
+    key: string;
+    text: string;
+};
 
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
@@ -32,6 +41,27 @@ const HabitosScreen = () => {
     const onPressButton = () => {
         setModalVisible(true);
     };
+
+    const data = [
+        { key: '1', text: 'Item 1' },
+        { key: '2', text: 'Item 2' },
+    ];
+
+    const renderItem = (data: { item: ListItem }) => (
+        <View style={styles.rowFront}>
+            <Text>{data.item.text}</Text>
+        </View>
+    );
+
+
+    const renderHiddenItem = () => (
+        <View style={styles.rowBack}>
+            <Text style={styles.backText}>Action 1</Text>
+            <Text style={styles.backText}>Action 2</Text>
+        </View>
+    );
+
+
 
     return (
         <View style={{ flex: 1 }}>
@@ -85,6 +115,13 @@ const HabitosScreen = () => {
                     </View>
                 </View>
             </Modal>
+            <SwipeListView
+                data={data}
+                renderItem={renderItem}
+                renderHiddenItem={renderHiddenItem}
+                leftOpenValue={75}
+                rightOpenValue={-75}
+            />
             <ScrollView
                 style={[
                     isDarkMode
@@ -197,3 +234,24 @@ const HabitosScreen = () => {
 };
 
 export default HabitosScreen;
+
+
+const styles = StyleSheet.create({
+    rowFront: {
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        padding: 20,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backText: {
+        color: 'white',
+    },
+});
