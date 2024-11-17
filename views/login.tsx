@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import loginScreenStyles from '../styles/loginStyles';
 import { registerUser, loginUser } from './AuthService';
+import { useGlobalContext } from './contexts/useGlobalContext';
 
 interface LoginScreenProps {
     onClose: () => void;
@@ -19,15 +21,18 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const [nacimientoDia, setDay] = useState('');
     const [nacimientoMes, setMonth] = useState('');
     const [nacimientoAnio, setYear] = useState('');
+    const router = useRouter();
+    const { user, setUser } = useGlobalContext();
 
     const handleLogin = async () => {
-        onLoginSuccess();
-        onClose();
-        // const success = await loginUser(email, password);
-        // if (success) {
-        //     onLoginSuccess();
-        //     onClose();
-        // }
+        const response = await loginUser(email, password, setUser);
+        if (!response.success) {
+            Alert.alert('Error', response.message);
+            return;
+        } else {
+            onLoginSuccess();
+            router.replace('/'); // Navigate back to the main tab screen
+        }
     };
 
     const handleSignUp = async () => {
@@ -40,9 +45,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             nacimientoAnio
         );
         if (success) {
-            handleLogin();
-            onLoginSuccess();
-            onClose();
+            handleLogin(); // Perform login after successful signup
         }
     };
 
