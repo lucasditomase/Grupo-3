@@ -7,25 +7,16 @@ import themeLight from '../../themes/themeLight';
 import { Text, View, useColorScheme, Modal, Button } from 'react-native';
 import { useGlobalContext } from '../../views/contexts/useGlobalContext';
 
-const isUserLoggedIn = () => {
-    return false;
-};
-
 const ProgresoScreen = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(isUserLoggedIn());
-    const [isLoginVisible, setIsLoginVisible] = useState(!isLoggedIn);
+    const { theme, user } = useGlobalContext();
+    const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+    const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
 
     const handleLoginSuccess = () => {
         setIsLoggedIn(true);
         setIsLoginVisible(false);
-    };
-
-    const { globalData, setGlobalData } = useGlobalContext();
-
-    const updateUser = () => {
-        setGlobalData({ ...globalData, user: { name: 'John Doe', age: 30 } });
     };
 
     return (
@@ -75,9 +66,15 @@ const ProgresoScreen = () => {
                             75% completado
                         </Text>
                     </View>
-                    <Text>User: {globalData.user ? globalData.user.name : 'No user logged in'}</Text>
-                    <Text>Theme: {globalData.theme}</Text>
-                    <Button title="Login User" onPress={updateUser} />
+                    <Text>
+                        Email: {user?.email ? user.email : 'No user logged in'}
+                    </Text>
+                    <Text>
+                        User:{' '}
+                        {user?.username ? user.username : 'No user logged in'}
+                    </Text>
+                    <Text>Theme: {theme}</Text>
+                    <Button title="Login User" />
                     <View
                         style={{
                             marginVertical: 50,
