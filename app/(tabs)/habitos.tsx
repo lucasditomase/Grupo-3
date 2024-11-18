@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
+    Alert,
     Button,
     Modal,
     Pressable,
     Text,
     TextInput,
+    TouchableOpacity,
     View,
     useColorScheme,
     StyleSheet,
@@ -43,6 +45,7 @@ const HabitosScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+    const swipeTriggered = useRef<{ [key: string]: boolean }>({}); // Keeps track of whether a swipe action has been triggered for each item
 
     const pokemons = ['Gimnasio', 'Meditación', 'Pagos', 'Agenda', 'Alimentos'];
 
@@ -51,6 +54,31 @@ const HabitosScreen = () => {
         { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
         { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
     ];
+
+
+    const markAsCompleted = (item: HabitoItem) => {
+        Alert.alert(`Marked "${item.text}" as completed`);
+    };
+
+    const deleteHabit = (item: HabitoItem) => {
+        Alert.alert(`Deleted "${item.text}"`);
+    };
+
+    /**
+     * Handles showing the context menu for an item.
+     */
+    const handleLongPress = (item: HabitoItem) => {
+        Alert.alert(
+            'Options',
+            `Choose an action for "${item.text}"`,
+            [
+                { text: 'Mark as Completed', onPress: () => markAsCompleted(item) },
+                { text: 'Delete', onPress: () => deleteHabit(item), style: 'destructive' },
+                { text: 'Cancel', style: 'cancel' },
+            ],
+            { cancelable: true }
+        );
+    };
 
     // State for the selected part of the habit
     const [selectedPart, setSelectedPart] = useState('Diario');
@@ -64,40 +92,73 @@ const HabitosScreen = () => {
      * Renders each habit item.
      */
     const renderItem = ({ item }: { item: HabitoItem }) => (
-        <View
-            style={[
-                habitosScreenStyles.habitosContainer,
-                { flexDirection: 'row' },
-            ]}
-        >
-            { }
-            <View style={habitosScreenStyles.habitosIconContainer}>
-                <MaterialIcons
-                    name={item.icon}
-                    size={50}
-                    color="black"
-                />
+        <Pressable onLongPress={() => handleLongPress(item)}>
+            <View
+                style={[
+                    habitosScreenStyles.habitosContainer,
+                    { flexDirection: 'row' },
+                ]}
+            >
+                <View style={habitosScreenStyles.habitosIconContainer}>
+                    <MaterialIcons
+                        name={item.icon}
+                        size={50}
+                        color="black"
+                    />
+                </View>
+                <View style={habitosScreenStyles.habitosTextosContainer}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                        {item.text}
+                    </Text>
+                    <Text style={{ fontSize: 16 }}>
+                        Frecuencia: {item.frequency}
+                    </Text>
+                </View>
             </View>
-
-            { }
-            <View style={habitosScreenStyles.habitosTextosContainer}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                    {item.text}
-                </Text>
-                <Text style={{ fontSize: 16 }}>
-                    Frecuencia: {item.frequency}
-                </Text>
-            </View>
-        </View>
+        </Pressable>
     );
+
+    /**
+    * Handles swipe actions.
+    */
+    const handleSwipeValueChange = ({
+        key,
+        value,
+    }: {
+        key: string;
+        value: number;
+    }) => {
+        const habit = data.find((item) => item.key === key); // Find the swiped habit
+        if (!habit) return;
+
+        // Check if a swipe action has already been triggered for this item
+        if (swipeTriggered.current[key]) return;
+
+        if (value > 50) {
+            // Trigger swipe-right action (Mark as Completed)
+            markAsCompleted(habit);
+            swipeTriggered.current[key] = true; // Set flag to true
+        } else if (value < -50) {
+            // Trigger swipe-left action (Delete)
+            deleteHabit(habit);
+            swipeTriggered.current[key] = true; // Set flag to true
+        }
+    };
+
+    /**
+     * Reset the swipe trigger when swipe is released.
+     */
+    const handleRowClose = (rowKey: string) => {
+        swipeTriggered.current[rowKey] = false; // Reset the swipe trigger for this item
+    };
 
     /**
      * Renders hidden actions for the SwipeListView.
      */
-    const renderHiddenItem = () => (
+    const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
         <View style={habitosScreenStyles.rowBack}>
-            <Text style={habitosScreenStyles.backText}>Action 1</Text>
-            <Text style={habitosScreenStyles.backText}>Action 2</Text>
+            <Text style={habitosScreenStyles.backText}>Complete</Text>
+            <Text style={habitosScreenStyles.backText}>Delete</Text>
         </View>
     );
 
@@ -178,8 +239,15 @@ const HabitosScreen = () => {
                 data={data}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75}
-                rightOpenValue={-75}
+                leftOpenValue={75} // Define swipe threshold for "Mark as Completed"
+                rightOpenValue={-75} // Define swipe threshold for "Delete"
+                onSwipeValueChange={(swipeData) =>
+                    handleSwipeValueChange({
+                        key: swipeData.key as string, // Explicitly cast key as string
+                        value: swipeData.value,
+                    })
+                }
+                onRowClose={(rowKey) => handleRowClose(rowKey as string)} // Cast rowKey explicitly
             />
         </View>
     );
