@@ -7,6 +7,7 @@ import {
     TextInput,
     View,
     useColorScheme,
+    StyleSheet,
 } from 'react-native';
 
 // Styles
@@ -50,6 +51,14 @@ const HabitosScreen = () => {
         { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
         { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
     ];
+
+    // State for the selected part of the habit
+    const [selectedPart, setSelectedPart] = useState('Diario');
+
+    const handlePartClick = (part: string) => {
+        setSelectedPart(part);
+    };
+
 
     /**
      * Renders each habit item.
@@ -138,6 +147,27 @@ const HabitosScreen = () => {
                                 <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
                             ))}
                         </Picker>
+                        <Text style={modalStyles.label}>Seleccione frecuencia</Text>
+                        <View style={styles.buttonContainer}>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Diario' && styles.selected]}
+                                onPress={() => handlePartClick('Diario')}
+                            >
+                                 <Text style={{ textAlign: 'center' }}>Diario</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Semanal' && styles.selected]}
+                                onPress={() => handlePartClick('Semanal')}
+                            >
+                                <Text style={{ textAlign: 'center' }}>Semanal</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Mensual' && styles.selected]}
+                                onPress={() => handlePartClick('Mensual')}
+                            >
+                                 <Text style={{ textAlign: 'center' }}>Mensual</Text>
+                            </Pressable>
+                        </View>
                         <Button title="Guardar" onPress={handleCloseModal} />
                     </View>
                 </View>
@@ -156,3 +186,22 @@ const HabitosScreen = () => {
 };
 
 export default HabitosScreen;
+
+const styles = StyleSheet.create({
+    buttonContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
+    },
+    buttonPart: {
+        flex: 1,
+        padding: 10,
+        textAlign: 'center',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    selected: {
+        backgroundColor: '#0E6E6D',
+        color: 'white',
+    },
+
+});
