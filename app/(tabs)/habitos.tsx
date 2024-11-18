@@ -8,6 +8,7 @@ import {
     TextInput,
     View,
     useColorScheme,
+    StyleSheet,
 } from 'react-native';
 
 // Styles
@@ -22,6 +23,7 @@ import themeLight from '../../components/themes/themeLight';
 import { Picker } from '@react-native-picker/picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
+
 // Icons
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -30,6 +32,7 @@ type HabitoItem = {
     key: string;
     text: string;
     category: string;
+
     frequency: string;
     icon: string;
 };
@@ -37,6 +40,7 @@ type HabitoItem = {
 /**
  * Screen component for managing and displaying habits.
  */
+
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
@@ -167,6 +171,7 @@ const HabitosScreen = () => {
         swipeTriggered.current[rowKey] = false; // Reset the swipe trigger for this item
     };
 
+
     /**
      * Renders hidden actions for the SwipeListView.
      */
@@ -249,11 +254,13 @@ const HabitosScreen = () => {
                 </View>
             </Modal>
 
+
             {/* SwipeListView for habits */}
             <SwipeListView
                 data={data}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
+
                 leftOpenValue={75} // Define swipe threshold for "Mark as Completed"
                 rightOpenValue={-75} // Define swipe threshold for "Delete"
                 onSwipeValueChange={(swipeData) =>
@@ -267,5 +274,25 @@ const HabitosScreen = () => {
         </View>
     );
 };
-
 export default HabitosScreen;
+
+
+const styles = StyleSheet.create({
+    rowFront: {
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        padding: 20,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backText: {
+        color: 'white',
+    },
+});

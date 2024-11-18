@@ -29,6 +29,8 @@ const PerfilScreen = () => {
     const { user } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+    const [image, setImage] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
 
     const [image, setImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -150,6 +152,79 @@ const PerfilScreen = () => {
         }
     };
 
+    useEffect(() => {
+        const requestPermissions = async () => {
+            const { status } = await Notifications.getPermissionsAsync();
+            if (status !== 'granted') {
+                await Notifications.requestPermissionsAsync();
+            }
+        };
+        requestPermissions();
+    }, []);
+
+    const scheduleNotification = async () => {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Hello!",
+                body: "This is a local notification.",
+                data: { extraData: "Some data" },
+            },
+            trigger: {
+                seconds: 5,
+                repeats: false,
+            },
+        });
+    };
+
+    const pickImage = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.5
+            });
+
+            if (!result.canceled) {
+                setImage(result.assets[0].uri);
+            } else Alert.alert('Delete', 'Are you sure you want to delte the image', [
+                { text: "Yes", onPress: () => setImage(null) }, { text: "No" }])
+
+        } catch (error) {
+            console.log("error reading an image")
+
+        }
+    }
+
+    const convertUriToBase64 = async (uri: string): Promise<string> => {
+        try {
+            return await FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+        } catch (error) {
+            console.error('Error converting file to Base64:', error);
+            throw error;
+        }
+    };
+
+    const uploadImage = async (): Promise<void> => {
+        if (!image) {
+            Alert.alert('No image selected', 'Please select an image before uploading.');
+            return;
+        }
+
+        try {
+            setUploading(true);
+
+            const base64Image = await convertUriToBase64(image);
+
+            Alert.alert(base64Image)
+
+        } catch (error) {
+            console.error('Upload failed:', error);
+            Alert.alert('Upload failed', 'Something went wrong while uploading the image.');
+        } finally {
+            setUploading(false);
+        }
+    };
     return (
         <View
             style={[
@@ -200,3 +275,23 @@ const PerfilScreen = () => {
 };
 
 export default PerfilScreen;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    image: {
+        width: 200,
+        height: 200,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    text: {
+        marginTop: 20,
+        fontSize: 16,
+        color: 'gray',
+    },
+});
