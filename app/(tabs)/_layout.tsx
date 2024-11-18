@@ -1,22 +1,34 @@
 import React from 'react';
-import { Colors } from '@/constants/Colors';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Tabs, useRouter } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
-<<<<<<< HEAD
-import { GlobalProvider } from '../../views/contexts/globalContext';
-=======
-import { GlobalProvider } from '../../components/contexts/globalContext';
->>>>>>> lucas
+import { Tabs } from 'expo-router';
 
+// Constants
+import { Colors } from '@/constants/Colors';
+
+// Components
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+
+// Hooks
+import { useColorScheme } from '@/hooks/useColorScheme';
+
+// Contexts
+import { GlobalProvider } from '../../components/contexts/globalContext';
+
+/**
+ * The main layout component for the Tab-based navigation in the app.
+ * Provides global context and consistent styling across all tabs.
+ */
 export default function TabLayout() {
+    // Determine the current color scheme (light or dark)
     const colorScheme = useColorScheme();
 
     return (
         <GlobalProvider>
             <Tabs
                 screenOptions={{
+                    // Active tab tint color based on the current color scheme
                     tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+
+                    // Header configuration
                     headerShown: true,
                     headerStyle: {
                         backgroundColor: 'teal',
@@ -27,22 +39,21 @@ export default function TabLayout() {
                     },
                 }}
             >
+                {/* Progress Tab */}
                 <Tabs.Screen
                     name="index"
                     options={{
                         title: 'Progreso',
                         tabBarIcon: ({ color, focused }) => (
                             <TabBarIcon
-                                name={
-                                    focused
-                                        ? 'checkmark-circle'
-                                        : 'checkmark-circle-outline'
-                                }
+                                name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'}
                                 color={color}
                             />
                         ),
                     }}
                 />
+
+                {/* Habits Tab */}
                 <Tabs.Screen
                     name="habitos"
                     options={{
@@ -55,6 +66,8 @@ export default function TabLayout() {
                         ),
                     }}
                 />
+
+                {/* Profile Tab */}
                 <Tabs.Screen
                     name="perfil"
                     options={{
@@ -70,8 +83,4 @@ export default function TabLayout() {
             </Tabs>
         </GlobalProvider>
     );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> lucas

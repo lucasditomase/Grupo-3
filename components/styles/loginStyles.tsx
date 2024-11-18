@@ -1,6 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+/**
+ * Styles for the Login screen components.
+ */
 const loginScreenStyles = StyleSheet.create({
+    // Container for the login form
     container: {
         width: '80%',
         backgroundColor: '#fff',
@@ -9,12 +13,16 @@ const loginScreenStyles = StyleSheet.create({
         elevation: 5,
         alignSelf: 'center',
     },
+
+    // Title text styles
     title: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
     },
+
+    // Input field styles
     input: {
         borderWidth: 1,
         borderColor: '#ddd',
@@ -24,6 +32,8 @@ const loginScreenStyles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 15,
     },
+
+    // Button container styles
     buttonContainer: {
         justifyContent: 'center',
         alignItems: 'center',

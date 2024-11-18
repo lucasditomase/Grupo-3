@@ -1,32 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import perfilScreenStyles from '../../components/styles/perfilStyles';
-import themeDark from '../../components/themes/themeDark';
-import themeLight from '../../components/themes/themeLight'
 import {
+    Alert,
+    Button,
     Image,
+    StyleSheet,
     Text,
-    TextInput,
     View,
     useColorScheme,
-    Button,
-    Alert,
-    StyleSheet,
 } from 'react-native';
+
+// Styles
+import perfilScreenStyles from '../../components/styles/perfilStyles';
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
+
+// Libraries
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+
+// Contexts
 import { useGlobalContext } from '@/components/contexts/useGlobalContext';
 
+/**
+ * The PerfilScreen component displays user profile information and provides
+ * functionalities like image selection, upload, and local notifications.
+ */
 const PerfilScreen = () => {
     const { user } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+
     const [image, setImage] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
 
+    /**
+     * Calculates the user's age based on their date of birth.
+     */
     const calculateAge = (birthDate: string): number => {
-        const birthDateObj = new Date(birthDate); // Parse the birthdate string into a Date object
-        const today = new Date(); // Get the current date
+        const birthDateObj = new Date(birthDate);
+        const today = new Date();
 
         let age = today.getFullYear() - birthDateObj.getFullYear();
 
@@ -41,6 +54,7 @@ const PerfilScreen = () => {
     };
 
     useEffect(() => {
+        // Request notification permissions on component mount
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
@@ -50,6 +64,9 @@ const PerfilScreen = () => {
         requestPermissions();
     }, []);
 
+    /**
+     * Schedules a local notification.
+     */
     const scheduleNotification = async () => {
         await Notifications.scheduleNotificationAsync({
             content: {
@@ -64,6 +81,9 @@ const PerfilScreen = () => {
         });
     };
 
+    /**
+     * Opens the image picker to select an image from the gallery.
+     */
     const pickImage = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -75,20 +95,24 @@ const PerfilScreen = () => {
 
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
-            } else
+            } else {
                 Alert.alert(
                     'Delete',
-                    'Are you sure you want to delte the image',
+                    'Are you sure you want to delete the image?',
                     [
                         { text: 'Yes', onPress: () => setImage(null) },
                         { text: 'No' },
                     ]
                 );
+            }
         } catch (error) {
-            console.log('error reading an image');
+            console.error('Error reading an image:', error);
         }
     };
 
+    /**
+     * Converts a file URI to a Base64 string.
+     */
     const convertUriToBase64 = async (uri: string): Promise<string> => {
         try {
             return await FileSystem.readAsStringAsync(uri, {
@@ -100,12 +124,12 @@ const PerfilScreen = () => {
         }
     };
 
+    /**
+     * Uploads the selected image (currently displays Base64 for demonstration).
+     */
     const uploadImage = async (): Promise<void> => {
         if (!image) {
-            Alert.alert(
-                'No image selected',
-                'Please select an image before uploading.'
-            );
+            Alert.alert('No image selected', 'Please select an image before uploading.');
             return;
         }
 
@@ -114,7 +138,8 @@ const PerfilScreen = () => {
 
             const base64Image = await convertUriToBase64(image);
 
-            Alert.alert(base64Image);
+            // Placeholder: display Base64 string as an alert
+            Alert.alert('Base64 Image', base64Image);
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert(
@@ -125,37 +150,35 @@ const PerfilScreen = () => {
             setUploading(false);
         }
     };
+
     return (
         <View
             style={[
                 perfilScreenStyles.container,
-                isDarkMode
-                    ? themeDark.darkBackground
-                    : themeLight.lightBackground,
+                isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
             ]}
         >
-            <View style={styles.container}>
-                {image && (
-                    <Image source={{ uri: image }} style={styles.image} />
-                )}
-                {image && (
-                    <Button
-                        title={uploading ? 'Uploading...' : 'Upload Image'}
-                        onPress={uploadImage}
-                        disabled={uploading}
-                    />
-                )}
-                {!image && (
+            {/* Profile Image Section */}
+            <View style={perfilScreenStyles.profileImageContainer}>
+                {image ? (
+                    <>
+                        <Image source={{ uri: image }} style={perfilScreenStyles.image} />
+                        <Button
+                            title={uploading ? 'Uploading...' : 'Upload Image'}
+                            onPress={uploadImage}
+                            disabled={uploading}
+                        />
+                    </>
+                ) : (
                     <Image
                         source={require('../../assets/images/user.png')}
                         style={perfilScreenStyles.profileImage}
                     />
                 )}
-                <Button
-                    title="Pick an image from gallery"
-                    onPress={pickImage}
-                />
+                <Button title="Pick an image from gallery" onPress={pickImage} />
             </View>
+
+            {/* User Information Section */}
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Usuario:</Text>
                 <Text style={perfilScreenStyles.value}>{user?.username}</Text>
@@ -171,32 +194,10 @@ const PerfilScreen = () => {
                 </Text>
             </View>
 
-            <Button
-                title="Schedule Notification"
-                onPress={scheduleNotification}
-            />
+            {/* Notification Button */}
+            <Button title="Schedule Notification" onPress={scheduleNotification} />
         </View>
     );
 };
 
 export default PerfilScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    image: {
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        marginTop: 20,
-    },
-    text: {
-        marginTop: 20,
-        fontSize: 16,
-        color: 'gray',
-    },
-});

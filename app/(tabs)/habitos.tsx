@@ -1,38 +1,35 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD
-import habitosScreenStyles from '../../styles/habitoStyles';
-import modalStyles from '../../styles/modalStyles';
-import themeDark from '../../themes/themeDark';
-import themeLight from '../../themes/themeLight';
-=======
-import habitosScreenStyles from '../../components/styles/habitoStyles';
-import modalStyles from '../../components/styles/modalStyles';
-import themeDark from '../../components/themes/themeDark';
-import themeLight from '../../components/themes/themeLight';
->>>>>>> lucas
 import {
     Button,
     Image,
     Modal,
     Pressable,
     ScrollView,
+    StyleSheet,
     Text,
     TextInput,
     View,
     useColorScheme,
-    StyleSheet,
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
+// Styles
+import habitosScreenStyles from '../../components/styles/habitoStyles';
+import modalStyles from '../../components/styles/modalStyles';
 
+// Themes
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
+
+// Components
+import { Picker } from '@react-native-picker/picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
+// Icons
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
+// Types
 type HabitoItem = {
     key: string;
     text: string;
@@ -40,38 +37,39 @@ type HabitoItem = {
     icon: string;
 };
 
+/**
+ * Screen component for managing and displaying habits.
+ */
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [pokemon, setPokemon] = useState();
+    const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const colorScheme = useColorScheme();
-    const handleValueChange = (itemValue: any, itemIndex: any) =>
-        setPokemon(itemValue);
     const isDarkMode = colorScheme === 'dark';
-    const pokemons = ['Gimnasio', 'Meditacion', 'Pagos', 'Agenda', 'Alimentos'];
 
-    const handleCloseModal = () => {
-        setModalVisible(false);
-    };
-    const onPressButton = () => {
-        setModalVisible(true);
-    };
+    const pokemons = ['Gimnasio', 'Meditación', 'Pagos', 'Agenda', 'Alimentos'];
 
-    const data = [
+    // Sample data for the SwipeListView
+    const data: HabitoItem[] = [
         { key: '1', text: 'Item 1', category: 'Category 1', icon: 'favorite' },
         { key: '2', text: 'Item 2', category: 'Category 2', icon: 'directions-run' },
     ];
 
-    const renderItem = (data: { item: HabitoItem }) => (
+    /**
+     * Renders each habit item.
+     */
+    const renderItem = ({ item }: { item: HabitoItem }) => (
         <View style={styles.rowFront}>
-            <MaterialIcons name={data.item.icon} size={100} color="red" />
-            <Icon name={data.item.icon} size={100} color="red" />
-            <FontAwesome name={data.item.icon} size={100} color="red" />
-            <Text>{data.item.text + ' ' + data.item.category}</Text>
+            <MaterialIcons name={item.icon} size={100} color="red" />
+            <Icon name={item.icon} size={100} color="red" />
+            <FontAwesome name={item.icon} size={100} color="red" />
+            <Text>{`${item.text} ${item.category}`}</Text>
         </View>
     );
 
-
+    /**
+     * Renders hidden actions for the SwipeListView.
+     */
     const renderHiddenItem = () => (
         <View style={styles.rowBack}>
             <Text style={styles.backText}>Action 1</Text>
@@ -79,24 +77,28 @@ const HabitosScreen = () => {
         </View>
     );
 
+    /**
+     * Handles closing the modal.
+     */
+    const handleCloseModal = () => setModalVisible(false);
+
     return (
         <View style={{ flex: 1 }}>
+            {/* Header Section */}
             <View
                 style={[
-                    isDarkMode
-                        ? themeDark.darkBackground
-                        : themeLight.lightBackground,
+                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
                 ]}
             >
                 <Pressable
                     style={habitosScreenStyles.button}
-                    onPress={onPressButton}
+                    onPress={() => setModalVisible(true)}
                 >
-                    <Text style={habitosScreenStyles.buttonText}>
-                        Agregar nuevo habito
-                    </Text>
+                    <Text style={habitosScreenStyles.buttonText}>Agregar nuevo hábito</Text>
                 </Pressable>
             </View>
+
+            {/* Modal for adding a new habit */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -110,27 +112,23 @@ const HabitosScreen = () => {
                             style={modalStyles.input}
                             value={inputText}
                             onChangeText={setInputText}
-                            placeholder="Nombre del habito"
+                            placeholder="Nombre del hábito"
                         />
-                        <Text style={modalStyles.label}>
-                            Selecciona categoria
-                        </Text>
+                        <Text style={modalStyles.label}>Selecciona categoría</Text>
                         <Picker
-                            selectedValue={pokemon}
-                            onValueChange={handleValueChange}
+                            selectedValue={selectedCategory}
+                            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
                         >
                             {pokemons.map((pokemon) => (
-                                <Picker.Item
-                                    key={pokemon}
-                                    label={pokemon}
-                                    value={pokemon}
-                                />
+                                <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
                             ))}
                         </Picker>
                         <Button title="Guardar" onPress={handleCloseModal} />
                     </View>
                 </View>
             </Modal>
+
+            {/* SwipeListView for habits */}
             <SwipeListView
                 data={data}
                 renderItem={renderItem}
@@ -138,119 +136,69 @@ const HabitosScreen = () => {
                 leftOpenValue={75}
                 rightOpenValue={-75}
             />
+
+            {/* List of static habits */}
             <ScrollView
                 style={[
-                    isDarkMode
-                        ? themeDark.darkBackground
-                        : themeLight.lightBackground,
+                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
                 ]}
             >
-                <View
-                    style={[
-                        habitosScreenStyles.habitosContainer,
-                        { flexDirection: 'row' },
-                    ]}
-                >
-                    <View style={habitosScreenStyles.habitosIconContainer}>
-                        <Image
-                            style={habitosScreenStyles.habitosIconMedidas}
-                            source={require('../../assets/images/dumbbell-fitness.png')}
-                        />
+                {[
+                    {
+                        image: require('../../assets/images/dumbbell-fitness.png'),
+                        title: 'Gimnasio',
+                        frequency: 'Diario',
+                    },
+                    {
+                        image: require('../../assets/images/meditation.png'),
+                        title: 'Meditación',
+                        frequency: 'Diario',
+                    },
+                    {
+                        image: require('../../assets/images/coins.png'),
+                        title: 'Pagar servicios',
+                        frequency: 'Mensual',
+                    },
+                    {
+                        image: require('../../assets/images/notebook-alt.png'),
+                        title: 'Revisar mi agenda para la semana',
+                        frequency: 'Semanal',
+                    },
+                    {
+                        image: require('../../assets/images/glass.png'),
+                        title: 'Tomar 2 litros de agua',
+                        frequency: 'Diario',
+                    },
+                ].map((habit, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            habitosScreenStyles.habitosContainer,
+                            { flexDirection: 'row' },
+                        ]}
+                    >
+                        <View style={habitosScreenStyles.habitosIconContainer}>
+                            <Image
+                                style={habitosScreenStyles.habitosIconMedidas}
+                                source={habit.image}
+                            />
+                        </View>
+                        <View style={habitosScreenStyles.habitosTextosContainer}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                                {habit.title}
+                            </Text>
+                            <Text style={{ fontSize: 16 }}>{`Frecuencia: ${habit.frequency}`}</Text>
+                        </View>
                     </View>
-                    <View style={habitosScreenStyles.habitosTextosContainer}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                            Gimnasio
-                        </Text>
-                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
-                    </View>
-                </View>
-                <View
-                    style={[
-                        habitosScreenStyles.habitosContainer,
-                        { flexDirection: 'row' },
-                    ]}
-                >
-                    <View style={habitosScreenStyles.habitosIconContainer}>
-                        <Image
-                            style={habitosScreenStyles.habitosIconMedidas}
-                            source={require('../../assets/images/meditation.png')}
-                        />
-                    </View>
-                    <View style={habitosScreenStyles.habitosTextosContainer}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                            Meditacion
-                        </Text>
-                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
-                    </View>
-                </View>
-                <View
-                    style={[
-                        habitosScreenStyles.habitosContainer,
-                        { flexDirection: 'row' },
-                    ]}
-                >
-                    <View style={habitosScreenStyles.habitosIconContainer}>
-                        <Image
-                            style={habitosScreenStyles.habitosIconMedidas}
-                            source={require('../../assets/images/coins.png')}
-                        />
-                    </View>
-                    <View style={habitosScreenStyles.habitosTextosContainer}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                            Pagar servicios
-                        </Text>
-                        <Text style={{ fontSize: 16 }}>
-                            Frecuencia: Mensual
-                        </Text>
-                    </View>
-                </View>
-                <View
-                    style={[
-                        habitosScreenStyles.habitosContainer,
-                        { flexDirection: 'row' },
-                    ]}
-                >
-                    <View style={habitosScreenStyles.habitosIconContainer}>
-                        <Image
-                            style={habitosScreenStyles.habitosIconMedidas}
-                            source={require('../../assets/images/notebook-alt.png')}
-                        />
-                    </View>
-                    <View style={habitosScreenStyles.habitosTextosContainer}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                            Revisar mi agenda para la semana
-                        </Text>
-                        <Text style={{ fontSize: 16 }}>
-                            Frecuencia: Semanal
-                        </Text>
-                    </View>
-                </View>
-                <View
-                    style={[
-                        habitosScreenStyles.habitosContainer,
-                        { flexDirection: 'row' },
-                    ]}
-                >
-                    <View style={habitosScreenStyles.habitosIconContainer}>
-                        <Image
-                            style={habitosScreenStyles.habitosIconMedidas}
-                            source={require('../../assets/images/glass.png')}
-                        />
-                    </View>
-                    <View style={habitosScreenStyles.habitosTextosContainer}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                            Tomar 2 litros de agua
-                        </Text>
-                        <Text style={{ fontSize: 16 }}>Frecuencia: Diario</Text>
-                    </View>
-                </View>
+                ))}
             </ScrollView>
         </View>
     );
 };
+
 export default HabitosScreen;
 
-
+// Styles for the SwipeListView
 const styles = StyleSheet.create({
     rowFront: {
         backgroundColor: 'white',
@@ -269,8 +217,4 @@ const styles = StyleSheet.create({
     backText: {
         color: 'white',
     },
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> lucas
