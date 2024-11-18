@@ -65,6 +65,20 @@ const habitosScreenStyles = StyleSheet.create({
     backText: {
         color: 'white',
     },
+    backButton: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 8,
+        marginHorizontal: 5,
+        padding: 10,
+    },
+    backButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+        marginTop: 5,
+    },
 });
 
 export default habitosScreenStyles;
