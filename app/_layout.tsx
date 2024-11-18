@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useEffect } from 'react';
-import { useFonts } from 'expo-font';
+import { useFonts } from 'expo-font'
 
 SplashScreen.preventAutoHideAsync();
 
