@@ -56,7 +56,7 @@ const habitosScreenStyles = StyleSheet.create({
     },
     rowBack: {
         alignItems: 'center',
-        backgroundColor: 'red',
+        backgroundColor: 'teal',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
