@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 import progresoScreenStyles from '../../components/styles/progresoStyles';
 import themeDark from '../../components/themes/themeDark';
 import themeLight from '../../components/themes/themeLight';
-import { Text, View, useColorScheme, Modal, Button } from 'react-native';
+import { Text, View, useColorScheme, Modal, Button, ScrollView } from 'react-native';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
+//import { ScrollView } from 'react-native-gesture-handler';
 
 const ProgresoScreen = () => {
     const { theme, user } = useGlobalContext();
     const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+    //const isLoggedIn = true;
     const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
@@ -19,6 +21,12 @@ const ProgresoScreen = () => {
         setIsLoginVisible(false);
     };
 
+    const progresoData = [
+        { title: 'Avance diario', progress: 75, color: 'teal', completado: '75%' },
+        { title: 'Avance semanal', progress: 35, color: 'teal', completado: '35%' },
+        { title: 'Avance mensual', progress: 40, color: 'teal', completado: '40%' },
+    ];
+
     return (
         <View
             style={[
@@ -27,7 +35,7 @@ const ProgresoScreen = () => {
                     : themeLight.lightBackground,
             ]}
         >
-            <Modal
+            {<Modal
                 visible={isLoginVisible}
                 animationType="slide"
                 transparent={true}
@@ -46,52 +54,33 @@ const ProgresoScreen = () => {
                         onLoginSuccess={handleLoginSuccess}
                     />
                 </View>
-            </Modal>
+            </Modal>}
             {isLoggedIn && (
                 <>
-                    <View
-                        style={{
-                            marginVertical: 50,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <ProgressCircle
-                            size={200}
-                            strokeWidth={20}
-                            progress={75}
-                            color="teal"
-                        />
-                        <Text style={progresoScreenStyles.label}>
-                            75% completado
-                        </Text>
-                    </View>
-                    <Text>
-                        Email: {user?.email ? user.email : 'No user logged in'}
-                    </Text>
-                    <Text>
-                        User:{' '}
-                        {user?.username ? user.username : 'No user logged in'}
-                    </Text>
-                    <Text>Theme: {theme}</Text>
-                    <Button title="Login User" />
-                    <View
-                        style={{
-                            marginVertical: 50,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <ProgressCircle
-                            size={200}
-                            strokeWidth={20}
-                            progress={25}
-                            color="teal"
-                        />
-                        <Text style={progresoScreenStyles.label}>
-                            35% completado
-                        </Text>
-                    </View>
+                    <ScrollView>
+                        {progresoData.map((item, index) => (
+                            <View
+                                key={index}
+                                style={{
+                                    marginVertical: 20,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={progresoScreenStyles.label}>{item.title}</Text>
+                                <Text></Text>
+                                <ProgressCircle
+                                    size={200}
+                                    strokeWidth={20}
+                                    progress={item.progress}
+                                    color={item.color}
+                                />
+                                <Text style={progresoScreenStyles.label}>
+                                    {item.completado} completado
+                                </Text>
+                            </View>
+                        ))}
+                    </ScrollView>
                 </>
             )}
         </View>
