@@ -8,7 +8,7 @@ import { Text, View, useColorScheme, Modal, Button } from 'react-native';
 import { useGlobalContext } from '../../views/contexts/useGlobalContext';
 
 const ProgresoScreen = () => {
-    const { theme, user } = useGlobalContext();
+    const { user } = useGlobalContext();
     const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
     const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
@@ -66,15 +66,6 @@ const ProgresoScreen = () => {
                             75% completado
                         </Text>
                     </View>
-                    <Text>
-                        Email: {user?.email ? user.email : 'No user logged in'}
-                    </Text>
-                    <Text>
-                        User:{' '}
-                        {user?.username ? user.username : 'No user logged in'}
-                    </Text>
-                    <Text>Theme: {theme}</Text>
-                    <Button title="Login User" />
                     <View
                         style={{
                             marginVertical: 50,

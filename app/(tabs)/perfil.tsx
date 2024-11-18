@@ -5,39 +5,32 @@ import themeLight from '../../themes/themeLight';
 import {
     Image,
     Text,
-    TextInput,
     View,
     useColorScheme,
     Button,
     Alert,
     StyleSheet,
+    ActivityIndicator,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 import { useGlobalContext } from '@/views/contexts/useGlobalContext';
+import { signOut, uploadImageToDatabase } from './API';
+import { calculateAge, scheduleNotification } from './API/perfilUtil';
+
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 const PerfilScreen = () => {
-    const { user } = useGlobalContext();
+    const { user, setUser } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const [image, setImage] = useState<string | null>(null);
+    const [serverImage, setServerImage] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
 
-    const calculateAge = (birthDate: string): number => {
-        const birthDateObj = new Date(birthDate); // Parse the birthdate string into a Date object
-        const today = new Date(); // Get the current date
-
-        let age = today.getFullYear() - birthDateObj.getFullYear();
-
-        const monthDiff = today.getMonth() - birthDateObj.getMonth();
-        const dayDiff = today.getDate() - birthDateObj.getDate();
-
-        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-            age--;
-        }
-
-        return age;
+    const handleSignOut = () => {
+        signOut(setUser);
     };
 
     useEffect(() => {
@@ -47,22 +40,29 @@ const PerfilScreen = () => {
                 await Notifications.requestPermissionsAsync();
             }
         };
-        requestPermissions();
-    }, []);
 
-    const scheduleNotification = async () => {
-        await Notifications.scheduleNotificationAsync({
-            content: {
-                title: 'Hello!',
-                body: 'This is a local notification.',
-                data: { extraData: 'Some data' },
-            },
-            trigger: {
-                seconds: 5,
-                repeats: false,
-            },
-        });
-    };
+        const checkServerImage = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch(
+                    `${SERVER_URL}/uploads/${user?.userId}.jpg`
+                );
+                if (response.ok) {
+                    setServerImage(`${SERVER_URL}/uploads/${user?.userId}.jpg`);
+                } else {
+                    setServerImage(null);
+                }
+            } catch (error) {
+                console.error('Error checking server image:', error);
+                setServerImage(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        requestPermissions();
+        checkServerImage();
+    }, [user]);
 
     const pickImage = async () => {
         try {
@@ -75,28 +75,11 @@ const PerfilScreen = () => {
 
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
-            } else
-                Alert.alert(
-                    'Delete',
-                    'Are you sure you want to delte the image',
-                    [
-                        { text: 'Yes', onPress: () => setImage(null) },
-                        { text: 'No' },
-                    ]
-                );
+            } else {
+                Alert.alert('Cancel', 'Image selection canceled.');
+            }
         } catch (error) {
-            console.log('error reading an image');
-        }
-    };
-
-    const convertUriToBase64 = async (uri: string): Promise<string> => {
-        try {
-            return await FileSystem.readAsStringAsync(uri, {
-                encoding: FileSystem.EncodingType.Base64,
-            });
-        } catch (error) {
-            console.error('Error converting file to Base64:', error);
-            throw error;
+            console.error('Error selecting image:', error);
         }
     };
 
@@ -112,9 +95,9 @@ const PerfilScreen = () => {
         try {
             setUploading(true);
 
-            const base64Image = await convertUriToBase64(image);
-
-            Alert.alert(base64Image);
+            await uploadImageToDatabase(user?.token, image);
+            setServerImage(image); // Use the local image URI for immediate display
+            setImage(null); // Clear the local image
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert(
@@ -125,6 +108,15 @@ const PerfilScreen = () => {
             setUploading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
+
     return (
         <View
             style={[
@@ -135,6 +127,21 @@ const PerfilScreen = () => {
             ]}
         >
             <View style={styles.container}>
+                {!serverImage && !image && (
+                    <Image
+                        source={require('../../assets/images/user.png')}
+                        style={perfilScreenStyles.profileImage}
+                    />
+                )}
+
+                {serverImage && (
+                    <Image
+                        source={{
+                            uri: serverImage,
+                        }}
+                        style={styles.image}
+                    />
+                )}
                 {image && (
                     <Image source={{ uri: image }} style={styles.image} />
                 )}
@@ -145,17 +152,12 @@ const PerfilScreen = () => {
                         disabled={uploading}
                     />
                 )}
-                {!image && (
-                    <Image
-                        source={require('../../assets/images/user.png')}
-                        style={perfilScreenStyles.profileImage}
-                    />
-                )}
                 <Button
                     title="Pick an image from gallery"
                     onPress={pickImage}
                 />
             </View>
+
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Usuario:</Text>
                 <Text style={perfilScreenStyles.value}>{user?.username}</Text>
@@ -170,11 +172,11 @@ const PerfilScreen = () => {
                     {calculateAge(user?.dateOfBirth ?? '')}
                 </Text>
             </View>
-
             <Button
                 title="Schedule Notification"
                 onPress={scheduleNotification}
             />
+            <Button title="Cerrar sesión" onPress={handleSignOut} />
         </View>
     );
 };
@@ -193,6 +195,11 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 10,
         marginTop: 20,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     text: {
         marginTop: 20,

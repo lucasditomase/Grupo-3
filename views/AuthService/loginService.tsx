@@ -3,6 +3,8 @@ import { Buffer } from 'buffer';
 import { UserPayload } from '../contexts/globalContext';
 import { Dispatch, SetStateAction } from 'react';
 
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+
 export const loginUser = async (
     email: string,
     password: string,
@@ -14,13 +16,9 @@ export const loginUser = async (
     }
 
     try {
-        // Send the login request
         const response = await sendLoginRequest(email, password);
-
-        // Handle the login response
         return await handleLoginResponse(response, setUser);
     } catch (error) {
-        // Handle any errors that occur during the request
         return {
             success: false,
             message:
@@ -30,8 +28,7 @@ export const loginUser = async (
 };
 
 const sendLoginRequest = async (email: string, password: string) => {
-    // Send a POST request to the login endpoint
-    return await fetch('http://192.168.68.104:3000/login', {
+    return await fetch(SERVER_URL + '/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -55,10 +52,9 @@ const handleLoginResponse = async (
                     'base64'
                 ).toString()
             );
-        console.log(parts);
         const payload: UserPayload = JSON.parse(parts[1]);
         payload.token = tokenJWT;
-        console.log(payload);
+        console.log('token: ' + tokenJWT);
         setUser(payload);
 
         return {

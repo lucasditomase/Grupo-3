@@ -26,12 +26,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
 
     const handleLogin = async () => {
         const response = await loginUser(email, password, setUser);
-        if (!response.success) {
-            Alert.alert('Error', response.message);
-            return;
-        } else {
+        if (response.success) {
             onLoginSuccess();
-            router.replace('/'); // Navigate back to the main tab screen
+            router.replace('/');
         }
     };
 

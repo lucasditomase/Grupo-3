@@ -1,4 +1,5 @@
 import { validateInput } from './validationUtil';
+const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 export const registerUser = async (
     username: string,
@@ -43,7 +44,7 @@ const sendRegisterRequest = async (
     nacimientoMes: string,
     nacimientoAnio: string
 ) => {
-    return await fetch('http://localhost:3000/register', {
+    return await fetch(SERVER_URL + '/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
