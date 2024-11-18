@@ -3,7 +3,6 @@ import {
     Alert,
     Button,
     Image,
-    StyleSheet,
     Text,
     View,
     useColorScheme,

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import {
     Button,
-    Image,
     Modal,
     Pressable,
-    ScrollView,
-    StyleSheet,
     Text,
     TextInput,
     View,
@@ -25,15 +22,14 @@ import { Picker } from '@react-native-picker/picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 // Icons
-import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // Types
 type HabitoItem = {
     key: string;
     text: string;
     category: string;
+    frequency: string;
     icon: string;
 };
 
@@ -51,19 +47,38 @@ const HabitosScreen = () => {
 
     // Sample data for the SwipeListView
     const data: HabitoItem[] = [
-        { key: '1', text: 'Item 1', category: 'Category 1', icon: 'favorite' },
-        { key: '2', text: 'Item 2', category: 'Category 2', icon: 'directions-run' },
+        { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
+        { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
     ];
 
     /**
      * Renders each habit item.
      */
     const renderItem = ({ item }: { item: HabitoItem }) => (
-        <View style={styles.rowFront}>
-            <MaterialIcons name={item.icon} size={100} color="red" />
-            <Icon name={item.icon} size={100} color="red" />
-            <FontAwesome name={item.icon} size={100} color="red" />
-            <Text>{`${item.text} ${item.category}`}</Text>
+        <View
+            style={[
+                habitosScreenStyles.habitosContainer,
+                { flexDirection: 'row' },
+            ]}
+        >
+            { }
+            <View style={habitosScreenStyles.habitosIconContainer}>
+                <MaterialIcons
+                    name={item.icon}
+                    size={50}
+                    color="black"
+                />
+            </View>
+
+            { }
+            <View style={habitosScreenStyles.habitosTextosContainer}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                    {item.text}
+                </Text>
+                <Text style={{ fontSize: 16 }}>
+                    Frecuencia: {item.frequency}
+                </Text>
+            </View>
         </View>
     );
 
@@ -71,9 +86,9 @@ const HabitosScreen = () => {
      * Renders hidden actions for the SwipeListView.
      */
     const renderHiddenItem = () => (
-        <View style={styles.rowBack}>
-            <Text style={styles.backText}>Action 1</Text>
-            <Text style={styles.backText}>Action 2</Text>
+        <View style={habitosScreenStyles.rowBack}>
+            <Text style={habitosScreenStyles.backText}>Action 1</Text>
+            <Text style={habitosScreenStyles.backText}>Action 2</Text>
         </View>
     );
 
@@ -136,85 +151,8 @@ const HabitosScreen = () => {
                 leftOpenValue={75}
                 rightOpenValue={-75}
             />
-
-            {/* List of static habits */}
-            <ScrollView
-                style={[
-                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
-                ]}
-            >
-                {[
-                    {
-                        image: require('../../assets/images/dumbbell-fitness.png'),
-                        title: 'Gimnasio',
-                        frequency: 'Diario',
-                    },
-                    {
-                        image: require('../../assets/images/meditation.png'),
-                        title: 'Meditación',
-                        frequency: 'Diario',
-                    },
-                    {
-                        image: require('../../assets/images/coins.png'),
-                        title: 'Pagar servicios',
-                        frequency: 'Mensual',
-                    },
-                    {
-                        image: require('../../assets/images/notebook-alt.png'),
-                        title: 'Revisar mi agenda para la semana',
-                        frequency: 'Semanal',
-                    },
-                    {
-                        image: require('../../assets/images/glass.png'),
-                        title: 'Tomar 2 litros de agua',
-                        frequency: 'Diario',
-                    },
-                ].map((habit, index) => (
-                    <View
-                        key={index}
-                        style={[
-                            habitosScreenStyles.habitosContainer,
-                            { flexDirection: 'row' },
-                        ]}
-                    >
-                        <View style={habitosScreenStyles.habitosIconContainer}>
-                            <Image
-                                style={habitosScreenStyles.habitosIconMedidas}
-                                source={habit.image}
-                            />
-                        </View>
-                        <View style={habitosScreenStyles.habitosTextosContainer}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                                {habit.title}
-                            </Text>
-                            <Text style={{ fontSize: 16 }}>{`Frecuencia: ${habit.frequency}`}</Text>
-                        </View>
-                    </View>
-                ))}
-            </ScrollView>
         </View>
     );
 };
 
 export default HabitosScreen;
-
-// Styles for the SwipeListView
-const styles = StyleSheet.create({
-    rowFront: {
-        backgroundColor: 'white',
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
-        padding: 20,
-    },
-    rowBack: {
-        alignItems: 'center',
-        backgroundColor: 'red',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingLeft: 15,
-    },
-    backText: {
-        color: 'white',
-    },
-});
