@@ -3,11 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Tabs, useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
-<<<<<<< HEAD
-import { GlobalProvider } from '../../views/contexts/globalContext';
-=======
 import { GlobalProvider } from '../../components/contexts/globalContext';
->>>>>>> lucas
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();
@@ -70,8 +66,4 @@ export default function TabLayout() {
             </Tabs>
         </GlobalProvider>
     );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> lucas
