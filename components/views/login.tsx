@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import loginScreenStyles from '../styles/loginStyles';
-import { registerUser, loginUser } from './AuthService';
-import { useGlobalContext } from './contexts/useGlobalContext';
+import loginScreenStyles from '../../components/styles/loginStyles';
+import { registerUser, loginUser } from '../../components/authService';
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 
 interface LoginScreenProps {
     onClose: () => void;

@@ -3,7 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Tabs, useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { GlobalProvider } from '../../views/contexts/globalContext';
+import { GlobalProvider } from '../../components/contexts/globalContext';
 
 export default function TabLayout() {
     const colorScheme = useColorScheme();

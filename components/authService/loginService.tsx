@@ -1,6 +1,6 @@
-import { validateInput } from './validationUtil';
+import { validateInput } from '../../components/authService/validationUtil';
 import { Buffer } from 'buffer';
-import { UserPayload } from '../contexts/globalContext';
+import { UserPayload } from '../../components/contexts/globalContext';
 import { Dispatch, SetStateAction } from 'react';
 
 export const loginUser = async (
@@ -70,9 +70,8 @@ const handleLoginResponse = async (
         const errorData = await response.json();
         return {
             success: false,
-            message: `Error ${response.status}: ${
-                errorData.message || 'Ocurrió un error'
-            }`,
+            message: `Error ${response.status}: ${errorData.message || 'Ocurrió un error'
+                }`,
         };
     }
 };

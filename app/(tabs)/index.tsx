@@ -1,11 +1,11 @@
-import LoginScreen from '../../views/login';
+import LoginScreen from '../../components/views/login';
 import ProgressCircle from '../../components/views/circulos';
 import React, { useState } from 'react';
-import progresoScreenStyles from '../../styles/progresoStyles';
-import themeDark from '../../themes/themeDark';
-import themeLight from '../../themes/themeLight';
+import progresoScreenStyles from '../../components/styles/progresoStyles';
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
 import { Text, View, useColorScheme, Modal, Button } from 'react-native';
-import { useGlobalContext } from '../../views/contexts/useGlobalContext';
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 
 const ProgresoScreen = () => {
     const { theme, user } = useGlobalContext();

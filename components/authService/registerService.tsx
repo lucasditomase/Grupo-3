@@ -1,4 +1,4 @@
-import { validateInput } from './validationUtil';
+import { validateInput } from '../../components/authService/validationUtil';
 
 export const registerUser = async (
     username: string,

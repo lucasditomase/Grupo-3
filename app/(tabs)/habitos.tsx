@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import habitosScreenStyles from '../../styles/habitoStyles';
-import modalStyles from '../../styles/modalStyles';
-import themeDark from '../../themes/themeDark';
-import themeLight from '../../themes/themeLight';
+import habitosScreenStyles from '../../components/styles/habitoStyles';
+import modalStyles from '../../components/styles/modalStyles';
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
 import {
     Button,
     Image,
