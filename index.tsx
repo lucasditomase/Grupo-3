@@ -10,7 +10,6 @@ import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 const ProgresoScreen = () => {
     const { theme, user } = useGlobalContext();
     const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
-    const isLoggedIn = true;
     const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
