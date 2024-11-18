@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
+<<<<<<< HEAD
 import perfilScreenStyles from '../../styles/perfilStyles';
 import themeDark from '../../themes/themeDark';
 import themeLight from '../../themes/themeLight';
+=======
+import perfilScreenStyles from '../../components/styles/perfilStyles';
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
+>>>>>>> lucas
 import {
     Image,
     Text,
@@ -15,7 +21,11 @@ import {
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
+<<<<<<< HEAD
 import { useGlobalContext } from '@/views/contexts/useGlobalContext';
+=======
+import { useGlobalContext } from '@/components/contexts/useGlobalContext';
+>>>>>>> lucas
 
 const PerfilScreen = () => {
     const { user } = useGlobalContext();
@@ -199,4 +209,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'gray',
     },
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> lucas
