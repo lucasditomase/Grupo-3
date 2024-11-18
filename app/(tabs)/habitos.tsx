@@ -58,8 +58,27 @@ const HabitosScreen = () => {
     };
 
     const deleteHabit = (item: HabitoItem) => {
-        Alert.alert(`Deleted "${item.text}"`);
+        Alert.alert(
+            "Confirm Delete", // Title of the alert
+            `Are you sure you want to delete "${item.text}"?`, // Message of the alert
+            [
+                {
+                    text: "Cancel", // Cancel button text
+                    onPress: () => console.log("Cancel Pressed"), // Action for Cancel button
+                    style: "cancel", // Style for Cancel button
+                },
+                {
+                    text: "Delete", // Confirm button text
+                    onPress: () => {
+                        Alert.alert(`Deleted "${item.text}"`); // Action for Confirm button
+                    },
+                    style: "destructive", // Style for destructive action
+                },
+            ],
+            { cancelable: true } // Allow dismissal by tapping outside the alert
+        );
     };
+
 
     /**
      * Handles showing the context menu for an item.
@@ -75,6 +94,13 @@ const HabitosScreen = () => {
             ],
             { cancelable: true }
         );
+    };
+
+    // State for the selected part of the habit
+    const [selectedPart, setSelectedPart] = useState('Diario');
+
+    const handlePartClick = (part: string) => {
+        setSelectedPart(part);
     };
 
     /**
@@ -197,6 +223,27 @@ const HabitosScreen = () => {
                                 <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
                             ))}
                         </Picker>
+                        <Text style={modalStyles.label}>Seleccione frecuencia</Text>
+                        <View style={habitosScreenStyles.buttonContainer}>
+                            <Pressable
+                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Diario' && habitosScreenStyles.selected]}
+                                onPress={() => handlePartClick('Diario')}
+                            >
+                                <Text style={{ textAlign: 'center' }}>Diario</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Semanal' && habitosScreenStyles.selected]}
+                                onPress={() => handlePartClick('Semanal')}
+                            >
+                                <Text style={{ textAlign: 'center' }}>Semanal</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Mensual' && habitosScreenStyles.selected]}
+                                onPress={() => handlePartClick('Mensual')}
+                            >
+                                <Text style={{ textAlign: 'center' }}>Mensual</Text>
+                            </Pressable>
+                        </View>
                         <Button title="Guardar" onPress={handleCloseModal} />
                     </View>
                 </View>

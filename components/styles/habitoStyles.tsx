@@ -79,6 +79,23 @@ const habitosScreenStyles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 5,
     },
+
+    //
+    buttonContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
+    },
+    buttonPart: {
+        flex: 1,
+        padding: 10,
+        textAlign: 'center',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    selected: {
+        backgroundColor: '#0E6E6D',
+        color: 'white',
+    },
 });
 
 export default habitosScreenStyles;
