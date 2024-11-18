@@ -1,6 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+/**
+ * Styles for the Habitos screen components.
+ */
 const habitosScreenStyles = StyleSheet.create({
+    // Button styles
     button: {
         alignItems: 'center',
         backgroundColor: 'teal',
@@ -17,6 +21,8 @@ const habitosScreenStyles = StyleSheet.create({
         letterSpacing: 0.25,
         lineHeight: 21,
     },
+
+    // Habitos container styles
     habitosContainer: {
         borderColor: 'black',
         borderWidth: 1,
@@ -39,6 +45,25 @@ const habitosScreenStyles = StyleSheet.create({
         flex: 2,
         justifyContent: 'center',
         paddingLeft: 10,
+    },
+
+    // Styles for the SwipeListView
+    rowFront: {
+        backgroundColor: 'white',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        padding: 20,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: 'red',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
+    backText: {
+        color: 'white',
     },
 });
 
