@@ -88,19 +88,10 @@ const ProgresoScreen = () => {
 
             {/* Progress Content */}
             {isLoggedIn && (
-                <ScrollView>
+                <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
                     {progresoData.map((item, index) => (
-                        <View
-                            key={index}
-                            style={{
-                                marginVertical: 20,
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text style={progresoScreenStyles.label}>
-                                {item.title}
-                            </Text>
+                        <View key={index} style={progresoScreenStyles.card}>
+                            <Text style={progresoScreenStyles.label}>{item.title}</Text>
                             <ProgressCircle
                                 size={200}
                                 strokeWidth={20}
@@ -112,6 +103,7 @@ const ProgresoScreen = () => {
                             </Text>
                         </View>
                     ))}
+
                 </ScrollView>
             )}
         </View>

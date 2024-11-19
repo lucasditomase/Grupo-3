@@ -3,29 +3,26 @@ export const uploadImageToDatabase = async (
     token: string | null | undefined,
     image: string
 ) => {
-    // Ensure token is not undefined
-    const safeToken = token ?? null;
-
-    return sendUploadImageRequest(safeToken, image);
+    sendUploadImageRequest(token, image);
 };
-
-const sendUploadImageRequest = async (token: string | null, image: string) => {
+const sendUploadImageRequest = async (
+    token: string | null | undefined,
+    image: string
+) => {
     const formData = new FormData();
+    const file = {
+        uri: image,
+        type: 'image/jpeg',
+        name: `profile_picture.jpg`,
+    };
 
-    // Convert the URI to a Blob
-    const response = await fetch(image);
-    const blob = await response.blob();
-
-    // Append the Blob to the FormData
-    formData.append('profile_picture', blob, 'profile.jpg');
-
-    // Send the request
+    formData.append('profile_picture', file);
     return await fetch(SERVER_URL + '/upload-profile-picture', {
         method: 'POST',
         headers: {
+            'Content-Type': 'multipart/form-data',
             Authorization: 'Bearer ' + token,
         },
         body: formData,
     });
 };
-
