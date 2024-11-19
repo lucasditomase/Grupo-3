@@ -79,6 +79,7 @@ const habitosScreenStyles = StyleSheet.create({
         color: '#fff',
         fontWeight: '600',
         fontSize: 16,
+        padding: 25,
     },
     completeButton: {
         backgroundColor: '#4CAF50',
