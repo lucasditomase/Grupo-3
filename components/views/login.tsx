@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Alert, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import loginScreenStyles from '../styles/loginStyles';
 import { registerUser, loginUser } from '../../components/authService';
@@ -15,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     onLoginSuccess,
 }) => {
     const [email, setEmail] = useState('');
-    const [isLogin, setIsLogin] = useState(true);
+    const [isLogin, setIsLogin] = useState(false);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [nacimientoDia, setDay] = useState('');
@@ -23,6 +23,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const [nacimientoAnio, setYear] = useState('');
     const router = useRouter();
     const { setUser } = useGlobalContext();
+
+    // Animación de opacidad del logo
+    const [logoOpacity] = useState(new Animated.Value(0));
+
+    useEffect(() => {
+        // Animación de aparición gradual
+        Animated.timing(logoOpacity, {
+            toValue: 1,
+            duration: 1500, // Duración de la animación en milisegundos
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
 
     const handleLogin = async () => {
         onLoginSuccess();
@@ -47,8 +60,25 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
         }
     };
 
+
+
     return (
         <View style={loginScreenStyles.container}>
+            {/* Logo con animación */}
+            <Animated.Image
+                source={require('../../assets/images/logoRedondeado.png')}
+                style={[
+                    {
+                        width: 120,
+                        height: 120,
+                        marginBottom: 20,
+                    },
+                    { opacity: logoOpacity }, // Animación de opacidad
+                    { alignSelf: 'center' }   // Centrar horizontalmente
+                ]}
+                resizeMode="contain"
+            />
+
             {isLogin ? (
                 <View>
                     <Text style={loginScreenStyles.title}>
