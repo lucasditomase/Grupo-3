@@ -27,8 +27,8 @@ const ProgresoScreen = () => {
     const { theme, user } = useGlobalContext();
 
     // State variables
-    const [isLoggedIn, setIsLoggedIn] = useState(!!user);
-    const [isLoginVisible, setIsLoginVisible] = useState(!user);
+    const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+    const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
 
