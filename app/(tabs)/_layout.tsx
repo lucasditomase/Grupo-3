@@ -1,5 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
+import { TouchableOpacity, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // Constants
 import { Colors } from '@/constants/Colors';
@@ -21,8 +23,32 @@ export default function TabLayout() {
     // Determine the current color scheme (light or dark)
     const colorScheme = useColorScheme();
 
+    const tabs = [
+        { name: 'index', title: 'Progreso', iconFocused: 'checkmark-circle', iconDefault: 'checkmark-circle-outline' },
+        { name: 'habitos', title: 'Hábitos', iconFocused: 'heart', iconDefault: 'heart-outline', },
+        { name: 'perfil', title: 'Perfil', iconFocused: 'person', iconDefault: 'person-outline', },
+    ];
+
+    const HeaderRight = () => {
+        const navigation = useNavigation();
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    (navigation as any).navigate('index'); // Cambia según la ruta destino
+                }}
+            >
+                <Image
+                    source={require('../../assets/images/logoRedondeado.png')}
+                    style={{ width: 30, height: 30, marginRight: 10 }}
+                />
+            </TouchableOpacity>
+        );
+    };
+
     return (
+
         <GlobalProvider>
+
             <Tabs
                 screenOptions={{
                     // Active tab tint color based on the current color scheme
@@ -39,47 +65,22 @@ export default function TabLayout() {
                     },
                 }}
             >
-                {/* Progress Tab */}
-                <Tabs.Screen
-                    name="index"
-                    options={{
-                        title: 'Progreso',
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabBarIcon
-                                name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'}
-                                color={color}
-                            />
-                        ),
-                    }}
-                />
-
-                {/* Habits Tab */}
-                <Tabs.Screen
-                    name="habitos"
-                    options={{
-                        title: 'Hábitos',
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabBarIcon
-                                name={focused ? 'heart' : 'heart-outline'}
-                                color={color}
-                            />
-                        ),
-                    }}
-                />
-
-                {/* Profile Tab */}
-                <Tabs.Screen
-                    name="perfil"
-                    options={{
-                        title: 'Perfil',
-                        tabBarIcon: ({ color, focused }) => (
-                            <TabBarIcon
-                                name={focused ? 'person' : 'person-outline'}
-                                color={color}
-                            />
-                        ),
-                    }}
-                />
+                {tabs.map(({ name, title, iconFocused, iconDefault }) => (
+                    <Tabs.Screen
+                        key={name}
+                        name={name}
+                        options={{
+                            title,
+                            tabBarIcon: ({ color, focused }) => (
+                                <TabBarIcon
+                                    name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
+                                    color={color}
+                                />
+                            ),
+                            headerRight: HeaderRight,
+                        }}
+                    />
+                ))}
             </Tabs>
         </GlobalProvider>
     );

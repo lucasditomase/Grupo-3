@@ -7,10 +7,9 @@ import {
     Text,
     View,
     useColorScheme,
-    Button,
     Alert,
-    StyleSheet,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
@@ -61,7 +60,7 @@ const PerfilScreen = () => {
         };
 
         requestPermissions();
-        checkServerImage();
+        //checkServerImage();
     }, [user]);
 
     const pickImage = async () => {
@@ -109,13 +108,13 @@ const PerfilScreen = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <View style={perfilScreenStyles.container}>
+    //             <ActivityIndicator size="large" color="#4caf50" />
+    //         </View>
+    //     );
+    // }
 
     return (
         <View
@@ -126,7 +125,7 @@ const PerfilScreen = () => {
                     : themeLight.lightBackground,
             ]}
         >
-            <View style={styles.container}>
+            <View style={perfilScreenStyles.profileImageContainer}>
                 {!serverImage && !image && (
                     <Image
                         source={require('../../assets/images/user.png')}
@@ -139,23 +138,31 @@ const PerfilScreen = () => {
                         source={{
                             uri: serverImage,
                         }}
-                        style={styles.image}
+                        style={perfilScreenStyles.image}
                     />
                 )}
                 {image && (
-                    <Image source={{ uri: image }} style={styles.image} />
+                    <Image source={{ uri: image }} style={perfilScreenStyles.image} />
                 )}
                 {image && (
-                    <Button
-                        title={uploading ? 'Uploading...' : 'Upload Image'}
+                    <TouchableOpacity
+                        style={perfilScreenStyles.button}
                         onPress={uploadImage}
                         disabled={uploading}
-                    />
+                    >
+                        <Text style={perfilScreenStyles.buttonText}>
+                            {uploading ? 'Uploading...' : 'Upload Image'}
+                        </Text>
+                    </TouchableOpacity>
                 )}
-                <Button
-                    title="Pick an image from gallery"
+                <TouchableOpacity
+                    style={perfilScreenStyles.button}
                     onPress={pickImage}
-                />
+                >
+                    <Text style={perfilScreenStyles.buttonText}>
+                        Pick an image from gallery
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             <View style={perfilScreenStyles.infoContainer}>
@@ -172,38 +179,20 @@ const PerfilScreen = () => {
                     {calculateAge(user?.dateOfBirth ?? '')}
                 </Text>
             </View>
-            <Button
-                title="Schedule Notification"
+            <TouchableOpacity
+                style={perfilScreenStyles.button}
                 onPress={scheduleNotification}
-            />
-            <Button title="Cerrar sesión" onPress={handleSignOut} />
+            >
+                <Text style={perfilScreenStyles.buttonText}>Schedule Notification</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={perfilScreenStyles.button}
+                onPress={handleSignOut}
+            >
+                <Text style={perfilScreenStyles.buttonText}>Cerrar sesión</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 export default PerfilScreen;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-    image: {
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        marginTop: 20,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    text: {
-        marginTop: 20,
-        fontSize: 16,
-        color: 'gray',
-    },
-});
