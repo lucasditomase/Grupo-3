@@ -110,7 +110,7 @@ const HabitosScreen = () => {
         <Pressable onLongPress={() => handleLongPress(item)}>
             <View style={habitosScreenStyles.habitosContainer}>
                 <View style={habitosScreenStyles.habitosIconContainer}>
-                    <MaterialIcons name={item.icon} size={30} color="#333" />
+                    <MaterialIcons name={item.icon} size={30} color="teal" />
                 </View>
                 <View style={habitosScreenStyles.habitosTextosContainer}>
                     <Text style={habitosScreenStyles.habitosText}>{item.text}</Text>
@@ -119,7 +119,6 @@ const HabitosScreen = () => {
             </View>
         </Pressable>
     );
-
 
     /**
     * Handles swipe actions.
