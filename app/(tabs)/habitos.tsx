@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Button,
@@ -24,6 +24,10 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 
 // Icons
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+// Navigation
+import { router } from 'expo-router'; // Assuming expo-router is used
+// Context
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 
 // Types
 type HabitoItem = {
@@ -40,18 +44,37 @@ type HabitoItem = {
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+    const [selectedCategory, setSelectedCategory] = useState<
+        string | undefined
+    >();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const swipeTriggered = useRef<{ [key: string]: boolean }>({}); // Keeps track of whether a swipe action has been triggered for each item
-
+    const { user } = useGlobalContext();
     const pokemons = ['Gimnasio', 'Meditación', 'Pagos', 'Agenda', 'Alimentos'];
 
     // Sample data for the SwipeListView
     const data: HabitoItem[] = [
-        { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
-        { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
+        {
+            key: '1',
+            text: 'Llamar a mi mama',
+            category: 'Relación',
+            frequency: 'Diario',
+            icon: 'favorite',
+        },
+        {
+            key: '2',
+            text: 'Salir a correr',
+            category: 'Deporte',
+            frequency: 'Semanal',
+            icon: 'directions-run',
+        },
     ];
+    useEffect(() => {
+        if (!user) {
+            router.replace('/');
+        }
+    }, [user]);
 
     const markAsCompleted = (item: HabitoItem) => {
         Alert.alert(`Marked "${item.text}" as completed`);
@@ -59,26 +82,25 @@ const HabitosScreen = () => {
 
     const deleteHabit = (item: HabitoItem) => {
         Alert.alert(
-            "Confirm Delete", // Title of the alert
+            'Confirm Delete', // Title of the alert
             `Are you sure you want to delete "${item.text}"?`, // Message of the alert
             [
                 {
-                    text: "Cancel", // Cancel button text
-                    onPress: () => console.log("Cancel Pressed"), // Action for Cancel button
-                    style: "cancel", // Style for Cancel button
+                    text: 'Cancel', // Cancel button text
+                    onPress: () => console.log('Cancel Pressed'), // Action for Cancel button
+                    style: 'cancel', // Style for Cancel button
                 },
                 {
-                    text: "Delete", // Confirm button text
+                    text: 'Delete', // Confirm button text
                     onPress: () => {
                         Alert.alert(`Deleted "${item.text}"`); // Action for Confirm button
                     },
-                    style: "destructive", // Style for destructive action
+                    style: 'destructive', // Style for destructive action
                 },
             ],
             { cancelable: true } // Allow dismissal by tapping outside the alert
         );
     };
-
 
     /**
      * Handles showing the context menu for an item.
@@ -88,8 +110,15 @@ const HabitosScreen = () => {
             'Options',
             `Choose an action for "${item.text}"`,
             [
-                { text: 'Mark as Completed', onPress: () => markAsCompleted(item) },
-                { text: 'Delete', onPress: () => deleteHabit(item), style: 'destructive' },
+                {
+                    text: 'Mark as Completed',
+                    onPress: () => markAsCompleted(item),
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => deleteHabit(item),
+                    style: 'destructive',
+                },
                 { text: 'Cancel', style: 'cancel' },
             ],
             { cancelable: true }
@@ -113,16 +142,20 @@ const HabitosScreen = () => {
                     <MaterialIcons name={item.icon} size={30} color="teal" />
                 </View>
                 <View style={habitosScreenStyles.habitosTextosContainer}>
-                    <Text style={habitosScreenStyles.habitosText}>{item.text}</Text>
-                    <Text style={habitosScreenStyles.frequencyText}>Frecuencia: {item.frequency}</Text>
+                    <Text style={habitosScreenStyles.habitosText}>
+                        {item.text}
+                    </Text>
+                    <Text style={habitosScreenStyles.frequencyText}>
+                        Frecuencia: {item.frequency}
+                    </Text>
                 </View>
             </View>
         </Pressable>
     );
 
     /**
-    * Handles swipe actions.
-    */
+     * Handles swipe actions.
+     */
     const handleSwipeValueChange = ({
         key,
         value,
@@ -159,10 +192,16 @@ const HabitosScreen = () => {
      */
     const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
         <View style={habitosScreenStyles.rowBack}>
-            <Pressable style={habitosScreenStyles.completeButton} onPress={() => markAsCompleted(item)}>
+            <Pressable
+                style={habitosScreenStyles.completeButton}
+                onPress={() => markAsCompleted(item)}
+            >
                 <Text style={habitosScreenStyles.backText}>Completar</Text>
             </Pressable>
-            <Pressable style={habitosScreenStyles.deleteButton} onPress={() => deleteHabit(item)}>
+            <Pressable
+                style={habitosScreenStyles.deleteButton}
+                onPress={() => deleteHabit(item)}
+            >
                 <Text style={habitosScreenStyles.backText}>Eliminar</Text>
             </Pressable>
         </View>
@@ -178,14 +217,18 @@ const HabitosScreen = () => {
             {/* Header Section */}
             <View
                 style={[
-                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
+                    isDarkMode
+                        ? themeDark.darkBackground
+                        : themeLight.lightBackground,
                 ]}
             >
                 <Pressable
                     style={habitosScreenStyles.button}
                     onPress={() => setModalVisible(true)}
                 >
-                    <Text style={habitosScreenStyles.buttonText}>Agregar nuevo hábito</Text>
+                    <Text style={habitosScreenStyles.buttonText}>
+                        Agregar nuevo hábito
+                    </Text>
                 </Pressable>
             </View>
 
@@ -205,34 +248,62 @@ const HabitosScreen = () => {
                             onChangeText={setInputText}
                             placeholder="Nombre del hábito"
                         />
-                        <Text style={modalStyles.label}>Selecciona categoría</Text>
+                        <Text style={modalStyles.label}>
+                            Selecciona categoría
+                        </Text>
                         <Picker
                             selectedValue={selectedCategory}
-                            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+                            onValueChange={(itemValue) =>
+                                setSelectedCategory(itemValue)
+                            }
                         >
                             {pokemons.map((pokemon) => (
-                                <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
+                                <Picker.Item
+                                    key={pokemon}
+                                    label={pokemon}
+                                    value={pokemon}
+                                />
                             ))}
                         </Picker>
-                        <Text style={modalStyles.label}>Seleccione frecuencia</Text>
+                        <Text style={modalStyles.label}>
+                            Seleccione frecuencia
+                        </Text>
                         <View style={habitosScreenStyles.buttonContainer}>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Diario' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Diario' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Diario')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Diario</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Diario
+                                </Text>
                             </Pressable>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Semanal' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Semanal' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Semanal')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Semanal</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Semanal
+                                </Text>
                             </Pressable>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Mensual' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Mensual' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Mensual')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Mensual</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Mensual
+                                </Text>
                             </Pressable>
                         </View>
                         <Button title="Guardar" onPress={handleCloseModal} />
