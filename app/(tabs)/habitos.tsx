@@ -108,30 +108,18 @@ const HabitosScreen = () => {
      */
     const renderItem = ({ item }: { item: HabitoItem }) => (
         <Pressable onLongPress={() => handleLongPress(item)}>
-            <View
-                style={[
-                    habitosScreenStyles.habitosContainer,
-                    { flexDirection: 'row' },
-                ]}
-            >
+            <View style={habitosScreenStyles.habitosContainer}>
                 <View style={habitosScreenStyles.habitosIconContainer}>
-                    <MaterialIcons
-                        name={item.icon}
-                        size={50}
-                        color="black"
-                    />
+                    <MaterialIcons name={item.icon} size={30} color="#333" />
                 </View>
                 <View style={habitosScreenStyles.habitosTextosContainer}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                        {item.text}
-                    </Text>
-                    <Text style={{ fontSize: 16 }}>
-                        Frecuencia: {item.frequency}
-                    </Text>
+                    <Text style={habitosScreenStyles.habitosText}>{item.text}</Text>
+                    <Text style={habitosScreenStyles.frequencyText}>Frecuencia: {item.frequency}</Text>
                 </View>
             </View>
         </Pressable>
     );
+
 
     /**
     * Handles swipe actions.
@@ -172,8 +160,12 @@ const HabitosScreen = () => {
      */
     const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
         <View style={habitosScreenStyles.rowBack}>
-            <Text style={habitosScreenStyles.backText}>Complete</Text>
-            <Text style={habitosScreenStyles.backText}>Delete</Text>
+            <Pressable style={habitosScreenStyles.completeButton} onPress={() => markAsCompleted(item)}>
+                <Text style={habitosScreenStyles.backText}>Completar</Text>
+            </Pressable>
+            <Pressable style={habitosScreenStyles.deleteButton} onPress={() => deleteHabit(item)}>
+                <Text style={habitosScreenStyles.backText}>Eliminar</Text>
+            </Pressable>
         </View>
     );
 

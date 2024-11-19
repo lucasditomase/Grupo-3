@@ -91,20 +91,23 @@ const ProgresoScreen = () => {
                 <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
                     {progresoData.map((item, index) => (
                         <View key={index} style={progresoScreenStyles.card}>
-                            <Text style={progresoScreenStyles.label}>{item.title}</Text>
+                            {/* Label Above */}
+                            <Text style={progresoScreenStyles.labelAbove}>{item.title}</Text>
+
+                            {/* Progress Circle */}
                             <ProgressCircle
                                 size={200}
                                 strokeWidth={20}
                                 progress={item.progress}
                                 color={item.color}
                             />
-                            <Text style={progresoScreenStyles.label}>
-                                {item.completado} completado
-                            </Text>
+
+                            {/* Label Below */}
+                            <Text style={progresoScreenStyles.label}>{item.completado} completado</Text>
                         </View>
                     ))}
-
                 </ScrollView>
+
             )}
         </View>
     );

@@ -1,100 +1,119 @@
 import { StyleSheet } from 'react-native';
 
-/**
- * Styles for the Habitos screen components.
- */
 const habitosScreenStyles = StyleSheet.create({
     // Button styles
     button: {
         alignItems: 'center',
         backgroundColor: 'teal',
-        borderRadius: 10,
+        borderRadius: 20,
         justifyContent: 'center',
-        marginHorizontal: 100,
+        marginHorizontal: 50,
         marginVertical: 20,
-        paddingVertical: 10,
+        paddingVertical: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4, // For Android shadow
     },
     buttonText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
-        letterSpacing: 0.25,
-        lineHeight: 21,
+        letterSpacing: 0.5,
+        textTransform: 'uppercase',
     },
 
-    // Habitos container styles
+    // Habit container styles
     habitosContainer: {
-        borderColor: 'black',
-        borderWidth: 1,
-        flex: 1,
-        height: 100,
+        backgroundColor: '#f8f9fa',
+        borderRadius: 15,
+        marginHorizontal: 10,
+        marginVertical: 15, // Increased vertical margin for more spacing
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        alignItems: 'center', // Ensures vertical alignment
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
     },
     habitosIconContainer: {
         alignItems: 'center',
-        backgroundColor: 'lightgray',
-        flex: 1,
-        height: 98,
+        backgroundColor: '#e0e0e0',
+        borderRadius: 30, // Perfect circle
+        height: 60,
         justifyContent: 'center',
-    },
-    habitosIconMedidas: {
-        height: 85,
-        width: 85,
+        width: 60,
+        overflow: 'hidden', // Ensures no overflow
     },
     habitosTextosContainer: {
-        backgroundColor: 'white',
-        flex: 2,
-        justifyContent: 'center',
-        paddingLeft: 10,
+        flex: 1,
+        marginLeft: 15, // Space between icon and text
+        justifyContent: 'center', // Vertically aligns the text
+    },
+    habitosText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 5, // Space between title and frequency
+    },
+    frequencyText: {
+        fontSize: 14,
+        color: '#555',
     },
 
     // Styles for the SwipeListView
-    rowFront: {
-        backgroundColor: 'white',
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
-        padding: 20,
-    },
     rowBack: {
-        alignItems: 'center',
-        backgroundColor: 'teal',
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingLeft: 15,
-    },
-    backText: {
-        color: 'white',
-    },
-    backButton: {
-        flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 8,
-        marginHorizontal: 5,
+        backgroundColor: '#dcdcdc',
+        borderRadius: 10,
+        margin: 5,
         padding: 10,
     },
-    backButtonText: {
+    backText: {
         color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
-        marginTop: 5,
+        fontWeight: '600',
+        fontSize: 16,
+    },
+    completeButton: {
+        backgroundColor: '#4CAF50',
+        borderRadius: 10,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    deleteButton: {
+        backgroundColor: '#FF5252',
+        borderRadius: 10,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 
-    //
+    // Modal and selection styles
     buttonContainer: {
         flexDirection: 'row',
         marginVertical: 10,
     },
     buttonPart: {
         flex: 1,
-        padding: 10,
-        textAlign: 'center',
+        padding: 12,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: '#ccc',
+        alignItems: 'center',
+        marginHorizontal: 5,
     },
     selected: {
         backgroundColor: '#0E6E6D',
         color: 'white',
+        borderColor: 'transparent',
     },
 });
 
