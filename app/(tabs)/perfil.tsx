@@ -19,7 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 
 // Contexts
-import { useGlobalContext } from '@/components/contexts/useGlobalContext';
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 
 /**
  * The PerfilScreen component displays user profile information and provides

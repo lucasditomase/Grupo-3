@@ -31,14 +31,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
      * Handles user login process.
      */
     const handleLogin = async () => {
+        const response = await loginUser(email, password, setUser);
+        if (!response.success) {
+            Alert.alert('Error', response.message);
+            return;
+        }
         onLoginSuccess();
-        // const response = await loginUser(email, password, setUser);
-        // if (!response.success) {
-        //     Alert.alert('Error', response.message);
-        //     return;
-        // }
-        // onLoginSuccess();
-        // router.replace('/'); // Navigate back to the main tab screen
+        router.replace('/'); // Navigate back to the main tab screen
     };
 
     /**
