@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Modal,
-    ScrollView,
-    Text,
-    View,
-    useColorScheme,
-} from 'react-native';
+import { Modal, ScrollView, Text, View, useColorScheme } from 'react-native';
 
 // Views
 import LoginScreen from '../../components/views/login';
@@ -24,11 +18,11 @@ import { useGlobalContext } from '../../components/contexts/useGlobalContext';
  * Handles login visibility and renders progress metrics if logged in.
  */
 const ProgresoScreen = () => {
-    const { theme, user } = useGlobalContext();
+    const { user } = useGlobalContext();
 
     // State variables
-    const [isLoggedIn, setIsLoggedIn] = useState(!!user);
-    const [isLoginVisible, setIsLoginVisible] = useState(!user);
+    const [isLoggedIn, setIsLoggedIn] = useState(!user ? false : true);
+    const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
 
@@ -42,15 +36,32 @@ const ProgresoScreen = () => {
 
     // Sample progress data
     const progresoData = [
-        { title: 'Avance diario', progress: 75, color: 'teal', completado: '75%' },
-        { title: 'Avance semanal', progress: 35, color: 'teal', completado: '35%' },
-        { title: 'Avance mensual', progress: 40, color: 'teal', completado: '40%' },
+        {
+            title: 'Avance diario',
+            progress: 75,
+            color: 'teal',
+            completado: '75%',
+        },
+        {
+            title: 'Avance semanal',
+            progress: 35,
+            color: 'teal',
+            completado: '35%',
+        },
+        {
+            title: 'Avance mensual',
+            progress: 40,
+            color: 'teal',
+            completado: '40%',
+        },
     ];
 
     return (
         <View
             style={[
-                isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
+                isDarkMode
+                    ? themeDark.darkBackground
+                    : themeLight.lightBackground,
             ]}
         >
             {/* Login Modal */}
@@ -87,7 +98,9 @@ const ProgresoScreen = () => {
                                 alignItems: 'center',
                             }}
                         >
-                            <Text style={progresoScreenStyles.label}>{item.title}</Text>
+                            <Text style={progresoScreenStyles.label}>
+                                {item.title}
+                            </Text>
                             <ProgressCircle
                                 size={200}
                                 strokeWidth={20}
