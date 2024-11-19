@@ -15,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     onLoginSuccess,
 }) => {
     const [email, setEmail] = useState('');
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [nacimientoDia, setDay] = useState('');
