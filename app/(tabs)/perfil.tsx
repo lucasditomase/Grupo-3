@@ -15,8 +15,8 @@ import {
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
-import { signOut, uploadImageToDatabase } from './API';
-import { calculateAge, scheduleNotification } from './API/perfilUtil';
+import { signOut, uploadImageToDatabase } from '../../components/api';
+import { calculateAge, scheduleNotification } from '../../components/api';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
