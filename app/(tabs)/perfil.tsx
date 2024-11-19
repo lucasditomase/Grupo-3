@@ -7,15 +7,18 @@ import {
     Text,
     View,
     useColorScheme,
+    Button,
     Alert,
+    StyleSheet,
     ActivityIndicator,
-    TouchableOpacity,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
 import { calculateAge, scheduleNotification } from '../../components/api';
+import { router } from 'expo-router'; // Importing expo-router
+
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -28,11 +31,13 @@ const PerfilScreen = () => {
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
 
-    const handleSignOut = () => {
-        signOut(setUser);
-    };
 
     useEffect(() => {
+        if (!user) {
+            // Redirect to ProgresoScreen if user is not set
+            router.replace('/');
+            return;
+        }
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
@@ -60,8 +65,12 @@ const PerfilScreen = () => {
         };
 
         requestPermissions();
-        //checkServerImage();
+        checkServerImage();
     }, [user]);
+
+    const handleSignOut = async () => {
+        await signOut(setUser);
+    };
 
     const pickImage = async () => {
         try {
@@ -108,13 +117,13 @@ const PerfilScreen = () => {
         }
     };
 
-    // if (loading) {
-    //     return (
-    //         <View style={perfilScreenStyles.container}>
-    //             <ActivityIndicator size="large" color="#4caf50" />
-    //         </View>
-    //     );
-    // }
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     return (
         <View
@@ -125,7 +134,7 @@ const PerfilScreen = () => {
                     : themeLight.lightBackground,
             ]}
         >
-            <View style={perfilScreenStyles.profileImageContainer}>
+            <View style={styles.container}>
                 {!serverImage && !image && (
                     <Image
                         source={require('../../assets/images/user.png')}
@@ -138,31 +147,24 @@ const PerfilScreen = () => {
                         source={{
                             uri: serverImage,
                         }}
-                        style={perfilScreenStyles.image}
+
+                        style={styles.image}
                     />
                 )}
                 {image && (
-                    <Image source={{ uri: image }} style={perfilScreenStyles.image} />
+                    <Image source={{ uri: image }} style={styles.image} />
                 )}
                 {image && (
-                    <TouchableOpacity
-                        style={perfilScreenStyles.button}
+                    <Button
+                        title={uploading ? 'Uploading...' : 'Upload Image'}
                         onPress={uploadImage}
                         disabled={uploading}
-                    >
-                        <Text style={perfilScreenStyles.buttonText}>
-                            {uploading ? 'Uploading...' : 'Upload Image'}
-                        </Text>
-                    </TouchableOpacity>
+                    />
                 )}
-                <TouchableOpacity
-                    style={perfilScreenStyles.button}
+                <Button
+                    title="Pick an image from gallery"
                     onPress={pickImage}
-                >
-                    <Text style={perfilScreenStyles.buttonText}>
-                        Pick an image from gallery
-                    </Text>
-                </TouchableOpacity>
+                />
             </View>
 
             <View style={perfilScreenStyles.infoContainer}>
@@ -179,20 +181,38 @@ const PerfilScreen = () => {
                     {calculateAge(user?.dateOfBirth ?? '')}
                 </Text>
             </View>
-            <TouchableOpacity
-                style={perfilScreenStyles.button}
+            <Button
+                title="Schedule Notification"
                 onPress={scheduleNotification}
-            >
-                <Text style={perfilScreenStyles.buttonText}>Schedule Notification</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={perfilScreenStyles.button}
-                onPress={handleSignOut}
-            >
-                <Text style={perfilScreenStyles.buttonText}>Cerrar sesión</Text>
-            </TouchableOpacity>
+            />
+            <Button title="Cerrar sesión" onPress={handleSignOut} />
         </View>
     );
 };
 
 export default PerfilScreen;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    image: {
+        width: 200,
+        height: 200,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    text: {
+        marginTop: 20,
+        fontSize: 16,
+        color: 'gray',
+    },
+});

@@ -15,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     onLoginSuccess,
 }) => {
     const [email, setEmail] = useState('');
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [nacimientoDia, setDay] = useState('');
@@ -25,12 +25,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const { setUser } = useGlobalContext();
 
     const handleLogin = async () => {
-        onLoginSuccess();
-        // const response = await loginUser(email, password, setUser);
-        // if (response.success) {
-        //     onLoginSuccess();
-        //     router.replace('/');
-        // }
+        const response = await loginUser(email, password, setUser);
+        if (response.success) {
+            onLoginSuccess();
+            router.replace('/');
+        }
     };
 
     const handleSignUp = async () => {
