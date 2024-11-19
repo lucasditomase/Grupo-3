@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ScrollView, Text, View, useColorScheme } from 'react-native';
 
 // Views
@@ -25,6 +25,16 @@ const ProgresoScreen = () => {
     const [isLoginVisible, setIsLoginVisible] = useState(user ? false : true);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+
+    useEffect(() => {
+        if (user) {
+            setIsLoggedIn(true);
+            setIsLoginVisible(false);
+        } else {
+            setIsLoggedIn(false);
+            setIsLoginVisible(true); // Show modal if user is null
+        }
+    }, [user]);
 
     /**
      * Handles successful login.
