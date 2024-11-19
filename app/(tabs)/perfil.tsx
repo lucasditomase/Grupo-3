@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
 import { calculateAge, scheduleNotification } from '../../components/api';
+import { router } from 'expo-router';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -33,6 +34,11 @@ const PerfilScreen = () => {
     };
 
     useEffect(() => {
+        if (!user) {
+            // Redirect to ProgresoScreen if user is not set
+            router.replace('/');
+            return;
+        }
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
@@ -60,7 +66,7 @@ const PerfilScreen = () => {
         };
 
         requestPermissions();
-        //checkServerImage();
+        checkServerImage();
     }, [user]);
 
     const pickImage = async () => {
@@ -108,13 +114,13 @@ const PerfilScreen = () => {
         }
     };
 
-    // if (loading) {
-    //     return (
-    //         <View style={perfilScreenStyles.container}>
-    //             <ActivityIndicator size="large" color="#4caf50" />
-    //         </View>
-    //     );
-    // }
+    if (loading) {
+        return (
+            <View style={perfilScreenStyles.container}>
+                <ActivityIndicator size="large" color="#4caf50" />
+            </View>
+        );
+    }
 
     return (
         <View
@@ -142,7 +148,10 @@ const PerfilScreen = () => {
                     />
                 )}
                 {image && (
-                    <Image source={{ uri: image }} style={perfilScreenStyles.image} />
+                    <Image
+                        source={{ uri: image }}
+                        style={perfilScreenStyles.image}
+                    />
                 )}
                 {image && (
                     <TouchableOpacity
@@ -183,7 +192,9 @@ const PerfilScreen = () => {
                 style={perfilScreenStyles.button}
                 onPress={scheduleNotification}
             >
-                <Text style={perfilScreenStyles.buttonText}>Schedule Notification</Text>
+                <Text style={perfilScreenStyles.buttonText}>
+                    Schedule Notification
+                </Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={perfilScreenStyles.button}

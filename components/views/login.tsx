@@ -15,7 +15,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     onLoginSuccess,
 }) => {
     const [email, setEmail] = useState('');
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [nacimientoDia, setDay] = useState('');
@@ -36,14 +36,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
         }).start();
     }, []);
 
-
     const handleLogin = async () => {
         onLoginSuccess();
-        // const response = await loginUser(email, password, setUser);
-        // if (response.success) {
-        //     onLoginSuccess();
-        //     router.replace('/');
-        // }
+        const response = await loginUser(email, password, setUser);
+        if (response.success) {
+            onLoginSuccess();
+            router.replace('/');
+        }
     };
 
     const handleSignUp = async () => {
@@ -60,8 +59,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
         }
     };
 
-
-
     return (
         <View style={loginScreenStyles.container}>
             {/* Logo con animación */}
@@ -74,7 +71,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                         marginBottom: 20,
                     },
                     { opacity: logoOpacity }, // Animación de opacidad
-                    { alignSelf: 'center' }   // Centrar horizontalmente
+                    { alignSelf: 'center' }, // Centrar horizontalmente
                 ]}
                 resizeMode="contain"
             />
