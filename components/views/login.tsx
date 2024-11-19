@@ -37,7 +37,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     }, []);
 
     const handleLogin = async () => {
-        onLoginSuccess();
         const response = await loginUser(email, password, setUser);
         if (response.success) {
             onLoginSuccess();
@@ -55,7 +54,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             nacimientoAnio
         );
         if (success) {
-            handleLogin(); // Perform login after successful signup
+            handleLogin();
         }
     };
 
