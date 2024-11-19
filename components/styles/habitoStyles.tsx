@@ -26,19 +26,19 @@ const habitosScreenStyles = StyleSheet.create({
 
     // Habit container styles
     habitosContainer: {
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#f8f9fa', // Light mode default
         borderRadius: 15,
         marginHorizontal: 10,
-        marginVertical: 15, // Increased vertical margin for more spacing
+        marginVertical: 15,
         paddingVertical: 15,
         paddingHorizontal: 15,
         flexDirection: 'row',
-        alignItems: 'center', // Ensures vertical alignment
-        shadowColor: '#000',
+        alignItems: 'center',
+        shadowColor: '#000', // Light mode shadow
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
-        elevation: 2,
+        elevation: 2, // Light mode elevation
     },
     habitosIconContainer: {
         alignItems: 'center',
@@ -71,7 +71,6 @@ const habitosScreenStyles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#dcdcdc',
         borderRadius: 10,
         margin: 5,
         padding: 10,

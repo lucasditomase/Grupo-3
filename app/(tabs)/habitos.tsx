@@ -108,13 +108,37 @@ const HabitosScreen = () => {
      */
     const renderItem = ({ item }: { item: HabitoItem }) => (
         <Pressable onLongPress={() => handleLongPress(item)}>
-            <View style={habitosScreenStyles.habitosContainer}>
+            <View
+                style={[
+                    habitosScreenStyles.habitosContainer,
+                    isDarkMode && {
+                        shadowColor: 'transparent', // Disable shadow
+                        elevation: 0,               // Disable elevation
+                        backgroundColor: '#1E1E1E', // Apply dark mode background explicitly
+                        borderWidth: 0,             // Ensure no borders
+                    },
+                ]}
+            >
                 <View style={habitosScreenStyles.habitosIconContainer}>
                     <MaterialIcons name={item.icon} size={30} color="teal" />
                 </View>
                 <View style={habitosScreenStyles.habitosTextosContainer}>
-                    <Text style={habitosScreenStyles.habitosText}>{item.text}</Text>
-                    <Text style={habitosScreenStyles.frequencyText}>Frecuencia: {item.frequency}</Text>
+                    <Text
+                        style={[
+                            habitosScreenStyles.habitosText,
+                            isDarkMode && themeDark.primaryText,
+                        ]}
+                    >
+                        {item.text}
+                    </Text>
+                    <Text
+                        style={[
+                            habitosScreenStyles.frequencyText,
+                            isDarkMode && themeDark.secondaryText,
+                        ]}
+                    >
+                        Frecuencia: {item.frequency}
+                    </Text>
                 </View>
             </View>
         </Pressable>
