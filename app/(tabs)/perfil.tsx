@@ -17,6 +17,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
 import { calculateAge, scheduleNotification } from '../../components/api';
+import { router } from 'expo-router'; // Importing expo-router
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -29,11 +30,13 @@ const PerfilScreen = () => {
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
 
-    const handleSignOut = () => {
-        signOut(setUser);
-    };
-
     useEffect(() => {
+        if (!user) {
+            // Redirect to ProgresoScreen if user is not set
+            router.replace('/');
+            return;
+        }
+
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
@@ -63,6 +66,10 @@ const PerfilScreen = () => {
         requestPermissions();
         checkServerImage();
     }, [user]);
+
+    const handleSignOut = async () => {
+        await signOut(setUser);
+    };
 
     const pickImage = async () => {
         try {

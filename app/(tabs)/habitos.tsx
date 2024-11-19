@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
     Alert,
     Button,
@@ -25,6 +25,12 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 // Icons
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+// Navigation
+import { router } from 'expo-router'; // Assuming expo-router is used
+
+// Context
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
+
 // Types
 type HabitoItem = {
     key: string;
@@ -40,18 +46,40 @@ type HabitoItem = {
 const HabitosScreen = () => {
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+    const [selectedCategory, setSelectedCategory] = useState<
+        string | undefined
+    >();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const swipeTriggered = useRef<{ [key: string]: boolean }>({}); // Keeps track of whether a swipe action has been triggered for each item
+    const { user } = useGlobalContext(); // Get the user context
 
     const pokemons = ['Gimnasio', 'Meditación', 'Pagos', 'Agenda', 'Alimentos'];
 
     // Sample data for the SwipeListView
     const data: HabitoItem[] = [
-        { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
-        { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
+        {
+            key: '1',
+            text: 'Llamar a mi mamá',
+            category: 'Relación',
+            frequency: 'Diario',
+            icon: 'favorite',
+        },
+        {
+            key: '2',
+            text: 'Salir a correr',
+            category: 'Deporte',
+            frequency: 'Semanal',
+            icon: 'directions-run',
+        },
     ];
+
+    // Redirect to ProgresoScreen if user is not set
+    useEffect(() => {
+        if (!user) {
+            router.replace('/');
+        }
+    }, [user]);
 
     const markAsCompleted = (item: HabitoItem) => {
         Alert.alert(`Marked "${item.text}" as completed`);
@@ -59,53 +87,50 @@ const HabitosScreen = () => {
 
     const deleteHabit = (item: HabitoItem) => {
         Alert.alert(
-            "Confirm Delete", // Title of the alert
-            `Are you sure you want to delete "${item.text}"?`, // Message of the alert
+            'Confirm Delete',
+            `Are you sure you want to delete "${item.text}"?`,
             [
                 {
-                    text: "Cancel", // Cancel button text
-                    onPress: () => console.log("Cancel Pressed"), // Action for Cancel button
-                    style: "cancel", // Style for Cancel button
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
                 },
                 {
-                    text: "Delete", // Confirm button text
-                    onPress: () => {
-                        Alert.alert(`Deleted "${item.text}"`); // Action for Confirm button
-                    },
-                    style: "destructive", // Style for destructive action
+                    text: 'Delete',
+                    onPress: () => Alert.alert(`Deleted "${item.text}"`),
+                    style: 'destructive',
                 },
             ],
-            { cancelable: true } // Allow dismissal by tapping outside the alert
+            { cancelable: true }
         );
     };
 
-
-    /**
-     * Handles showing the context menu for an item.
-     */
     const handleLongPress = (item: HabitoItem) => {
         Alert.alert(
             'Options',
             `Choose an action for "${item.text}"`,
             [
-                { text: 'Mark as Completed', onPress: () => markAsCompleted(item) },
-                { text: 'Delete', onPress: () => deleteHabit(item), style: 'destructive' },
+                {
+                    text: 'Mark as Completed',
+                    onPress: () => markAsCompleted(item),
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => deleteHabit(item),
+                    style: 'destructive',
+                },
                 { text: 'Cancel', style: 'cancel' },
             ],
             { cancelable: true }
         );
     };
 
-    // State for the selected part of the habit
     const [selectedPart, setSelectedPart] = useState('Diario');
 
     const handlePartClick = (part: string) => {
         setSelectedPart(part);
     };
 
-    /**
-     * Renders each habit item.
-     */
     const renderItem = ({ item }: { item: HabitoItem }) => (
         <Pressable onLongPress={() => handleLongPress(item)}>
             <View
@@ -115,11 +140,7 @@ const HabitosScreen = () => {
                 ]}
             >
                 <View style={habitosScreenStyles.habitosIconContainer}>
-                    <MaterialIcons
-                        name={item.icon}
-                        size={50}
-                        color="black"
-                    />
+                    <MaterialIcons name={item.icon} size={50} color="black" />
                 </View>
                 <View style={habitosScreenStyles.habitosTextosContainer}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
@@ -133,9 +154,6 @@ const HabitosScreen = () => {
         </Pressable>
     );
 
-    /**
-    * Handles swipe actions.
-    */
     const handleSwipeValueChange = ({
         key,
         value,
@@ -143,33 +161,24 @@ const HabitosScreen = () => {
         key: string;
         value: number;
     }) => {
-        const habit = data.find((item) => item.key === key); // Find the swiped habit
+        const habit = data.find((item) => item.key === key);
         if (!habit) return;
 
-        // Check if a swipe action has already been triggered for this item
         if (swipeTriggered.current[key]) return;
 
         if (value > 50) {
-            // Trigger swipe-right action (Mark as Completed)
             markAsCompleted(habit);
-            swipeTriggered.current[key] = true; // Set flag to true
+            swipeTriggered.current[key] = true;
         } else if (value < -50) {
-            // Trigger swipe-left action (Delete)
             deleteHabit(habit);
-            swipeTriggered.current[key] = true; // Set flag to true
+            swipeTriggered.current[key] = true;
         }
     };
 
-    /**
-     * Reset the swipe trigger when swipe is released.
-     */
     const handleRowClose = (rowKey: string) => {
-        swipeTriggered.current[rowKey] = false; // Reset the swipe trigger for this item
+        swipeTriggered.current[rowKey] = false;
     };
 
-    /**
-     * Renders hidden actions for the SwipeListView.
-     */
     const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
         <View style={habitosScreenStyles.rowBack}>
             <Text style={habitosScreenStyles.backText}>Complete</Text>
@@ -177,28 +186,27 @@ const HabitosScreen = () => {
         </View>
     );
 
-    /**
-     * Handles closing the modal.
-     */
     const handleCloseModal = () => setModalVisible(false);
 
     return (
         <View style={{ flex: 1 }}>
-            {/* Header Section */}
             <View
                 style={[
-                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
+                    isDarkMode
+                        ? themeDark.darkBackground
+                        : themeLight.lightBackground,
                 ]}
             >
                 <Pressable
                     style={habitosScreenStyles.button}
                     onPress={() => setModalVisible(true)}
                 >
-                    <Text style={habitosScreenStyles.buttonText}>Agregar nuevo hábito</Text>
+                    <Text style={habitosScreenStyles.buttonText}>
+                        Agregar nuevo hábito
+                    </Text>
                 </Pressable>
             </View>
 
-            {/* Modal for adding a new habit */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -214,34 +222,62 @@ const HabitosScreen = () => {
                             onChangeText={setInputText}
                             placeholder="Nombre del hábito"
                         />
-                        <Text style={modalStyles.label}>Selecciona categoría</Text>
+                        <Text style={modalStyles.label}>
+                            Selecciona categoría
+                        </Text>
                         <Picker
                             selectedValue={selectedCategory}
-                            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+                            onValueChange={(itemValue) =>
+                                setSelectedCategory(itemValue)
+                            }
                         >
                             {pokemons.map((pokemon) => (
-                                <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
+                                <Picker.Item
+                                    key={pokemon}
+                                    label={pokemon}
+                                    value={pokemon}
+                                />
                             ))}
                         </Picker>
-                        <Text style={modalStyles.label}>Seleccione frecuencia</Text>
+                        <Text style={modalStyles.label}>
+                            Seleccione frecuencia
+                        </Text>
                         <View style={habitosScreenStyles.buttonContainer}>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Diario' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Diario' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Diario')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Diario</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Diario
+                                </Text>
                             </Pressable>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Semanal' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Semanal' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Semanal')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Semanal</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Semanal
+                                </Text>
                             </Pressable>
                             <Pressable
-                                style={[habitosScreenStyles.buttonPart, selectedPart === 'Mensual' && habitosScreenStyles.selected]}
+                                style={[
+                                    habitosScreenStyles.buttonPart,
+                                    selectedPart === 'Mensual' &&
+                                        habitosScreenStyles.selected,
+                                ]}
                                 onPress={() => handlePartClick('Mensual')}
                             >
-                                <Text style={{ textAlign: 'center' }}>Mensual</Text>
+                                <Text style={{ textAlign: 'center' }}>
+                                    Mensual
+                                </Text>
                             </Pressable>
                         </View>
                         <Button title="Guardar" onPress={handleCloseModal} />
@@ -249,20 +285,19 @@ const HabitosScreen = () => {
                 </View>
             </Modal>
 
-            {/* SwipeListView for habits */}
             <SwipeListView
                 data={data}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75} // Define swipe threshold for "Mark as Completed"
-                rightOpenValue={-75} // Define swipe threshold for "Delete"
+                leftOpenValue={75}
+                rightOpenValue={-75}
                 onSwipeValueChange={(swipeData) =>
                     handleSwipeValueChange({
-                        key: swipeData.key as string, // Explicitly cast key as string
+                        key: swipeData.key as string,
                         value: swipeData.value,
                     })
                 }
-                onRowClose={(rowKey) => handleRowClose(rowKey as string)} // Cast rowKey explicitly
+                onRowClose={(rowKey) => handleRowClose(rowKey as string)}
             />
         </View>
     );
