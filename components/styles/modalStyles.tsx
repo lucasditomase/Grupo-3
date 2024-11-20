@@ -33,6 +33,19 @@ const modalStyles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
     },
+    closeButton: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#FF5C5C',
+        borderRadius: 5,
+        alignItems: 'center',
+        width: '100%',
+    },
+    closeButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 });
 
 export default modalStyles;
