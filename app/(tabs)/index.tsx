@@ -5,7 +5,8 @@ import Animated, {
     useAnimatedProps,
     withTiming,
 } from 'react-native-reanimated';
-import Svg, { Circle } from 'react-native-svg'; // Used for rendering the progress circle
+import Svg, { Circle } from 'react-native-svg';
+import { useIsFocused } from '@react-navigation/native'; // Hook to detect screen focus
 
 // Views
 import LoginScreen from '../../components/views/login';
@@ -74,6 +75,7 @@ const ProgressCircle = ({
                 strokeDasharray={circumference}
                 animatedProps={animatedProps} // Apply animated props
                 strokeLinecap="round" // Smooth edges
+                transform={`rotate(-90 ${size / 2} ${size / 2})`} // Start from the top
             />
         </Svg>
     );
@@ -81,7 +83,7 @@ const ProgressCircle = ({
 
 const ProgresoScreen = () => {
     const { user, habitos, setHabitos } = useGlobalContext();
-
+    const isFocused = useIsFocused(); // Detect when the screen is focused
     const [isLoggedIn, setIsLoggedIn] = useState(!!user);
     const [isLoginVisible, setIsLoginVisible] = useState(!user);
     const [progressData, setProgressData] = useState<ProgressData[]>([]);
@@ -91,7 +93,8 @@ const ProgresoScreen = () => {
     const progresoStyles = getProgresoStyles({ isDarkMode });
 
     useEffect(() => {
-        if (user) {
+        if (isFocused && user) {
+            // Refresh progress animation when screen is focused
             setIsLoggedIn(true);
             setIsLoginVisible(false);
             if (!habitos || habitos.length === 0) {
@@ -99,11 +102,11 @@ const ProgresoScreen = () => {
             } else {
                 calculateProgress();
             }
-        } else {
+        } else if (!user) {
             setIsLoggedIn(false);
             setIsLoginVisible(true);
         }
-    }, [user, habitos]);
+    }, [isFocused, user, habitos]);
 
     const fetchHabits = async () => {
         const token = user?.token;

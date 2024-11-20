@@ -70,6 +70,15 @@ const HabitosScreen = () => {
         'OCIO',
         'OTROS',
     ];
+    const categoryIcons: { [key: string]: string } = {
+        SALUD: 'local-hospital',
+        DEPORTE: 'sports-soccer',
+        ESTUDIO: 'school',
+        TRABAJO: 'work',
+        OCIO: 'movie',
+        OTROS: 'category',
+    };
+
     const [selectedFrequency, setSelectedFrequency] = useState('DIARIA');
 
     const handleFrequencyChange = (frequency: string) => {
@@ -222,24 +231,18 @@ const HabitosScreen = () => {
                     },
                 ]}
             >
-                {/* Icon Section */}
                 <View style={habitosScreenStyles.habitosIconContainer}>
                     <MaterialIcons
-                        name={item.icon || 'default-icon'}
+                        name={categoryIcons[item.category] || 'help-outline'}
                         size={30}
                         color="teal"
                     />
                 </View>
-
-                {/* Text Section */}
                 <View style={habitosScreenStyles.habitosTextosContainer}>
                     <Text
                         style={[
                             habitosScreenStyles.habitosText,
                             isDarkMode && themeDark.primaryText,
-                            item.completion && {
-                                textDecorationLine: 'line-through',
-                            }, // Add strikethrough if completed
                         ]}
                     >
                         {item.text}
@@ -253,18 +256,16 @@ const HabitosScreen = () => {
                         Frecuencia: {item.frequency}
                     </Text>
                 </View>
-
-                {/* Completion Toggle Section */}
                 <MaterialIcons
                     name={
                         item.completion
                             ? 'check-circle'
                             : 'radio-button-unchecked'
-                    } // Tick or unchecked icon
+                    }
                     size={24}
-                    color="green"
-                    style={{ marginLeft: 'auto', marginRight: 10 }} // Align to the right
-                    onPress={() => toggleCompletion(item)} // Toggle completion state
+                    color={item.completion ? 'green' : 'gray'}
+                    style={{ marginLeft: 'auto', marginRight: 10 }}
+                    onPress={() => toggleCompletion(item)}
                 />
             </View>
         </Pressable>
@@ -386,7 +387,14 @@ const HabitosScreen = () => {
                                 )
                             )}
                         </View>
-                        <Button title="Guardar" onPress={handleAddHabit} />
+                        <Pressable
+                            style={modalStyles.saveButton}
+                            onPress={handleAddHabit}
+                        >
+                            <Text style={modalStyles.closeButtonText}>
+                                Guardar
+                            </Text>
+                        </Pressable>
 
                         {/* Add a Close Button */}
                         <Pressable

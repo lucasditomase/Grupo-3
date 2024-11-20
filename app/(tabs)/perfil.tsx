@@ -15,7 +15,7 @@ import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
-import { calculateAge, scheduleNotification } from '../../components/api';
+import { calculateAge } from '../../components/api';
 import { router } from 'expo-router';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -35,10 +35,10 @@ const PerfilScreen = () => {
 
     useEffect(() => {
         if (!user) {
-            // Redirect to ProgresoScreen if user is not set
             router.replace('/');
             return;
         }
+
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
@@ -88,6 +88,10 @@ const PerfilScreen = () => {
         }
     };
 
+    const cancelUpload = () => {
+        setImage(null); // Clear the selected image
+    };
+
     const uploadImage = async (): Promise<void> => {
         if (!image) {
             Alert.alert(
@@ -111,6 +115,32 @@ const PerfilScreen = () => {
             );
         } finally {
             setUploading(false);
+        }
+    };
+
+    const scheduleNotification = async () => {
+        try {
+            const identifier = await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: '¡Hola!',
+                    body: 'Recuerda revisar tus hábitos hoy. 📝',
+                    data: { screen: 'Habitos' },
+                },
+                trigger: {
+                    seconds: 5, // Notification will trigger after 5 seconds
+                },
+            });
+            Alert.alert(
+                'Notification Scheduled',
+                'A reminder notification has been scheduled!'
+            );
+            console.log('Notification Identifier:', identifier);
+        } catch (error) {
+            console.error('Error scheduling notification:', error);
+            Alert.alert(
+                'Error',
+                'Something went wrong while scheduling the notification.'
+            );
         }
     };
 
@@ -139,7 +169,7 @@ const PerfilScreen = () => {
                     />
                 )}
 
-                {serverImage && (
+                {serverImage && !image && (
                     <Image
                         source={{
                             uri: serverImage,
@@ -153,25 +183,39 @@ const PerfilScreen = () => {
                         style={perfilScreenStyles.image}
                     />
                 )}
+
                 {image && (
+                    <View style={perfilScreenStyles.actionContainer}>
+                        <TouchableOpacity
+                            style={perfilScreenStyles.button}
+                            onPress={uploadImage}
+                            disabled={uploading}
+                        >
+                            <Text style={perfilScreenStyles.buttonText}>
+                                {uploading ? 'Uploading...' : 'Upload Image'}
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={perfilScreenStyles.button}
+                            onPress={cancelUpload}
+                        >
+                            <Text style={perfilScreenStyles.buttonText}>
+                                Cancelar Subida
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+
+                {!image && (
                     <TouchableOpacity
                         style={perfilScreenStyles.button}
-                        onPress={uploadImage}
-                        disabled={uploading}
+                        onPress={pickImage}
                     >
                         <Text style={perfilScreenStyles.buttonText}>
-                            {uploading ? 'Uploading...' : 'Upload Image'}
+                            Pick an image from gallery
                         </Text>
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity
-                    style={perfilScreenStyles.button}
-                    onPress={pickImage}
-                >
-                    <Text style={perfilScreenStyles.buttonText}>
-                        Pick an image from gallery
-                    </Text>
-                </TouchableOpacity>
             </View>
 
             <View style={perfilScreenStyles.infoContainer}>

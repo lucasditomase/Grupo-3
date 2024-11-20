@@ -41,6 +41,14 @@ const modalStyles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    saveButton: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#28a745',
+        borderRadius: 5,
+        alignItems: 'center',
+        width: '100%',
+    },
     closeButtonText: {
         color: 'white',
         fontSize: 16,

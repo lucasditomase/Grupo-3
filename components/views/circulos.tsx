@@ -28,7 +28,10 @@ const ProgressCircle = ({
 
     return (
         <View
-            style={[progressCircleStyles.container, { width: size, height: size }]}
+            style={[
+                progressCircleStyles.container,
+                { width: size, height: size },
+            ]}
         >
             <Svg height={size} width={size}>
                 <G rotation="-90" origin={`${size / 2}, ${size / 2}`}>
