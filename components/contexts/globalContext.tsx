@@ -15,6 +15,14 @@ export interface UserPayload {
     dateOfBirth: string;
     token: string | null;
 }
+type HabitoItem = {
+    key: string;
+    text: string;
+    category: string;
+    frequency: string;
+    completion: boolean;
+    icon?: string;
+};
 
 // Type for authentication context
 type AuthContextType = {
@@ -22,10 +30,12 @@ type AuthContextType = {
     setUser: Dispatch<SetStateAction<UserPayload | null>>;
 };
 
-// Type for the global context that includes user and theme
+// Type for the global context that includes user, theme, and habits
 type GlobalContextType = AuthContextType & {
     theme: string;
     setTheme: Dispatch<SetStateAction<string>>;
+    habitos: HabitoItem[];
+    setHabitos: Dispatch<SetStateAction<HabitoItem[]>>;
 };
 
 // Create the global context
@@ -40,9 +50,12 @@ interface GlobalProviderProps {
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     const [user, setUser] = useState<UserPayload | null>(null);
     const [theme, setTheme] = useState<string>('light');
+    const [habitos, setHabitos] = useState<HabitoItem[]>([]);
 
     return (
-        <GlobalContext.Provider value={{ user, setUser, theme, setTheme }}>
+        <GlobalContext.Provider
+            value={{ habitos, setHabitos, user, setUser, theme, setTheme }}
+        >
             {children}
         </GlobalContext.Provider>
     );

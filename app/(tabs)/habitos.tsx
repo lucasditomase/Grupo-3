@@ -33,15 +33,23 @@ import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import {
     habitosEnBaseDeDatos,
     crearHabitoEnBaseDeDatos,
+    eliminarHabitoEnBaseDeDatos,
+    actualizarHabitoEnBaseDeDatos,
 } from '../../components/api';
 
 // Types
 type HabitoItem = {
-    key?: string;
+    key: string;
     text: string;
     category: string;
     frequency: string;
+    completion: boolean;
     icon?: string;
+};
+type HabitoItemDB = {
+    text: string;
+    category: string;
+    frequency: string;
 };
 
 const HabitosScreen = () => {
@@ -50,11 +58,10 @@ const HabitosScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState<
         string | undefined
     >();
-    const [habits, setHabits] = useState<HabitoItem[]>([]);
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const swipeTriggered = useRef<{ [key: string]: boolean }>({});
-    const { user } = useGlobalContext(); // Include token for authentication
+    const { user, habitos, setHabitos } = useGlobalContext();
     const categories = [
         'SALUD',
         'DEPORTE',
@@ -63,6 +70,11 @@ const HabitosScreen = () => {
         'OCIO',
         'OTROS',
     ];
+    const [selectedFrequency, setSelectedFrequency] = useState('DIARIA');
+
+    const handleFrequencyChange = (frequency: string) => {
+        setSelectedFrequency(frequency);
+    };
 
     useEffect(() => {
         if (!user) {
@@ -77,14 +89,10 @@ const HabitosScreen = () => {
         if (token) {
             const fetchedHabits = await habitosEnBaseDeDatos(token);
             if (fetchedHabits) {
-                console.log(fetchedHabits);
-                setHabits(fetchedHabits);
+                console.log('Habitos:', fetchedHabits);
+                setHabitos(fetchedHabits);
             }
         }
-    };
-
-    const markAsCompleted = (item: HabitoItem) => {
-        Alert.alert(`Marked "${item.text}" as completed`);
     };
 
     const deleteHabit = (item: HabitoItem) => {
@@ -98,11 +106,17 @@ const HabitosScreen = () => {
                 },
                 {
                     text: 'Delete',
-                    onPress: () => {
-                        setHabits((prev) =>
-                            prev.filter((habit) => habit.key !== item.key)
-                        );
-                        Alert.alert(`Deleted "${item.text}"`);
+                    onPress: async () => {
+                        const token = user?.token;
+                        if (token) {
+                            await eliminarHabitoEnBaseDeDatos(token, item.key);
+                            setHabitos((prev) =>
+                                prev.filter((habit) => habit.key !== item.key)
+                            );
+                            Alert.alert(`Deleted "${item.text}"`);
+                        } else {
+                            Alert.alert('Error', 'No se ha iniciado sesión');
+                        }
                     },
                     style: 'destructive',
                 },
@@ -112,7 +126,12 @@ const HabitosScreen = () => {
 
     const handleLongPress = (item: HabitoItem) => {
         Alert.alert('Options', `Choose an action for "${item.text}"`, [
-            { text: 'Mark as Completed', onPress: () => markAsCompleted(item) },
+            {
+                text: item.completion
+                    ? 'Mark as Incomplete'
+                    : 'Mark as Completed',
+                onPress: () => toggleCompletion(item), // Use toggleCompletion
+            },
             {
                 text: 'Delete',
                 onPress: () => deleteHabit(item),
@@ -122,59 +141,16 @@ const HabitosScreen = () => {
         ]);
     };
 
-    const [selectedFrequency, setSelectedFrequency] = useState('Diario');
-    const handleFrequencyChange = (frequency: string) => {
-        setSelectedFrequency(frequency);
-    };
-
-    const renderItem = ({ item }: { item: HabitoItem }) => (
-        <Pressable onLongPress={() => handleLongPress(item)}>
-            <View
-                style={[
-                    habitosScreenStyles.habitosContainer,
-                    isDarkMode && {
-                        backgroundColor: '#1E1E1E',
-                        shadowColor: 'transparent',
-                        elevation: 0,
-                    },
-                ]}
-            >
-                <View style={habitosScreenStyles.habitosIconContainer}>
-                    <MaterialIcons
-                        name={item.icon || 'default-icon'}
-                        size={30}
-                        color="teal"
-                    />
-                </View>
-                <View style={habitosScreenStyles.habitosTextosContainer}>
-                    <Text
-                        style={[
-                            habitosScreenStyles.habitosText,
-                            isDarkMode && themeDark.primaryText,
-                        ]}
-                    >
-                        {item.text}
-                    </Text>
-                    <Text
-                        style={[
-                            habitosScreenStyles.frequencyText,
-                            isDarkMode && themeDark.secondaryText,
-                        ]}
-                    >
-                        Frecuencia: {item.frequency}
-                    </Text>
-                </View>
-            </View>
-        </Pressable>
-    );
-
     const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
         <View style={habitosScreenStyles.rowBack}>
             <Pressable
                 style={habitosScreenStyles.completeButton}
-                onPress={() => markAsCompleted(item)}
+                onPress={() => toggleCompletion(item)} // Use toggleCompletion
             >
-                <Text style={habitosScreenStyles.backText}>Completar</Text>
+                <Text style={habitosScreenStyles.backText}>
+                    {item.completion ? 'Descompletar' : 'Completar'}{' '}
+                    {/* Dynamic label */}
+                </Text>
             </Pressable>
             <Pressable
                 style={habitosScreenStyles.deleteButton}
@@ -192,17 +168,107 @@ const HabitosScreen = () => {
         key: string;
         value: number;
     }) => {
-        const habit = habits.find((item) => item.key === key);
+        const habit = habitos.find((item) => item.key === key);
         if (!habit || swipeTriggered.current[key]) return;
 
-        if (value > 50) {
-            markAsCompleted(habit);
+        if (value > 150) {
+            toggleCompletion(habit); // Use toggleCompletion
             swipeTriggered.current[key] = true;
-        } else if (value < -50) {
+        } else if (value < -150) {
             deleteHabit(habit);
             swipeTriggered.current[key] = true;
         }
     };
+
+    const toggleCompletion = async (item: HabitoItem) => {
+        const updatedCompletion = !item.completion;
+        setHabitos((prev) =>
+            prev.map((habit) =>
+                habit.key === item.key
+                    ? { ...habit, completion: updatedCompletion }
+                    : habit
+            )
+        );
+
+        const token = user?.token;
+        if (token) {
+            try {
+                await actualizarHabitoEnBaseDeDatos(token, {
+                    ...item,
+                    completion: updatedCompletion,
+                });
+                fetchHabits();
+            } catch (error) {
+                console.error('Error updating habit completion:', error);
+                Alert.alert(
+                    'Error',
+                    'Failed to update habit. Please try again.'
+                );
+            }
+        } else {
+            Alert.alert('Error', 'No se ha iniciado sesión');
+        }
+    };
+
+    const renderItem = ({ item }: { item: HabitoItem }) => (
+        <Pressable onLongPress={() => handleLongPress(item)}>
+            <View
+                style={[
+                    habitosScreenStyles.habitosContainer,
+                    isDarkMode && {
+                        backgroundColor: '#1E1E1E',
+                        shadowColor: 'transparent',
+                        elevation: 0,
+                    },
+                ]}
+            >
+                {/* Icon Section */}
+                <View style={habitosScreenStyles.habitosIconContainer}>
+                    <MaterialIcons
+                        name={item.icon || 'default-icon'}
+                        size={30}
+                        color="teal"
+                    />
+                </View>
+
+                {/* Text Section */}
+                <View style={habitosScreenStyles.habitosTextosContainer}>
+                    <Text
+                        style={[
+                            habitosScreenStyles.habitosText,
+                            isDarkMode && themeDark.primaryText,
+                            item.completion && {
+                                textDecorationLine: 'line-through',
+                            }, // Add strikethrough if completed
+                        ]}
+                    >
+                        {item.text}
+                    </Text>
+                    <Text
+                        style={[
+                            habitosScreenStyles.frequencyText,
+                            isDarkMode && themeDark.secondaryText,
+                        ]}
+                    >
+                        Frecuencia: {item.frequency}
+                    </Text>
+                </View>
+
+                {/* Completion Toggle Section */}
+                <MaterialIcons
+                    name={
+                        item.completion
+                            ? 'check-circle'
+                            : 'radio-button-unchecked'
+                    } // Tick or unchecked icon
+                    size={24}
+                    color="green"
+                    style={{ marginLeft: 'auto', marginRight: 10 }} // Align to the right
+                    onPress={() => toggleCompletion(item)} // Toggle completion state
+                />
+            </View>
+        </Pressable>
+    );
 
     const handleRowClose = (rowKey: string) => {
         swipeTriggered.current[rowKey] = false;
@@ -214,25 +280,37 @@ const HabitosScreen = () => {
             Alert.alert('Error', 'El nombre no puede estar vacío');
             return;
         }
-        if (habits.find((habit) => habit.text === inputText)) {
+        if (habitos.find((habit) => habit.text === inputText)) {
             Alert.alert('Error', 'El hábito ya existe');
             return;
         }
-        const newHabit: HabitoItem = {
+
+        const newHabit: HabitoItemDB = {
             text: inputText,
-            category: selectedCategory || 'Uncategorized',
+            category: selectedCategory || 'OTROS',
             frequency: selectedFrequency,
         };
+
         const token = user?.token;
         if (!token) {
             Alert.alert('Error', 'No se ha iniciado sesión');
             return;
         }
-        crearHabitoEnBaseDeDatos(token, newHabit);
-        newHabit.icon = 'check-circle'; // Set a default icon
-        setHabits((prev) => [...prev, newHabit]);
-        setInputText('');
-        setModalVisible(false);
+
+        try {
+            // Add habit to the database
+            await crearHabitoEnBaseDeDatos(token, newHabit);
+
+            // Fetch updated habitos from the database
+            await fetchHabits();
+
+            // Reset the form and close the modal
+            setInputText('');
+            setModalVisible(false);
+        } catch (error) {
+            console.error('Error adding habit:', error);
+            Alert.alert('Error', 'Hubo un problema al agregar el hábito.');
+        }
     };
 
     return (
@@ -324,11 +402,11 @@ const HabitosScreen = () => {
             </Modal>
 
             <SwipeListView
-                data={habits}
+                data={habitos}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75}
-                rightOpenValue={-75}
+                leftOpenValue={150}
+                rightOpenValue={-150}
                 onSwipeValueChange={handleSwipeValueChange}
                 onRowClose={handleRowClose}
             />
