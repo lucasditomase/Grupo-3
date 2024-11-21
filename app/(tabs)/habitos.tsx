@@ -98,7 +98,7 @@ const HabitosScreen = () => {
         if (token) {
             const fetchedHabits = await habitosEnBaseDeDatos(token);
             if (fetchedHabits) {
-                console.log('Habitos:', fetchedHabits);
+                //console.log('Habitos:', fetchedHabits);
                 setHabitos(fetchedHabits);
             }
         }
@@ -206,7 +206,6 @@ const HabitosScreen = () => {
                     ...item,
                     completion: updatedCompletion,
                 });
-                fetchHabits();
             } catch (error) {
                 console.error('Error updating habit completion:', error);
                 Alert.alert(

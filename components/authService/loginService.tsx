@@ -2,6 +2,7 @@ import { validateInput } from './validationUtil';
 import { Buffer } from 'buffer';
 import { UserPayload } from '../contexts/globalContext';
 import { Dispatch, SetStateAction } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -54,13 +55,16 @@ const handleLoginResponse = async (
             );
         const payload: UserPayload = JSON.parse(parts[1]);
         payload.token = tokenJWT;
-        console.log('token: ' + tokenJWT);
+        console.log('Token: ' + tokenJWT);
         setUser(payload);
+
+        // Save user to AsyncStorage
+        await AsyncStorage.setItem('user', JSON.stringify(payload));
 
         return {
             success: true,
             message: 'Inicio de sesión exitoso',
-            data: data, // Assuming the response has a `data` field containing the token and user info
+            data,
         };
     } else {
         const errorData = await response.json();

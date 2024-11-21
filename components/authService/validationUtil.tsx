@@ -57,7 +57,9 @@ export const isFieldEmpty = (field: string): boolean => !field.trim();
  * @returns A boolean indicating whether the email is valid.
  */
 export const isValidEmail = (email: string): boolean => {
-    const emailRegex = /\S+@\S+\.\S+/;
+    const emailRegex =
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+
     return emailRegex.test(email);
 };
 
@@ -66,7 +68,8 @@ export const isValidEmail = (email: string): boolean => {
  * @param password - The password to validate.
  * @returns A boolean indicating whether the password is valid.
  */
-export const isValidPassword = (password: string): boolean => password.length >= 6;
+export const isValidPassword = (password: string): boolean =>
+    password.length >= 6;
 
 /**
  * Validates a birth date.

@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, Animated } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Animated,
+    StyleSheet,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import loginScreenStyles from '../styles/loginStyles';
-import { registerUser, loginUser } from '../../components/authService';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
+import { registerUser, loginUser } from '../../components/authService';
 
 interface LoginScreenProps {
     onClose: () => void;
@@ -24,14 +30,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const router = useRouter();
     const { setUser } = useGlobalContext();
 
-    // Animación de opacidad del logo
     const [logoOpacity] = useState(new Animated.Value(0));
 
     useEffect(() => {
-        // Animación de aparición gradual
         Animated.timing(logoOpacity, {
             toValue: 1,
-            duration: 1500, // Duración de la animación en milisegundos
+            duration: 1500,
             useNativeDriver: true,
         }).start();
     }, []);
@@ -59,30 +63,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     };
 
     return (
-        <View style={loginScreenStyles.container}>
-            {/* Logo con animación */}
+        <View style={styles.container}>
+            {/* Animated Logo */}
             <Animated.Image
                 source={require('../../assets/images/logoRedondeado.png')}
-                style={[
-                    {
-                        width: 120,
-                        height: 120,
-                        marginBottom: 20,
-                    },
-                    { opacity: logoOpacity }, // Animación de opacidad
-                    { alignSelf: 'center' }, // Centrar horizontalmente
-                ]}
+                style={[styles.logo, { opacity: logoOpacity }]}
                 resizeMode="contain"
             />
 
+            {/* Form */}
             {isLogin ? (
                 <View>
-                    <Text style={loginScreenStyles.title}>
-                        Debes autenticarte para continuar
+                    <Text style={styles.welcomeText}>
+                        ¡Bienvenido de nuevo! 🎉
+                    </Text>
+                    <Text style={styles.subtitle}>
+                        Inicia sesión para continuar y alcanzar tus metas.
                     </Text>
                     <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Correo"
+                        style={styles.input}
+                        placeholder="Tu correo electrónico"
                         placeholderTextColor="#aaa"
                         value={email}
                         onChangeText={setEmail}
@@ -90,52 +90,41 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                         autoCapitalize="none"
                     />
                     <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Clave"
+                        style={styles.input}
+                        placeholder="Tu contraseña"
                         placeholderTextColor="#aaa"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={true}
                     />
-                    <View style={loginScreenStyles.buttonContainer}>
-                        <Button title="Iniciar sesión" onPress={handleLogin} />
-                    </View>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleLogin}
+                    >
+                        <Text style={styles.buttonText}>Iniciar sesión</Text>
+                    </TouchableOpacity>
                 </View>
             ) : (
                 <View>
-                    <Text style={loginScreenStyles.title}>
-                        Necesitas una cuenta para continuar
+                    <Text style={styles.welcomeText}>
+                        ¡Un nuevo comienzo! 🌟
+                    </Text>
+                    <Text style={styles.subtitle}>
+                        Regístrate para personalizar tu experiencia.
                     </Text>
                     <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Usuario"
+                        style={styles.input}
+                        placeholder="Elige un nombre de usuario"
                         placeholderTextColor="#aaa"
                         value={username}
                         onChangeText={setUsername}
                         autoCapitalize="none"
                     />
-                    <Text
-                        style={{
-                            fontSize: 16,
-                            fontWeight: 'bold',
-                            marginBottom: 10,
-                        }}
-                    >
-                        {'Fecha de nacimiento'}
-                    </Text>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
+                    <Text style={styles.sectionTitle}>Fecha de nacimiento</Text>
+                    <View style={styles.birthdateContainer}>
                         <TextInput
-                            style={[
-                                loginScreenStyles.input,
-                                { flex: 1, marginRight: 5 },
-                            ]}
-                            placeholder="Dia"
+                            style={[styles.input, styles.birthdateInput]}
+                            placeholder="Día"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
                             value={nacimientoDia}
@@ -143,10 +132,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                             maxLength={2}
                         />
                         <TextInput
-                            style={[
-                                loginScreenStyles.input,
-                                { flex: 1, marginHorizontal: 5 },
-                            ]}
+                            style={[styles.input, styles.birthdateInput]}
                             placeholder="Mes"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
@@ -155,11 +141,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                             maxLength={2}
                         />
                         <TextInput
-                            style={[
-                                loginScreenStyles.input,
-                                { flex: 1, marginLeft: 5 },
-                            ]}
-                            placeholder="Anio"
+                            style={[styles.input, styles.birthdateInput]}
+                            placeholder="Año"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
                             value={nacimientoAnio}
@@ -168,8 +151,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                         />
                     </View>
                     <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Correo"
+                        style={styles.input}
+                        placeholder="Correo electrónico"
                         placeholderTextColor="#aaa"
                         value={email}
                         onChangeText={setEmail}
@@ -177,28 +160,98 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                         autoCapitalize="none"
                     />
                     <TextInput
-                        style={loginScreenStyles.input}
-                        placeholder="Clave"
+                        style={styles.input}
+                        placeholder="Crea una contraseña segura"
                         placeholderTextColor="#aaa"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry={true}
                     />
-                    <View style={loginScreenStyles.buttonContainer}>
-                        <Button title="Registrarse" onPress={handleSignUp} />
-                    </View>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={handleSignUp}
+                    >
+                        <Text style={styles.buttonText}>Registrarme</Text>
+                    </TouchableOpacity>
                 </View>
             )}
-            <Button
-                title={
-                    isLogin
-                        ? '¿No tienes cuenta? Regístrate'
-                        : '¿Ya tienes cuenta? Inicia sesión'
-                }
-                onPress={() => setIsLogin(!isLogin)}
-            />
+
+            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+                <Text style={styles.switchText}>
+                    {isLogin
+                        ? '¿No tienes cuenta? Regístrate aquí'
+                        : '¿Ya tienes cuenta? Inicia sesión aquí'}
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 export default LoginScreen;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: 20,
+        backgroundColor: '#f8f8f8',
+    },
+    logo: {
+        width: 120,
+        height: 120,
+        alignSelf: 'center',
+        marginBottom: 30,
+    },
+    welcomeText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 10,
+        color: '#333',
+    },
+    subtitle: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 20,
+        color: '#555',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        padding: 10,
+        marginBottom: 15,
+        backgroundColor: '#fff',
+    },
+    button: {
+        backgroundColor: 'teal',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    switchText: {
+        marginTop: 10,
+        textAlign: 'center',
+        color: 'teal',
+        textDecorationLine: 'underline',
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#333',
+    },
+    birthdateContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    birthdateInput: {
+        flex: 1,
+        marginHorizontal: 5,
+    },
+});

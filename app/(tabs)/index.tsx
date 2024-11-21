@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ScrollView, Text, View, useColorScheme } from 'react-native';
+import {
+    Modal,
+    ScrollView,
+    Text,
+    View,
+    useColorScheme,
+    ActivityIndicator,
+} from 'react-native';
 import Animated, {
     useSharedValue,
     useAnimatedProps,
     withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
-import { useIsFocused } from '@react-navigation/native'; // Hook to detect screen focus
+import { useIsFocused } from '@react-navigation/native';
 
-// Views
 import LoginScreen from '../../components/views/login';
-
-// Styles
 import getProgresoStyles from '../../components/styles/progresoStyles';
 import themeDark from '../../components/themes/themeDark';
 import themeLight from '../../components/themes/themeLight';
-
-// Contexts
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { habitosEnBaseDeDatos } from '../../components/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define type for progress data
 interface ProgressData {
@@ -43,19 +46,18 @@ const ProgressCircle = ({
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
-    const progressValue = useSharedValue(0); // Shared value for animation
+    const progressValue = useSharedValue(0);
 
     const animatedProps = useAnimatedProps(() => ({
-        strokeDashoffset: circumference * (1 - progressValue.value / 100), // Calculate offset based on progress
+        strokeDashoffset: circumference * (1 - progressValue.value / 100),
     }));
 
     useEffect(() => {
-        progressValue.value = withTiming(progress, { duration: 1000 }); // Animate to the target progress
+        progressValue.value = withTiming(progress, { duration: 1000 });
     }, [progress]);
 
     return (
         <Svg width={size} height={size}>
-            {/* Background Circle */}
             <Circle
                 cx={size / 2}
                 cy={size / 2}
@@ -64,7 +66,6 @@ const ProgressCircle = ({
                 strokeWidth={strokeWidth}
                 fill="none"
             />
-            {/* Animated Foreground Circle */}
             <AnimatedCircle
                 cx={size / 2}
                 cy={size / 2}
@@ -73,55 +74,84 @@ const ProgressCircle = ({
                 strokeWidth={strokeWidth}
                 fill="none"
                 strokeDasharray={circumference}
-                animatedProps={animatedProps} // Apply animated props
-                strokeLinecap="round" // Smooth edges
-                transform={`rotate(-90 ${size / 2} ${size / 2})`} // Start from the top
+                animatedProps={animatedProps}
+                strokeLinecap="round"
+                transform={`rotate(-90 ${size / 2} ${size / 2})`}
             />
         </Svg>
     );
 };
 
 const ProgresoScreen = () => {
-    const { user, habitos, setHabitos } = useGlobalContext();
-    const isFocused = useIsFocused(); // Detect when the screen is focused
-    const [isLoggedIn, setIsLoggedIn] = useState(!!user);
-    const [isLoginVisible, setIsLoginVisible] = useState(!user);
+    const { user, setUser, habitos, setHabitos } = useGlobalContext();
+    const isFocused = useIsFocused();
+    const [isLoginVisible, setIsLoginVisible] = useState(true);
     const [progressData, setProgressData] = useState<ProgressData[]>([]);
+    const [isLoading, setIsLoading] = useState(true); // Loading state
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
 
     const progresoStyles = getProgresoStyles({ isDarkMode });
 
     useEffect(() => {
-        if (isFocused && user) {
-            // Refresh progress animation when screen is focused
-            setIsLoggedIn(true);
-            setIsLoginVisible(false);
-            if (!habitos || habitos.length === 0) {
-                fetchHabits(); // Fetch habits if not already set
-            } else {
-                calculateProgress();
+        const checkUser = async () => {
+            try {
+                const storedUser = await AsyncStorage.getItem('user');
+                if (storedUser) {
+                    const parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                    setIsLoginVisible(false);
+                } else {
+                    setUser(null); // Ensure user state is cleared
+                    setIsLoginVisible(true);
+                }
+            } catch (error) {
+                console.error('Error loading user from AsyncStorage:', error);
+            } finally {
+                setIsLoading(false); // Stop loading once the check is complete
             }
-        } else if (!user) {
-            setIsLoggedIn(false);
-            setIsLoginVisible(true);
+        };
+
+        if (isFocused) {
+            checkUser();
         }
-    }, [isFocused, user, habitos]);
+    }, [isFocused]);
+
+    useEffect(() => {
+        const fetchHabits = async () => {
+            if (user && user.token) {
+                try {
+                    const fetchedHabits = await habitosEnBaseDeDatos(
+                        user.token
+                    );
+                    if (fetchedHabits) {
+                        setHabitos(fetchedHabits);
+                        calculateProgress(fetchedHabits);
+                    }
+                } catch (error) {
+                    console.error('Error fetching habits:', error);
+                }
+            }
+        };
+
+        if (isFocused && user) {
+            fetchHabits();
+        }
+    }, [isFocused, user]);
 
     const fetchHabits = async () => {
         const token = user?.token;
         if (token) {
             const fetchedHabits = await habitosEnBaseDeDatos(token);
             if (fetchedHabits) {
-                setHabitos(fetchedHabits); // Store habits in global provider
-                calculateProgress(fetchedHabits); // Calculate progress
+                setHabitos(fetchedHabits);
+                calculateProgress(fetchedHabits);
             }
         }
     };
 
     const calculateProgress = (habits = habitos) => {
         const frequencies = ['DIARIA', 'SEMANAL', 'MENSUAL'];
-
         const frequencyProgress: ProgressData[] = frequencies.map(
             (frequency) => {
                 const frequencyHabits = habits.filter(
@@ -146,10 +176,24 @@ const ProgresoScreen = () => {
     };
 
     const handleLoginSuccess = () => {
-        setIsLoggedIn(true);
+        fetchHabits();
         setIsLoginVisible(false);
-        fetchHabits(); // Fetch habits after login
     };
+
+    if (isLoading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: isDarkMode ? '#000' : '#fff',
+                }}
+            >
+                <ActivityIndicator size="large" color="teal" />
+            </View>
+        );
+    }
 
     return (
         <View
@@ -182,7 +226,7 @@ const ProgresoScreen = () => {
                 </View>
             </Modal>
 
-            {isLoggedIn && progressData.length > 0 && (
+            {user && progressData.length > 0 && (
                 <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
                     {progressData.map((item, index) => (
                         <View key={index} style={progresoStyles.card}>
