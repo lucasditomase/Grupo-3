@@ -38,7 +38,6 @@ export const habitosEnBaseDeDatos = async (token: string) => {
                 frequency: habit.frequencia || 'Desconocida', // Default frequency
                 icon: 'event', // Default icon
             }));
-        //console.log('Habitos y caca:', habits);
         return habits;
     } catch (error) {
         console.error('Error fetching habits:', error);
