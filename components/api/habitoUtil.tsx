@@ -19,6 +19,21 @@ type HabitoItem = {
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
+const mapPriority = (value: any): 'ALTA' | 'MEDIA' | 'BAJA' => {
+    if (typeof value === 'string') {
+        const upper = value.toUpperCase();
+        if (upper === 'ALTA' || upper === 'MEDIA' || upper === 'BAJA') {
+            return upper as 'ALTA' | 'MEDIA' | 'BAJA';
+        }
+    }
+    if (typeof value === 'number') {
+        if (value === 0) return 'ALTA';
+        if (value === 1) return 'MEDIA';
+        if (value === 2) return 'BAJA';
+    }
+    return 'MEDIA';
+};
+
 export const habitosEnBaseDeDatos = async (token: string) => {
     try {
         console.log(SERVER_URL + '/get-habitos');
@@ -45,7 +60,7 @@ export const habitosEnBaseDeDatos = async (token: string) => {
                 completion: habit.completado || false, // Default completion status
                 frequency: habit.frequencia || 'Desconocida', // Default frequency
 
-                priority: habit.prioridad || 'MEDIA',
+                priority: mapPriority(habit.prioridad),
 
 
                 progress: habit.progreso || 0,
@@ -71,7 +86,7 @@ export const crearHabitoEnBaseDeDatos = async (
                 nombre: habito.text,
                 frequencia: habito.frequency,
                 categoria: habito.category,
-                prioridad: habito.priority,
+                prioridad: habito.priority.toUpperCase(),
             })
         );
         const response = await fetch(SERVER_URL + '/crear-habito', {
@@ -85,7 +100,7 @@ export const crearHabitoEnBaseDeDatos = async (
                 frequencia: habito.frequency,
                 categoria: habito.category,
 
-                prioridad: habito.priority,
+                prioridad: habito.priority.toUpperCase(),
 
 
                 objetivo: habito.goal ?? 1,
