@@ -105,6 +105,10 @@ const HabitosScreen = () => {
 
     const [selectedPriority, setSelectedPriority] = useState<'ALTA' | 'MEDIA' | 'BAJA'>('MEDIA');
 
+    const [contextMenuVisible, setContextMenuVisible] = useState(false);
+    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
+    const [selectedHabit, setSelectedHabit] = useState<HabitoItem | null>(null);
+
 
     const handleFrequencyChange = (frequency: string) => {
         setSelectedFrequency(frequency);
@@ -184,21 +188,15 @@ const HabitosScreen = () => {
         );
     };
 
-    const handleLongPress = (item: HabitoItem) => {
-        Alert.alert('Opciones', `Elige una acción para "${item.text}"`, [
-            {
-                text: item.completion
-                    ? 'Marcar como incompleto'
-                    : 'Marcar como completado',
-                onPress: () => toggleCompletion(item), // Use toggleCompletion
-            },
-            {
-                text: 'Eliminar',
-                onPress: () => deleteHabit(item),
-                style: 'destructive',
-            },
-            { text: 'Cancelar', style: 'cancel' },
-        ]);
+    const handleLongPress = (item: HabitoItem, event?: any) => {
+        if (event?.nativeEvent?.pageX) {
+            setContextMenuPosition({
+                x: event.nativeEvent.pageX,
+                y: event.nativeEvent.pageY,
+            });
+        }
+        setSelectedHabit(item);
+        setContextMenuVisible(true);
     };
 
     const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
@@ -314,7 +312,9 @@ const HabitosScreen = () => {
     };
 
     const renderItem = ({ item }: { item: HabitoItem }) => (
-        <Pressable onLongPress={() => handleLongPress(item)}>
+        <Pressable
+            onLongPress={(e) => handleLongPress(item, e)}
+        >
             <View
                 style={[
                     habitosScreenStyles.habitosContainer,
@@ -488,8 +488,49 @@ const HabitosScreen = () => {
         );
     };
 
-    return (
-        <View style={{ flex: 1 }}>
+    const deleteAllHabits = () => {
+        Alert.alert(
+            'Confirmar eliminación',
+            '¿Estás seguro de que deseas eliminar todos los hábitos?',
+            [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                    text: 'Eliminar todos',
+                    style: 'destructive',
+                    onPress: async () => {
+                        const token = user?.token;
+                        if (token) {
+                            try {
+                                for (const habit of habitos) {
+                                    await eliminarHabitoEnBaseDeDatos(
+                                        token,
+                                        habit.key
+                                    );
+                                }
+                                setHabitos([]);
+                                listViewRef.current?.closeAllOpenRows();
+                                Alert.alert('Hábitos eliminados');
+                            } catch (error) {
+                                console.error(
+                                    'Error deleting all habits:',
+                                    error
+                                );
+                                Alert.alert(
+                                    'Error',
+                                    'No se pudieron eliminar los hábitos. Inténtalo de nuevo.'
+                                );
+                            }
+                        } else {
+                            Alert.alert('Error', 'No se ha iniciado sesión');
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+    const renderHeader = () => (
+        <View>
             <View
                 style={[
                     isDarkMode
@@ -521,6 +562,14 @@ const HabitosScreen = () => {
                         Ordenar por racha
                     </Text>
                 </Pressable>
+                <Pressable
+                    style={habitosScreenStyles.button}
+                    onPress={deleteAllHabits}
+                >
+                    <Text style={habitosScreenStyles.buttonText}>
+                        Borrar todos
+                    </Text>
+                </Pressable>
             </View>
 
             {habitos.filter((h) => (h.streak || 0) > 0).length > 0 && (
@@ -540,7 +589,11 @@ const HabitosScreen = () => {
                         ))}
                 </View>
             )}
+        </View>
+    );
 
+    return (
+        <View style={{ flex: 1 }}>
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -666,7 +719,48 @@ const HabitosScreen = () => {
                 rightOpenValue={-150}
                 onSwipeValueChange={handleSwipeValueChange}
                 onRowClose={handleRowClose}
+                ListHeaderComponent={renderHeader}
             />
+
+            {contextMenuVisible && selectedHabit && (
+                <Pressable
+                    style={habitosScreenStyles.contextMenuOverlay}
+                    onPress={() => setContextMenuVisible(false)}
+                >
+                    <View
+                        style={[
+                            habitosScreenStyles.contextMenu,
+                            {
+                                top: contextMenuPosition.y,
+                                left: contextMenuPosition.x,
+                            },
+                        ]}
+                    >
+                        <Pressable
+                            style={habitosScreenStyles.contextMenuItem}
+                            onPress={() => {
+                                toggleCompletion(selectedHabit);
+                                setContextMenuVisible(false);
+                            }}
+                        >
+                            <Text>
+                                {selectedHabit.completion
+                                    ? 'Marcar como incompleto'
+                                    : 'Marcar como completado'}
+                            </Text>
+                        </Pressable>
+                        <Pressable
+                            style={habitosScreenStyles.contextMenuItem}
+                            onPress={() => {
+                                deleteHabit(selectedHabit);
+                                setContextMenuVisible(false);
+                            }}
+                        >
+                            <Text>Eliminar</Text>
+                        </Pressable>
+                    </View>
+                </Pressable>
+            )}
         </View>
     );
 };
