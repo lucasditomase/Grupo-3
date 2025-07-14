@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Modal,
     ScrollView,
     Text,
     View,
@@ -14,8 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { useIsFocused } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
-import LoginScreen from '../../components/views/login';
 import getProgresoStyles from '../../components/styles/progresoStyles';
 import themeDark from '../../components/themes/themeDark';
 import themeLight from '../../components/themes/themeLight';
@@ -85,7 +84,7 @@ const ProgressCircle = ({
 const ProgresoScreen = () => {
     const { user, setUser, habitos, setHabitos } = useGlobalContext();
     const isFocused = useIsFocused();
-    const [isLoginVisible, setIsLoginVisible] = useState(true);
+    const router = useRouter();
     const [progressData, setProgressData] = useState<ProgressData[]>([]);
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const colorScheme = useColorScheme();
@@ -100,10 +99,9 @@ const ProgresoScreen = () => {
                 if (storedUser) {
                     const parsedUser = JSON.parse(storedUser);
                     setUser(parsedUser);
-                    setIsLoginVisible(false);
                 } else {
                     setUser(null); // Ensure user state is cleared
-                    setIsLoginVisible(true);
+                    router.replace('/login');
                 }
             } catch (error) {
                 console.error('Error loading user from AsyncStorage:', error);
@@ -152,33 +150,38 @@ const ProgresoScreen = () => {
 
     const calculateProgress = (habits = habitos) => {
         const frequencies = ['DIARIA', 'SEMANAL', 'MENSUAL'];
-        const frequencyProgress: ProgressData[] = frequencies.map(
-            (frequency) => {
+        const frequencyProgress: ProgressData[] = frequencies.reduce(
+            (acc: ProgressData[], frequency) => {
                 const frequencyHabits = habits.filter(
                     (habit) => habit.frequency === frequency
                 );
+                const total = frequencyHabits.length;
+
+                // Skip frequencies without any habits to avoid showing 0%
+                if (total === 0) {
+                    return acc;
+                }
+
                 const completed = frequencyHabits.filter(
                     (habit) => habit.completion
                 ).length;
-                const total = frequencyHabits.length;
-                const progress = total > 0 ? (completed / total) * 100 : 0;
+                const progress = (completed / total) * 100;
 
-                return {
+                acc.push({
                     title: `Progreso ${frequency.toLowerCase()}`,
                     progress,
                     color: 'teal',
                     completado: `${Math.round(progress)}%`,
-                };
-            }
+                });
+
+                return acc;
+            },
+            [] as ProgressData[]
         );
 
         setProgressData(frequencyProgress);
     };
 
-    const handleLoginSuccess = () => {
-        fetchHabits();
-        setIsLoginVisible(false);
-    };
 
     if (isLoading) {
         return (
@@ -203,28 +206,6 @@ const ProgresoScreen = () => {
                     : themeLight.lightBackground,
             ]}
         >
-            <Modal
-                visible={isLoginVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setIsLoginVisible(false)}
-            >
-                <View
-                    style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: isDarkMode
-                            ? 'rgba(0, 0, 0, 0.7)'
-                            : 'rgba(0, 0, 0, 0.5)',
-                    }}
-                >
-                    <LoginScreen
-                        onClose={() => setIsLoginVisible(false)}
-                        onLoginSuccess={handleLoginSuccess}
-                    />
-                </View>
-            </Modal>
 
             {user && progressData.length > 0 && (
                 <ScrollView contentContainerStyle={{ alignItems: 'center' }}>

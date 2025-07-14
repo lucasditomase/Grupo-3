@@ -12,14 +12,10 @@ import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { registerUser, loginUser } from '../../components/authService';
 
 interface LoginScreenProps {
-    onClose: () => void;
-    onLoginSuccess: () => void;
+    onLoginSuccess?: () => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({
-    onClose,
-    onLoginSuccess,
-}) => {
+const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [isLogin, setIsLogin] = useState(true);
     const [password, setPassword] = useState('');
@@ -27,6 +23,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const [nacimientoDia, setDay] = useState('');
     const [nacimientoMes, setMonth] = useState('');
     const [nacimientoAnio, setYear] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const { setUser } = useGlobalContext();
 
@@ -43,8 +40,15 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
     const handleLogin = async () => {
         const response = await loginUser(email, password, setUser);
         if (response.success) {
+
+            setErrorMessage('');
+            if (onLoginSuccess) {
             onLoginSuccess();
+            }
+
             router.replace('/');
+        } else {
+            setErrorMessage(response.message);
         }
     };
 
@@ -176,7 +180,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                 </View>
             )}
 
-            <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+            {errorMessage !== '' && (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+            )}
+
+            <TouchableOpacity
+                onPress={() => {
+                    setIsLogin(!isLogin);
+                    setErrorMessage('');
+                }}
+            >
                 <Text style={styles.switchText}>
                     {isLogin
                         ? '¿No tienes cuenta? Regístrate aquí'
@@ -233,6 +246,11 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginTop: 10,
     },
     switchText: {
         marginTop: 10,

@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { GlobalProvider } from '../components/contexts/globalContext';
 
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
@@ -35,14 +36,19 @@ export default function RootLayout() {
   }
 
   return (
+    <GlobalProvider>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         {/* Tab-based navigation */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
+        {/* Login screen */}
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+
         {/* Additional screens */}
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
+    </GlobalProvider>
   );
 }

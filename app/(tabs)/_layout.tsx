@@ -12,9 +12,6 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 // Hooks
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Contexts
-import { GlobalProvider } from '../../components/contexts/globalContext';
-
 /**
  * The main layout component for the Tab-based navigation in the app.
  * Provides global context and consistent styling across all tabs.
@@ -46,8 +43,6 @@ export default function TabLayout() {
     };
 
     return (
-
-        <GlobalProvider>
 
             <Tabs
                 screenOptions={{
@@ -82,6 +77,5 @@ export default function TabLayout() {
                     />
                 ))}
             </Tabs>
-        </GlobalProvider>
     );
 }

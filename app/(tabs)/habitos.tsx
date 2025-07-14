@@ -61,6 +61,7 @@ const HabitosScreen = () => {
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const swipeTriggered = useRef<{ [key: string]: boolean }>({});
+    const listViewRef = useRef<any>(null);
     const { user, habitos, setHabitos } = useGlobalContext();
     const categories = [
         'SALUD',
@@ -87,7 +88,7 @@ const HabitosScreen = () => {
 
     useEffect(() => {
         if (!user) {
-            router.replace('/');
+            router.replace('/login');
         } else {
             fetchHabits();
         }
@@ -123,6 +124,7 @@ const HabitosScreen = () => {
                                 prev.filter((habit) => habit.key !== item.key)
                             );
                             Alert.alert(`Deleted "${item.text}"`);
+                            listViewRef.current?.closeAllOpenRows();
                         } else {
                             Alert.alert('Error', 'No se ha iniciado sesión');
                         }
@@ -183,9 +185,11 @@ const HabitosScreen = () => {
         if (value > 150) {
             toggleCompletion(habit); // Use toggleCompletion
             swipeTriggered.current[key] = true;
+            listViewRef.current?.closeAllOpenRows();
         } else if (value < -150) {
             deleteHabit(habit);
             swipeTriggered.current[key] = true;
+            listViewRef.current?.closeAllOpenRows();
         }
     };
 
@@ -198,6 +202,7 @@ const HabitosScreen = () => {
                     : habit
             )
         );
+        listViewRef.current?.closeAllOpenRows();
 
         const token = user?.token;
         if (token) {
@@ -409,6 +414,7 @@ const HabitosScreen = () => {
             </Modal>
 
             <SwipeListView
+                ref={listViewRef}
                 data={habitos}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}

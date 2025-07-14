@@ -10,6 +10,7 @@ import {
     Alert,
     ActivityIndicator,
     TouchableOpacity,
+    ScrollView,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
@@ -35,7 +36,7 @@ const PerfilScreen = () => {
 
     useEffect(() => {
         if (!user) {
-            router.replace('/');
+            router.replace('/login');
             return;
         }
 
@@ -80,8 +81,6 @@ const PerfilScreen = () => {
 
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
-            } else {
-                Alert.alert('Cancel', 'Image selection canceled.');
             }
         } catch (error) {
             console.error('Error selecting image:', error);
@@ -130,10 +129,6 @@ const PerfilScreen = () => {
                     seconds: 5, // Notification will trigger after 5 seconds
                 },
             });
-            Alert.alert(
-                'Notification Scheduled',
-                'A reminder notification has been scheduled!'
-            );
             console.log('Notification Identifier:', identifier);
         } catch (error) {
             console.error('Error scheduling notification:', error);
@@ -153,13 +148,15 @@ const PerfilScreen = () => {
     }
 
     return (
-        <View
+        <ScrollView
+
             style={[
-                perfilScreenStyles.container,
                 isDarkMode
                     ? themeDark.darkBackground
                     : themeLight.lightBackground,
             ]}
+            contentContainerStyle={perfilScreenStyles.scrollContainer}
+
         >
             <View style={perfilScreenStyles.profileImageContainer}>
                 {!serverImage && !image && (
@@ -229,7 +226,9 @@ const PerfilScreen = () => {
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Edad:</Text>
                 <Text style={perfilScreenStyles.value}>
-                    {calculateAge(user?.dateOfBirth ?? '')}
+                    {user?.dateOfBirth
+                        ? calculateAge(user.dateOfBirth).toString()
+                        : ''}
                 </Text>
             </View>
             <TouchableOpacity
@@ -246,7 +245,7 @@ const PerfilScreen = () => {
             >
                 <Text style={perfilScreenStyles.buttonText}>Cerrar sesión</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
