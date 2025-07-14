@@ -448,6 +448,13 @@ const HabitosScreen = () => {
             return;
         }
 
+        if (!/^\d+$/.test(goalInput)) {
+            Alert.alert('Error', 'El objetivo debe ser un n\u00famero entero');
+            return;
+        }
+
+        const goalValue = parseInt(goalInput, 10);
+
         const newHabit: HabitoItemDB = {
             text: inputText,
             category: selectedCategory || 'OTROS',
@@ -457,7 +464,7 @@ const HabitosScreen = () => {
             priority: selectedPriority,
 
 
-            goal: parseInt(goalInput) || 1,
+            goal: goalValue || 1,
             progress: 0,
 
         };
