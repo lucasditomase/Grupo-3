@@ -17,7 +17,8 @@ interface LoginScreenProps {
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
-    const [email, setEmail] = useState('');
+    const [emailUser, setEmailUser] = useState('');
+    const [emailDomain, setEmailDomain] = useState('');
     const [isLogin, setIsLogin] = useState(true);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -40,7 +41,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     }, []);
 
     const handleLogin = async () => {
-        const response = await loginUser(email, password, setUser);
+        const fullEmail = `${emailUser}@${emailDomain}.com`;
+        const response = await loginUser(fullEmail, password, setUser);
         if (response.success) {
 
             setErrorMessage('');
@@ -55,9 +57,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     };
 
     const handleSignUp = async () => {
+        const fullEmail = `${emailUser}@${emailDomain}.com`;
         const success = await registerUser(
             username,
-            email,
+            fullEmail,
             password,
             nacimientoDia,
             nacimientoMes,
@@ -86,15 +89,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                     <Text style={styles.subtitle}>
                         Inicia sesión para continuar y alcanzar tus metas.
                     </Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Tu correo electrónico"
-                        placeholderTextColor="#aaa"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
+                    <View style={styles.emailContainer}>
+                        <TextInput
+                            style={[styles.input, styles.emailInput]}
+                            placeholder="usuario"
+                            placeholderTextColor="#aaa"
+                            value={emailUser}
+                            onChangeText={setEmailUser}
+                            autoCapitalize="none"
+                        />
+                        <Text style={styles.emailText}>@</Text>
+                        <TextInput
+                            style={[styles.input, styles.emailInput]}
+                            placeholder="dominio"
+                            placeholderTextColor="#aaa"
+                            value={emailDomain}
+                            onChangeText={setEmailDomain}
+                            autoCapitalize="none"
+                        />
+                        <Text style={styles.emailText}>.com</Text>
+                    </View>
                     <View style={styles.passwordContainer}>
                         <TextInput
                             style={[styles.input, { paddingRight: 40 }]}
@@ -168,15 +182,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                             maxLength={4}
                         />
                     </View>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Correo electrónico"
-                        placeholderTextColor="#aaa"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                    />
+                    <View style={styles.emailContainer}>
+                        <TextInput
+                            style={[styles.input, styles.emailInput]}
+                            placeholder="usuario"
+                            placeholderTextColor="#aaa"
+                            value={emailUser}
+                            onChangeText={setEmailUser}
+                            autoCapitalize="none"
+                        />
+                        <Text style={styles.emailText}>@</Text>
+                        <TextInput
+                            style={[styles.input, styles.emailInput]}
+                            placeholder="dominio"
+                            placeholderTextColor="#aaa"
+                            value={emailDomain}
+                            onChangeText={setEmailDomain}
+                            autoCapitalize="none"
+                        />
+                        <Text style={styles.emailText}>.com</Text>
+                    </View>
                     <View style={styles.passwordContainer}>
                         <TextInput
                             style={[styles.input, { paddingRight: 40 }]}
@@ -254,13 +279,16 @@ const styles = StyleSheet.create({
         color: '#555',
     },
     input: {
+        height: 48,
         borderWidth: 1,
         borderColor: '#ddd',
         borderRadius: 10,
-        padding: 10,
+        paddingLeft: 10,
+        paddingRight: 40,
         marginBottom: 15,
         backgroundColor: '#fff',
     },
+
     passwordContainer: {
         marginBottom: 15,
         justifyContent: 'center',
@@ -268,11 +296,13 @@ const styles = StyleSheet.create({
     showPasswordButton: {
         position: 'absolute',
         right: 10,
-        top: 0,
-        bottom: 0,
+        top: 12,
+        height: 24,
+        width: 24,
         justifyContent: 'center',
         alignItems: 'center',
     },
+
     button: {
         backgroundColor: 'teal',
         padding: 15,
@@ -309,5 +339,18 @@ const styles = StyleSheet.create({
     birthdateInput: {
         flex: 1,
         marginHorizontal: 5,
+    },
+    emailContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    emailInput: {
+        flex: 1,
+        marginHorizontal: 2,
+    },
+    emailText: {
+        fontSize: 18,
+        marginHorizontal: 2,
     },
 });
