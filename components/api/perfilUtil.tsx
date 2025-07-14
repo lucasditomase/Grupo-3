@@ -17,9 +17,9 @@ export const calculateAge = (birthDate: string): number => {
 export const scheduleNotification = async () => {
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: 'Hello!',
-            body: 'This is a local notification.',
-            data: { extraData: 'Some data' },
+            title: '¡Hola!',
+            body: 'Recuerda revisar tus hábitos hoy. 📝',
+            data: { screen: 'Habitos' },
         },
         trigger: {
             seconds: 5,

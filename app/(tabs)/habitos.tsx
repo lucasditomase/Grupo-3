@@ -416,7 +416,13 @@ const HabitosScreen = () => {
     );
 
     const handleRowClose = (rowKey: string) => {
-        swipeTriggered.current[rowKey] = false;
+        // Delay resetting the swipe trigger to avoid multiple
+        // `onSwipeValueChange` events firing while the row closes.
+        // This prevents the complete/delete actions from
+        // executing repeatedly when a swipe gesture finishes.
+        setTimeout(() => {
+            swipeTriggered.current[rowKey] = false;
+        }, 300); // allow close animation to finish
     };
 
     const handleAddHabit = async () => {

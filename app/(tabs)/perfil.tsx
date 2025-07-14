@@ -15,9 +15,21 @@ import {
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
-import { signOut, uploadImageToDatabase } from '../../components/api';
-import { calculateAge } from '../../components/api';
+import {
+    signOut,
+    uploadImageToDatabase,
+    scheduleNotification,
+    calculateAge,
+} from '../../components/api';
 import { useRouter } from 'expo-router';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
@@ -118,27 +130,6 @@ const PerfilScreen = () => {
         }
     };
 
-    const scheduleNotification = async () => {
-        try {
-            const identifier = await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '¡Hola!',
-                    body: 'Recuerda revisar tus hábitos hoy. 📝',
-                    data: { screen: 'Habitos' },
-                },
-                trigger: {
-                    seconds: 5, // Notification will trigger after 5 seconds
-                },
-            });
-            console.log('Notification Identifier:', identifier);
-        } catch (error) {
-            console.error('Error scheduling notification:', error);
-            Alert.alert(
-                'Error',
-                'Ocurrió un error al programar la notificación.'
-            );
-        }
-    };
 
     if (loading) {
         return (
