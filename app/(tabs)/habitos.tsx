@@ -177,7 +177,9 @@ const HabitosScreen = () => {
                             setHabitos((prev) =>
                                 prev.filter((habit) => habit.key !== item.key)
                             );
-                            Alert.alert(`"${item.text}" eliminado`);
+                            setTimeout(() => {
+                                Alert.alert(`"${item.text}" eliminado`);
+                            }, 500);
                             listViewRef.current?.closeAllOpenRows();
                         } else {
                             Alert.alert('Error', 'No se ha iniciado sesión');
@@ -570,7 +572,7 @@ const HabitosScreen = () => {
                     style={[
                         habitosScreenStyles.button,
                         sortOrder === 'PRIORITY' &&
-                            habitosScreenStyles.activeSortButton,
+                        habitosScreenStyles.activeSortButton,
                     ]}
                     onPress={sortHabitsByPriority}
                 >
@@ -582,7 +584,7 @@ const HabitosScreen = () => {
                     style={[
                         habitosScreenStyles.button,
                         sortOrder === 'STREAK' &&
-                            habitosScreenStyles.activeSortButton,
+                        habitosScreenStyles.activeSortButton,
                     ]}
                     onPress={sortHabitsByStreak}
                 >
