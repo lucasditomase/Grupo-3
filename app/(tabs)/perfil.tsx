@@ -17,11 +17,13 @@ import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
 import { calculateAge } from '../../components/api';
-import { router } from 'expo-router';
+import { useRouter, useRootNavigationState } from 'expo-router';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 const PerfilScreen = () => {
+    const router = useRouter();
+    const rootNavigation = useRootNavigationState();
     const { user, setUser } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
@@ -35,6 +37,8 @@ const PerfilScreen = () => {
     };
 
     useEffect(() => {
+        if (!rootNavigation?.key) return;
+
         if (!user) {
             router.replace('/login');
             return;
@@ -68,7 +72,7 @@ const PerfilScreen = () => {
 
         requestPermissions();
         checkServerImage();
-    }, [user]);
+    }, [user, rootNavigation]);
 
     const pickImage = async () => {
         try {
@@ -184,7 +188,7 @@ const PerfilScreen = () => {
                 {image && (
                     <View style={perfilScreenStyles.actionContainer}>
                         <TouchableOpacity
-                            style={perfilScreenStyles.button}
+                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
                             onPress={uploadImage}
                             disabled={uploading}
                         >
@@ -193,7 +197,7 @@ const PerfilScreen = () => {
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={perfilScreenStyles.button}
+                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
                             onPress={cancelUpload}
                         >
                             <Text style={perfilScreenStyles.buttonText}>

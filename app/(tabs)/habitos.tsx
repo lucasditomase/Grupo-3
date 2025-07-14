@@ -26,7 +26,7 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // Navigation
-import { router } from 'expo-router';
+import { useRouter, useRootNavigationState } from 'expo-router';
 
 // Context
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
@@ -53,6 +53,8 @@ type HabitoItemDB = {
 };
 
 const HabitosScreen = () => {
+    const router = useRouter();
+    const rootNavigation = useRootNavigationState();
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<
@@ -87,12 +89,13 @@ const HabitosScreen = () => {
     };
 
     useEffect(() => {
+        if (!rootNavigation?.key) return;
         if (!user) {
             router.replace('/login');
         } else {
             fetchHabits();
         }
-    }, [user]);
+    }, [user, rootNavigation]);
 
     const fetchHabits = async () => {
         const token = user?.token;

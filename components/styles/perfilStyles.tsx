@@ -50,6 +50,11 @@ const perfilScreenStyles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 25, // Added more space between buttons and other elements
     },
+    actionButton: {
+        width: '80%',
+        marginTop: 10,
+        marginBottom: 10,
+    },
     buttonText: {
         color: '#ffffff',
         textAlign: 'center',

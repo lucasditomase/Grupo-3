@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { useIsFocused } from '@react-navigation/native';
-import { useRouter } from 'expo-router';
+import { useRouter, useRootNavigationState } from 'expo-router';
 
 import getProgresoStyles from '../../components/styles/progresoStyles';
 import themeDark from '../../components/themes/themeDark';
@@ -85,6 +85,7 @@ const ProgresoScreen = () => {
     const { user, setUser, habitos, setHabitos } = useGlobalContext();
     const isFocused = useIsFocused();
     const router = useRouter();
+    const rootNavigation = useRootNavigationState();
     const [progressData, setProgressData] = useState<ProgressData[]>([]);
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const colorScheme = useColorScheme();
@@ -110,10 +111,10 @@ const ProgresoScreen = () => {
             }
         };
 
-        if (isFocused) {
+        if (isFocused && rootNavigation?.key) {
             checkUser();
         }
-    }, [isFocused]);
+    }, [isFocused, rootNavigation]);
 
     useEffect(() => {
         const fetchHabits = async () => {
@@ -132,10 +133,10 @@ const ProgresoScreen = () => {
             }
         };
 
-        if (isFocused && user) {
+        if (isFocused && rootNavigation?.key && user) {
             fetchHabits();
         }
-    }, [isFocused, user]);
+    }, [isFocused, user, rootNavigation]);
 
     const fetchHabits = async () => {
         const token = user?.token;
@@ -166,9 +167,11 @@ const ProgresoScreen = () => {
                     (habit) => habit.completion
                 ).length;
                 const progress = (completed / total) * 100;
+                const formattedFrequency = frequency.toLowerCase() === 'diaria' ? 'diario' : frequency.toLowerCase();
+                const title = `Progreso ${formattedFrequency}`;
 
                 acc.push({
-                    title: `Progreso ${frequency.toLowerCase()}`,
+                    title: title,
                     progress,
                     color: 'teal',
                     completado: `${Math.round(progress)}%`,
