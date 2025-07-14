@@ -108,6 +108,7 @@ const HabitosScreen = () => {
     const [contextMenuVisible, setContextMenuVisible] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [selectedHabit, setSelectedHabit] = useState<HabitoItem | null>(null);
+    const [sortOrder, setSortOrder] = useState<'PRIORITY' | 'STREAK' | null>(null);
 
 
     const handleFrequencyChange = (frequency: string) => {
@@ -470,7 +471,12 @@ const HabitosScreen = () => {
         }
     };
 
-    const sortHabitsByPriority = () => {
+    const sortHabitsByPriority = async () => {
+        if (sortOrder === 'PRIORITY') {
+            setSortOrder(null);
+            await fetchHabits();
+            return;
+        }
         const order: Record<'ALTA' | 'MEDIA' | 'BAJA', number> = {
             ALTA: 1,
             MEDIA: 2,
@@ -481,12 +487,19 @@ const HabitosScreen = () => {
                 (a, b) => (order[a.priority] ?? 4) - (order[b.priority] ?? 4)
             )
         );
+        setSortOrder('PRIORITY');
     };
 
-    const sortHabitsByStreak = () => {
+    const sortHabitsByStreak = async () => {
+        if (sortOrder === 'STREAK') {
+            setSortOrder(null);
+            await fetchHabits();
+            return;
+        }
         setHabitos((prev) =>
             [...prev].sort((a, b) => (b.streak || 0) - (a.streak || 0))
         );
+        setSortOrder('STREAK');
     };
 
     const deleteAllHabits = () => {
@@ -548,7 +561,11 @@ const HabitosScreen = () => {
                     </Text>
                 </Pressable>
                 <Pressable
-                    style={habitosScreenStyles.button}
+                    style={[
+                        habitosScreenStyles.button,
+                        sortOrder === 'PRIORITY' &&
+                            habitosScreenStyles.activeSortButton,
+                    ]}
                     onPress={sortHabitsByPriority}
                 >
                     <Text style={habitosScreenStyles.buttonText}>
@@ -556,7 +573,11 @@ const HabitosScreen = () => {
                     </Text>
                 </Pressable>
                 <Pressable
-                    style={habitosScreenStyles.button}
+                    style={[
+                        habitosScreenStyles.button,
+                        sortOrder === 'STREAK' &&
+                            habitosScreenStyles.activeSortButton,
+                    ]}
                     onPress={sortHabitsByStreak}
                 >
                     <Text style={habitosScreenStyles.buttonText}>
