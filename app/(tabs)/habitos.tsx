@@ -35,6 +35,8 @@ import {
     crearHabitoEnBaseDeDatos,
     eliminarHabitoEnBaseDeDatos,
     actualizarHabitoEnBaseDeDatos,
+    updateHabitStreak,
+    getStreaks,
 } from '../../components/api';
 
 // Types
@@ -44,12 +46,29 @@ type HabitoItem = {
     category: string;
     frequency: string;
     completion: boolean;
+
+    priority: 'ALTA' | 'MEDIA' | 'BAJA';
+
+    progress: number;
+    goal: number;
+
     icon?: string;
+    streak?: number;
+    lastCompletionDate?: string;
 };
 type HabitoItemDB = {
     text: string;
     category: string;
     frequency: string;
+
+    priority: 'ALTA' | 'MEDIA' | 'BAJA';
+
+
+    objetivo: number;
+    progreso: number;
+
+
+
 };
 
 const HabitosScreen = () => {
@@ -59,6 +78,7 @@ const HabitosScreen = () => {
     const [selectedCategory, setSelectedCategory] = useState<
         string | undefined
     >();
+    const [goalInput, setGoalInput] = useState('1');
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
     const swipeTriggered = useRef<{ [key: string]: boolean }>({});
@@ -83,8 +103,17 @@ const HabitosScreen = () => {
 
     const [selectedFrequency, setSelectedFrequency] = useState('DIARIA');
 
+    const [selectedPriority, setSelectedPriority] = useState<'ALTA' | 'MEDIA' | 'BAJA'>('MEDIA');
+
+
     const handleFrequencyChange = (frequency: string) => {
         setSelectedFrequency(frequency);
+    };
+
+
+    const handlePriorityChange = (priority: 'ALTA' | 'MEDIA' | 'BAJA') => {
+
+        setSelectedPriority(priority);
     };
 
     useEffect(() => {
@@ -97,11 +126,30 @@ const HabitosScreen = () => {
 
     const fetchHabits = async () => {
         const token = user?.token;
-        if (token) {
+        if (token && user) {
             const fetchedHabits = await habitosEnBaseDeDatos(token);
             if (fetchedHabits) {
-                //console.log('Habitos:', fetchedHabits);
-                setHabitos(fetchedHabits);
+                const streakData = await getStreaks(user.userId);
+                interface StreakData {
+                    [key: string]: {
+                        streak: number;
+                        lastCompleted: string;
+                    };
+                }
+
+                interface HabitWithStreak extends HabitoItem {
+                    streak: number;
+                    lastCompletionDate: string;
+                }
+
+                const streakDataTyped: StreakData = streakData;
+
+                const habitsWithStreak: HabitWithStreak[] = (fetchedHabits as HabitoItem[]).map((h: HabitoItem) => ({
+                    ...h,
+                    streak: streakDataTyped[h.key]?.streak || 0,
+                    lastCompletionDate: streakDataTyped[h.key]?.lastCompleted || '',
+                }));
+                setHabitos(habitsWithStreak);
             }
         }
     };
@@ -199,19 +247,32 @@ const HabitosScreen = () => {
         setHabitos((prev) =>
             prev.map((habit) =>
                 habit.key === item.key
-                    ? { ...habit, completion: updatedCompletion }
+                    ? { ...habit, completion: updatedCompletion, progress: updatedCompletion ? habit.goal : 0 }
                     : habit
             )
         );
         listViewRef.current?.closeAllOpenRows();
 
         const token = user?.token;
-        if (token) {
+        if (token && user) {
             try {
                 await actualizarHabitoEnBaseDeDatos(token, {
                     ...item,
                     completion: updatedCompletion,
+                    progress: updatedCompletion ? item.goal : 0,
                 });
+                const newStreak = await updateHabitStreak(
+                    user.userId,
+                    item.key,
+                    updatedCompletion
+                );
+                setHabitos((prev) =>
+                    prev.map((habit) =>
+                        habit.key === item.key
+                            ? { ...habit, streak: newStreak }
+                            : habit
+                    )
+                );
             } catch (error) {
                 console.error('Error updating habit completion:', error);
                 Alert.alert(
@@ -221,6 +282,34 @@ const HabitosScreen = () => {
             }
         } else {
             Alert.alert('Error', 'No se ha iniciado sesión');
+        }
+    };
+
+    const updateProgress = async (item: HabitoItem, delta: number) => {
+        const newProgress = Math.min(
+            (item.goal || 1),
+            Math.max(0, (item.progress || 0) + delta)
+        );
+        const completed = newProgress >= (item.goal || 1);
+        setHabitos((prev) =>
+            prev.map((habit) =>
+                habit.key === item.key
+                    ? { ...habit, progress: newProgress, completion: completed }
+                    : habit
+            )
+        );
+        const token = user?.token;
+        if (token) {
+            try {
+                await actualizarHabitoEnBaseDeDatos(token, {
+                    ...item,
+                    progress: newProgress,
+                    completion: completed,
+                });
+            } catch (error) {
+                console.error('Error updating habit progress:', error);
+                Alert.alert('Error', 'No se pudo actualizar el progreso.');
+            }
         }
     };
 
@@ -262,6 +351,45 @@ const HabitosScreen = () => {
                     >
                         Frecuencia: {item.frequency}
                     </Text>
+
+
+                    {item.goal > 1 && (
+                        <View style={habitosScreenStyles.progressContainer}>
+                            <Pressable onPress={() => updateProgress(item, 1)}>
+                                <MaterialIcons
+                                    name="add-circle-outline"
+                                    size={20}
+                                    color="teal"
+                                />
+                            </Pressable>
+                            <Text style={habitosScreenStyles.progressText}>
+                                {item.progress}/{item.goal}
+                            </Text>
+                        </View>
+                    )}
+
+
+
+                    <Text
+                        style={[
+                            habitosScreenStyles.frequencyText,
+                            isDarkMode && themeDark.secondaryText,
+                        ]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                    >
+                        Prioridad: {item.priority}
+                    </Text>
+
+
+                    {item.streak && item.streak > 0 && (
+                        <Text style={habitosScreenStyles.streakText}>
+                            🔥 {item.streak}
+                        </Text>
+                    )}
+
+
+
                 </View>
                 <MaterialIcons
                     name={
@@ -297,6 +425,14 @@ const HabitosScreen = () => {
             text: inputText,
             category: selectedCategory || 'OTROS',
             frequency: selectedFrequency,
+
+
+            objetivo: parseInt(goalInput) || 1,
+            progreso: 0,
+
+            priority: selectedPriority,
+
+
         };
 
         const token = user?.token;
@@ -314,11 +450,29 @@ const HabitosScreen = () => {
 
             // Reset the form and close the modal
             setInputText('');
+
+            setSelectedPriority('MEDIA');
+
+            setGoalInput('1');
+
             setModalVisible(false);
         } catch (error) {
             console.error('Error adding habit:', error);
             Alert.alert('Error', 'Hubo un problema al agregar el hábito.');
         }
+    };
+
+    const sortHabitsByPriority = () => {
+        const order: Record<'ALTA' | 'MEDIA' | 'BAJA', number> = {
+            ALTA: 1,
+            MEDIA: 2,
+            BAJA: 3,
+        };
+        setHabitos((prev) =>
+            [...prev].sort(
+                (a, b) => (order[a.priority] ?? 4) - (order[b.priority] ?? 4)
+            )
+        );
     };
 
     return (
@@ -336,6 +490,14 @@ const HabitosScreen = () => {
                 >
                     <Text style={habitosScreenStyles.buttonText}>
                         Agregar nuevo hábito
+                    </Text>
+                </Pressable>
+                <Pressable
+                    style={habitosScreenStyles.button}
+                    onPress={sortHabitsByPriority}
+                >
+                    <Text style={habitosScreenStyles.buttonText}>
+                        Ordenar por prioridad
                     </Text>
                 </Pressable>
             </View>
@@ -372,6 +534,14 @@ const HabitosScreen = () => {
                                 />
                             ))}
                         </Picker>
+                        <Text style={modalStyles.label}>Objetivo (cantidad)</Text>
+                        <TextInput
+                            style={modalStyles.input}
+                            keyboardType="numeric"
+                            value={goalInput}
+                            onChangeText={setGoalInput}
+                            placeholder="Ej. 10"
+                        />
                         <Text style={modalStyles.label}>
                             Selecciona frecuencia
                         </Text>
@@ -396,6 +566,35 @@ const HabitosScreen = () => {
                                     </Pressable>
                                 )
                             )}
+                        </View>
+                        <Text style={modalStyles.label}>
+                            Selecciona prioridad
+                        </Text>
+                        <View style={habitosScreenStyles.buttonContainer}>
+                            {['ALTA', 'MEDIA', 'BAJA'].map((priority) => (
+                                <Pressable
+                                    key={priority}
+                                    style={[
+                                        habitosScreenStyles.buttonPart,
+                                        selectedPriority === priority &&
+                                            habitosScreenStyles.selected,
+                                    ]}
+
+                                    onPress={() =>
+                                        handlePriorityChange(
+                                            priority as 'ALTA' | 'MEDIA' | 'BAJA'
+                                        )
+                                    }
+                                >
+                                    <Text
+                                        numberOfLines={1}
+                                        adjustsFontSizeToFit={true}
+                                    >
+                                        {priority}
+                                    </Text>
+
+                                </Pressable>
+                            ))}
                         </View>
                         <Pressable
                             style={modalStyles.saveButton}

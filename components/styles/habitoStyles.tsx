@@ -65,6 +65,24 @@ const habitosScreenStyles = StyleSheet.create({
         color: '#555',
     },
 
+    progressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    progressText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: '#555',
+    },
+    streakText: {
+        fontSize: 14,
+        color: 'orange',
+        fontWeight: 'bold',
+        marginTop: 2,
+
+    },
+
     // Styles for the SwipeListView
     rowBack: {
         flex: 1,

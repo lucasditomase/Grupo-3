@@ -6,7 +6,15 @@ type HabitoItem = {
     category: string;
     frequency: string;
     completion?: boolean;
+
+    priority: 'ALTA' | 'MEDIA' | 'BAJA';
+
+    progress?: number;
+    goal?: number;
+
     icon?: string;
+    streak?: number;
+    lastCompletionDate?: string;
 };
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -36,6 +44,13 @@ export const habitosEnBaseDeDatos = async (token: string) => {
                 category: habit.categoria || 'Sin Categoría', // Default category
                 completion: habit.completado || false, // Default completion status
                 frequency: habit.frequencia || 'Desconocida', // Default frequency
+
+                priority: habit.prioridad || 'MEDIA',
+
+
+                progress: habit.progreso || 0,
+                goal: habit.objetivo || 1,
+
                 icon: 'event', // Default icon
             }));
         return habits;
@@ -56,6 +71,7 @@ export const crearHabitoEnBaseDeDatos = async (
                 nombre: habito.text,
                 frequencia: habito.frequency,
                 categoria: habito.category,
+                prioridad: habito.priority,
             })
         );
         const response = await fetch(SERVER_URL + '/crear-habito', {
@@ -68,6 +84,13 @@ export const crearHabitoEnBaseDeDatos = async (
                 nombre: habito.text,
                 frequencia: habito.frequency,
                 categoria: habito.category,
+
+                prioridad: habito.priority,
+
+
+                objetivo: habito.goal ?? 1,
+                progreso: habito.progress ?? 0,
+
             }),
         });
 
@@ -133,6 +156,8 @@ export const actualizarHabitoEnBaseDeDatos = async (
                 },
                 body: JSON.stringify({
                     completado: habito.completion,
+                    progreso: habito.progress,
+                    objetivo: habito.goal,
                 }),
             }
         );

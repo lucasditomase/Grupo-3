@@ -21,7 +21,17 @@ type HabitoItem = {
     category: string;
     frequency: string;
     completion: boolean;
+
+    priority: 'ALTA' | 'MEDIA' | 'BAJA';
+
+    progress: number;
+    goal: number;
+
     icon?: string;
+    /** Consecutive days the habit has been completed */
+    streak?: number;
+    /** ISO date string of the last completion */
+    lastCompletionDate?: string;
 };
 
 // Type for authentication context

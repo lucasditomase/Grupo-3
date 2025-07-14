@@ -162,10 +162,12 @@ const ProgresoScreen = () => {
                     return acc;
                 }
 
-                const completed = frequencyHabits.filter(
-                    (habit) => habit.completion
-                ).length;
-                const progress = (completed / total) * 100;
+                const progressSum = frequencyHabits.reduce((acc, habit) => {
+                    const goal = habit.goal || 1;
+                    const current = habit.progress || (habit.completion ? goal : 0);
+                    return acc + Math.min(current / goal, 1);
+                }, 0);
+                const progress = (progressSum / total) * 100;
                 const formattedFrequency = frequency.toLowerCase() === 'diaria' ? 'diario' : frequency.toLowerCase();
                 const title = `Progreso ${formattedFrequency}`;
 
