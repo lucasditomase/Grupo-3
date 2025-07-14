@@ -355,9 +355,9 @@ const HabitosScreen = () => {
 
                     {item.goal > 1 && (
                         <View style={habitosScreenStyles.progressContainer}>
-                            <Pressable onPress={() => updateProgress(item, 1)}>
+                            <Pressable onPress={() => updateProgress(item, -1)}>
                                 <MaterialIcons
-                                    name="add-circle-outline"
+                                    name="remove-circle-outline"
                                     size={20}
                                     color="teal"
                                 />
@@ -365,6 +365,13 @@ const HabitosScreen = () => {
                             <Text style={habitosScreenStyles.progressText}>
                                 {item.progress}/{item.goal}
                             </Text>
+                            <Pressable onPress={() => updateProgress(item, 1)}>
+                                <MaterialIcons
+                                    name="add-circle-outline"
+                                    size={20}
+                                    color="teal"
+                                />
+                            </Pressable>
                         </View>
                     )}
 
@@ -475,6 +482,12 @@ const HabitosScreen = () => {
         );
     };
 
+    const sortHabitsByStreak = () => {
+        setHabitos((prev) =>
+            [...prev].sort((a, b) => (b.streak || 0) - (a.streak || 0))
+        );
+    };
+
     return (
         <View style={{ flex: 1 }}>
             <View
@@ -500,7 +513,33 @@ const HabitosScreen = () => {
                         Ordenar por prioridad
                     </Text>
                 </Pressable>
+                <Pressable
+                    style={habitosScreenStyles.button}
+                    onPress={sortHabitsByStreak}
+                >
+                    <Text style={habitosScreenStyles.buttonText}>
+                        Ordenar por racha
+                    </Text>
+                </Pressable>
             </View>
+
+            {habitos.filter((h) => (h.streak || 0) > 0).length > 0 && (
+                <View style={habitosScreenStyles.streakContainer}>
+                    <Text style={habitosScreenStyles.streakTitle}>
+                        Rachas activas
+                    </Text>
+                    {habitos
+                        .filter((h) => (h.streak || 0) > 0)
+                        .map((h) => (
+                            <Text
+                                key={h.key}
+                                style={habitosScreenStyles.streakItem}
+                            >
+                                🔥 {h.text}: {h.streak}
+                            </Text>
+                        ))}
+                </View>
+            )}
 
             <Modal
                 animationType="slide"
