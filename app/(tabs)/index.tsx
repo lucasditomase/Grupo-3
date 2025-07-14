@@ -208,6 +208,7 @@ const ProgresoScreen = () => {
                 isDarkMode
                     ? themeDark.darkBackground
                     : themeLight.lightBackground,
+                { flex: 1 },
             ]}
         >
 
