@@ -64,8 +64,8 @@ type HabitoItemDB = {
     priority: 'ALTA' | 'MEDIA' | 'BAJA';
 
 
-    objetivo: number;
-    progreso: number;
+    goal: number;
+    progress: number;
 
 
 
@@ -434,11 +434,11 @@ const HabitosScreen = () => {
             frequency: selectedFrequency,
 
 
-            objetivo: parseInt(goalInput) || 1,
-            progreso: 0,
-
             priority: selectedPriority,
 
+
+            goal: parseInt(goalInput) || 1,
+            progress: 0,
 
         };
 
