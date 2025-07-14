@@ -212,25 +212,33 @@ const ProgresoScreen = () => {
             ]}
         >
 
-            {user && progressData.length > 0 && (
-                <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-                    {progressData.map((item, index) => (
-                        <View key={index} style={progresoStyles.card}>
-                            <Text style={progresoStyles.labelAbove}>
-                                {item.title}
-                            </Text>
-                            <ProgressCircle
-                                size={200}
-                                strokeWidth={20}
-                                progress={item.progress}
-                                color={item.color}
-                            />
-                            <Text style={progresoStyles.label}>
-                                {item.completado} completado
-                            </Text>
-                        </View>
-                    ))}
-                </ScrollView>
+            {user && (
+                progressData.length > 0 ? (
+                    <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+                        {progressData.map((item, index) => (
+                            <View key={index} style={progresoStyles.card}>
+                                <Text style={progresoStyles.labelAbove}>
+                                    {item.title}
+                                </Text>
+                                <ProgressCircle
+                                    size={200}
+                                    strokeWidth={20}
+                                    progress={item.progress}
+                                    color={item.color}
+                                />
+                                <Text style={progresoStyles.label}>
+                                    {item.completado} completado
+                                </Text>
+                            </View>
+                        ))}
+                    </ScrollView>
+                ) : (
+                    <View style={progresoStyles.emptyContainer}>
+                        <Text style={progresoStyles.emptyText}>
+                            Aún no tienes hábitos registrados
+                        </Text>
+                    </View>
+                )
             )}
         </View>
     );

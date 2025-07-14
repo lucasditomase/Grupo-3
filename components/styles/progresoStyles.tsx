@@ -34,6 +34,17 @@ const progresoScreenStyles = ({ isDarkMode }: ProgresoStylesParams) =>
             width: '90%',
             alignSelf: 'center',
         },
+        emptyContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 20,
+        },
+        emptyText: {
+            fontSize: 18,
+            color: isDarkMode ? '#FFFFFF' : '#333333',
+            textAlign: 'center',
+        },
     });
 
 export default progresoScreenStyles;
