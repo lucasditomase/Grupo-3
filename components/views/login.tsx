@@ -268,8 +268,10 @@ const styles = StyleSheet.create({
     showPasswordButton: {
         position: 'absolute',
         right: 10,
-        top: '50%',
-        marginTop: -12,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     button: {
         backgroundColor: 'teal',
