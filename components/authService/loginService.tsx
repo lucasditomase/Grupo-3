@@ -13,7 +13,7 @@ export const loginUser = async (
 ) => {
     // Validate user input
     if (!validateInput(email, password)) {
-        return { success: false, message: 'Invalid input. Please try again.' };
+        return { success: false, message: 'Entrada inválida. Inténtalo de nuevo.' };
     }
 
     try {

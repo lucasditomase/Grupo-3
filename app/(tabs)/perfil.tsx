@@ -98,8 +98,8 @@ const PerfilScreen = () => {
     const uploadImage = async (): Promise<void> => {
         if (!image) {
             Alert.alert(
-                'No image selected',
-                'Please select an image before uploading.'
+                'No se seleccionó ninguna imagen',
+                'Selecciona una imagen antes de subirla.'
             );
             return;
         }
@@ -113,8 +113,8 @@ const PerfilScreen = () => {
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert(
-                'Upload failed',
-                'Something went wrong while uploading the image.'
+                'Error al subir',
+                'Ocurrió un error al subir la imagen.'
             );
         } finally {
             setUploading(false);
@@ -138,7 +138,7 @@ const PerfilScreen = () => {
             console.error('Error scheduling notification:', error);
             Alert.alert(
                 'Error',
-                'Something went wrong while scheduling the notification.'
+                'Ocurrió un error al programar la notificación.'
             );
         }
     };
@@ -193,7 +193,7 @@ const PerfilScreen = () => {
                             disabled={uploading}
                         >
                             <Text style={perfilScreenStyles.buttonText}>
-                                {uploading ? 'Uploading...' : 'Upload Image'}
+                                {uploading ? 'Subiendo...' : 'Subir imagen'}
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -213,7 +213,7 @@ const PerfilScreen = () => {
                         onPress={pickImage}
                     >
                         <Text style={perfilScreenStyles.buttonText}>
-                            Pick an image from gallery
+                            Elegir una imagen de la galería
                         </Text>
                     </TouchableOpacity>
                 )}
@@ -240,7 +240,7 @@ const PerfilScreen = () => {
                 onPress={scheduleNotification}
             >
                 <Text style={perfilScreenStyles.buttonText}>
-                    Schedule Notification
+                    Programar notificación
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity

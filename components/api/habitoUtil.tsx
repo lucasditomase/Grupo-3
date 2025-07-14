@@ -41,7 +41,7 @@ export const habitosEnBaseDeDatos = async (token: string) => {
         return habits;
     } catch (error) {
         console.error('Error fetching habits:', error);
-        Alert.alert('Error', 'Failed to load habits. Please try again.');
+        Alert.alert('Error', 'No se pudieron cargar los hábitos. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -80,7 +80,7 @@ export const crearHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error creating habit:', error);
-        Alert.alert('Error', 'Failed to create habit. Please try again.');
+        Alert.alert('Error', 'No se pudo crear el hábito. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -112,7 +112,7 @@ export const eliminarHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error deleting habit:', error);
-        Alert.alert('Error', 'Failed to delete habit. Please try again.');
+        Alert.alert('Error', 'No se pudo eliminar el hábito. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -147,7 +147,7 @@ export const actualizarHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error updating habit:', error);
-        Alert.alert('Error', 'Failed to update habit. Please try again.');
+        Alert.alert('Error', 'No se pudo actualizar el hábito. Inténtalo de nuevo.');
         return null;
     }
 };

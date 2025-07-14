@@ -110,15 +110,15 @@ const HabitosScreen = () => {
 
     const deleteHabit = (item: HabitoItem) => {
         Alert.alert(
-            'Confirm Delete',
-            `Are you sure you want to delete "${item.text}"?`,
+            'Confirmar eliminación',
+            `¿Estás seguro de que deseas eliminar "${item.text}"?`,
             [
                 {
-                    text: 'Cancel',
+                    text: 'Cancelar',
                     style: 'cancel',
                 },
                 {
-                    text: 'Delete',
+                    text: 'Eliminar',
                     onPress: async () => {
                         const token = user?.token;
                         if (token) {
@@ -126,7 +126,7 @@ const HabitosScreen = () => {
                             setHabitos((prev) =>
                                 prev.filter((habit) => habit.key !== item.key)
                             );
-                            Alert.alert(`Deleted "${item.text}"`);
+                            Alert.alert(`"${item.text}" eliminado`);
                             listViewRef.current?.closeAllOpenRows();
                         } else {
                             Alert.alert('Error', 'No se ha iniciado sesión');
@@ -139,19 +139,19 @@ const HabitosScreen = () => {
     };
 
     const handleLongPress = (item: HabitoItem) => {
-        Alert.alert('Options', `Choose an action for "${item.text}"`, [
+        Alert.alert('Opciones', `Elige una acción para "${item.text}"`, [
             {
                 text: item.completion
-                    ? 'Mark as Incomplete'
-                    : 'Mark as Completed',
+                    ? 'Marcar como incompleto'
+                    : 'Marcar como completado',
                 onPress: () => toggleCompletion(item), // Use toggleCompletion
             },
             {
-                text: 'Delete',
+                text: 'Eliminar',
                 onPress: () => deleteHabit(item),
                 style: 'destructive',
             },
-            { text: 'Cancel', style: 'cancel' },
+            { text: 'Cancelar', style: 'cancel' },
         ]);
     };
 
@@ -218,7 +218,7 @@ const HabitosScreen = () => {
                 console.error('Error updating habit completion:', error);
                 Alert.alert(
                     'Error',
-                    'Failed to update habit. Please try again.'
+                    'No se pudo actualizar el hábito. Inténtalo de nuevo.'
                 );
             }
         } else {
@@ -259,6 +259,8 @@ const HabitosScreen = () => {
                             habitosScreenStyles.frequencyText,
                             isDarkMode && themeDark.secondaryText,
                         ]}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
                     >
                         Frecuencia: {item.frequency}
                     </Text>
