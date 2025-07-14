@@ -7,6 +7,7 @@ import {
     Animated,
     StyleSheet,
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { registerUser, loginUser } from '../../components/authService';
@@ -23,6 +24,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
     const [nacimientoDia, setDay] = useState('');
     const [nacimientoMes, setMonth] = useState('');
     const [nacimientoAnio, setYear] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const { setUser } = useGlobalContext();
@@ -93,14 +95,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Tu contraseña"
-                        placeholderTextColor="#aaa"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={true}
-                    />
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={[styles.input, { paddingRight: 40 }]}
+                            placeholder="Tu contraseña"
+                            placeholderTextColor="#aaa"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={!showPassword}
+                        />
+                        <TouchableOpacity
+                            style={styles.showPasswordButton}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Ionicons
+                                name={showPassword ? 'eye-off' : 'eye'}
+                                size={24}
+                                color="gray"
+                            />
+                        </TouchableOpacity>
+                    </View>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={handleLogin}
@@ -163,14 +177,26 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Crea una contraseña segura"
-                        placeholderTextColor="#aaa"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={true}
-                    />
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={[styles.input, { paddingRight: 40 }]}
+                            placeholder="Crea una contraseña segura"
+                            placeholderTextColor="#aaa"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={!showPassword}
+                        />
+                        <TouchableOpacity
+                            style={styles.showPasswordButton}
+                            onPress={() => setShowPassword(!showPassword)}
+                        >
+                            <Ionicons
+                                name={showPassword ? 'eye-off' : 'eye'}
+                                size={24}
+                                color="gray"
+                            />
+                        </TouchableOpacity>
+                    </View>
                     <TouchableOpacity
                         style={styles.button}
                         onPress={handleSignUp}
@@ -234,6 +260,16 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 15,
         backgroundColor: '#fff',
+    },
+    passwordContainer: {
+        marginBottom: 15,
+        justifyContent: 'center',
+    },
+    showPasswordButton: {
+        position: 'absolute',
+        right: 10,
+        top: '50%',
+        marginTop: -12,
     },
     button: {
         backgroundColor: 'teal',

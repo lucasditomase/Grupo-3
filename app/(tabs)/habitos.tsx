@@ -134,7 +134,17 @@ const HabitosScreen = () => {
         if (token && user) {
             const fetchedHabits = await habitosEnBaseDeDatos(token);
             if (fetchedHabits) {
-                const streakData = await getStreaks(user.userId);
+                let streakData = await getStreaks(user.userId);
+
+                // Ensure completed habits are reflected in streaks
+                for (const habit of fetchedHabits as HabitoItem[]) {
+                    if (habit.completion && !streakData[habit.key]) {
+                        await updateHabitStreak(user.userId, habit.key, true);
+                    }
+                }
+
+                // Reload streaks in case they were updated above
+                streakData = await getStreaks(user.userId);
                 interface StreakData {
                     [key: string]: {
                         streak: number;

@@ -58,7 +58,7 @@ export const isFieldEmpty = (field: string): boolean => !field.trim();
  */
 export const isValidEmail = (email: string): boolean => {
     const emailRegex =
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/;
+        /^[a-zA-Z0-9]+(?:[._%+-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[A-Za-z]{2,}$/;
 
     return emailRegex.test(email);
 };
@@ -83,14 +83,32 @@ const isValidBirthDate = (
     birthMonth: string,
     birthDay: string
 ): boolean => {
-    const year = parseInt(birthYear);
-    const month = parseInt(birthMonth);
-    const day = parseInt(birthDay);
+    const year = parseInt(birthYear, 10);
+    const month = parseInt(birthMonth, 10);
+    const day = parseInt(birthDay, 10);
+
+    if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
+        alert('Ingrese una fecha válida.');
+        return false;
+    }
+
+    if (month < 1 || month > 12) {
+        alert('Ingrese un mes válido.');
+        return false;
+    }
 
     const birthDate = new Date(year, month - 1, day);
-    const currentDate = new Date();
 
-    // Define acceptable age range (5 to 120 years)
+    if (
+        birthDate.getFullYear() !== year ||
+        birthDate.getMonth() !== month - 1 ||
+        birthDate.getDate() !== day
+    ) {
+        alert('Ingrese una fecha válida.');
+        return false;
+    }
+
+    const currentDate = new Date();
     const minDate = new Date(
         currentDate.getFullYear() - 120,
         currentDate.getMonth(),
@@ -102,25 +120,11 @@ const isValidBirthDate = (
         currentDate.getDate()
     );
 
-    // Check year validity and minimum age
-    if (year === 0 || birthDate <= minDate) {
+    if (birthDate <= minDate) {
         alert('Ingrese una fecha válida.');
         return false;
     }
 
-    // Check valid day range
-    if (day < 1 || day > 31) {
-        alert('Ingrese un día válido.');
-        return false;
-    }
-
-    // Check valid month range
-    if (month < 1 || month > 12) {
-        alert('Ingrese un mes válido.');
-        return false;
-    }
-
-    // Check maximum age limit
     if (birthDate >= maxDate) {
         alert('No puede ingresar al menos que tenga más de 5 años.');
         return false;
