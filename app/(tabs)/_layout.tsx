@@ -12,9 +12,6 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 // Hooks
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Contexts
-import { GlobalProvider } from '../../components/contexts/globalContext';
-
 /**
  * The main layout component for the Tab-based navigation in the app.
  * Provides global context and consistent styling across all tabs.
@@ -47,41 +44,38 @@ export default function TabLayout() {
 
     return (
 
-        <GlobalProvider>
+        <Tabs
+            screenOptions={{
+                // Active tab tint color based on the current color scheme
+                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
 
-            <Tabs
-                screenOptions={{
-                    // Active tab tint color based on the current color scheme
-                    tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-
-                    // Header configuration
-                    headerShown: true,
-                    headerStyle: {
-                        backgroundColor: 'teal',
-                    },
-                    headerTintColor: 'white',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
-                }}
-            >
-                {tabs.map(({ name, title, iconFocused, iconDefault }) => (
-                    <Tabs.Screen
-                        key={name}
-                        name={name}
-                        options={{
-                            title,
-                            tabBarIcon: ({ color, focused }) => (
-                                <TabBarIcon
-                                    name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
-                                    color={color}
-                                />
-                            ),
-                            headerRight: HeaderRight,
-                        }}
-                    />
-                ))}
-            </Tabs>
-        </GlobalProvider>
+                // Header configuration
+                headerShown: true,
+                headerStyle: {
+                    backgroundColor: 'teal',
+                },
+                headerTintColor: 'white',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            }}
+        >
+            {tabs.map(({ name, title, iconFocused, iconDefault }) => (
+                <Tabs.Screen
+                    key={name}
+                    name={name}
+                    options={{
+                        title,
+                        tabBarIcon: ({ color, focused }) => (
+                            <TabBarIcon
+                                name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
+                                color={color}
+                            />
+                        ),
+                        headerRight: HeaderRight,
+                    }}
+                />
+            ))}
+        </Tabs>
     );
 }

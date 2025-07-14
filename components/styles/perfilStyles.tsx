@@ -2,7 +2,12 @@ import { StyleSheet } from 'react-native';
 
 const perfilScreenStyles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
+        padding: 20,
+        backgroundColor: '#f5f5f5',
+    },
+    scrollContainer: {
+        flexGrow: 1,
         padding: 20,
         backgroundColor: '#f5f5f5',
     },
@@ -45,6 +50,11 @@ const perfilScreenStyles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 25, // Added more space between buttons and other elements
     },
+    actionButton: {
+        width: '80%',
+        marginTop: 10,
+        marginBottom: 10,
+    },
     buttonText: {
         color: '#ffffff',
         textAlign: 'center',
@@ -60,14 +70,13 @@ const perfilScreenStyles = StyleSheet.create({
     },
     // Main container for the profile image
     profileImageContainer: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 40,
     },
     actionContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
+        flexDirection: 'column',
+        alignItems: 'center',
         marginTop: 10,
     },
 });

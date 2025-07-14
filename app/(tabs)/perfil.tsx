@@ -10,17 +10,31 @@ import {
     Alert,
     ActivityIndicator,
     TouchableOpacity,
+    ScrollView,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
-import { signOut, uploadImageToDatabase } from '../../components/api';
-import { calculateAge } from '../../components/api';
-import { router } from 'expo-router';
+import {
+    signOut,
+    uploadImageToDatabase,
+    scheduleNotification,
+    calculateAge,
+} from '../../components/api';
+import { useRouter } from 'expo-router';
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 const PerfilScreen = () => {
+    const router = useRouter();
     const { user, setUser } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
@@ -35,7 +49,7 @@ const PerfilScreen = () => {
 
     useEffect(() => {
         if (!user) {
-            router.replace('/');
+            router.replace('/login');
             return;
         }
 
@@ -80,8 +94,6 @@ const PerfilScreen = () => {
 
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
-            } else {
-                Alert.alert('Cancel', 'Image selection canceled.');
             }
         } catch (error) {
             console.error('Error selecting image:', error);
@@ -95,8 +107,8 @@ const PerfilScreen = () => {
     const uploadImage = async (): Promise<void> => {
         if (!image) {
             Alert.alert(
-                'No image selected',
-                'Please select an image before uploading.'
+                'No se seleccionó ninguna imagen',
+                'Selecciona una imagen antes de subirla.'
             );
             return;
         }
@@ -110,39 +122,14 @@ const PerfilScreen = () => {
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert(
-                'Upload failed',
-                'Something went wrong while uploading the image.'
+                'Error al subir',
+                'Ocurrió un error al subir la imagen.'
             );
         } finally {
             setUploading(false);
         }
     };
 
-    const scheduleNotification = async () => {
-        try {
-            const identifier = await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '¡Hola!',
-                    body: 'Recuerda revisar tus hábitos hoy. 📝',
-                    data: { screen: 'Habitos' },
-                },
-                trigger: {
-                    seconds: 5, // Notification will trigger after 5 seconds
-                },
-            });
-            Alert.alert(
-                'Notification Scheduled',
-                'A reminder notification has been scheduled!'
-            );
-            console.log('Notification Identifier:', identifier);
-        } catch (error) {
-            console.error('Error scheduling notification:', error);
-            Alert.alert(
-                'Error',
-                'Something went wrong while scheduling the notification.'
-            );
-        }
-    };
 
     if (loading) {
         return (
@@ -153,13 +140,15 @@ const PerfilScreen = () => {
     }
 
     return (
-        <View
+        <ScrollView
+
             style={[
-                perfilScreenStyles.container,
                 isDarkMode
                     ? themeDark.darkBackground
                     : themeLight.lightBackground,
             ]}
+            contentContainerStyle={perfilScreenStyles.scrollContainer}
+
         >
             <View style={perfilScreenStyles.profileImageContainer}>
                 {!serverImage && !image && (
@@ -187,16 +176,16 @@ const PerfilScreen = () => {
                 {image && (
                     <View style={perfilScreenStyles.actionContainer}>
                         <TouchableOpacity
-                            style={perfilScreenStyles.button}
+                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
                             onPress={uploadImage}
                             disabled={uploading}
                         >
                             <Text style={perfilScreenStyles.buttonText}>
-                                {uploading ? 'Uploading...' : 'Upload Image'}
+                                {uploading ? 'Subiendo...' : 'Subir imagen'}
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={perfilScreenStyles.button}
+                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
                             onPress={cancelUpload}
                         >
                             <Text style={perfilScreenStyles.buttonText}>
@@ -212,7 +201,7 @@ const PerfilScreen = () => {
                         onPress={pickImage}
                     >
                         <Text style={perfilScreenStyles.buttonText}>
-                            Pick an image from gallery
+                            Elegir una imagen de la galería
                         </Text>
                     </TouchableOpacity>
                 )}
@@ -229,7 +218,9 @@ const PerfilScreen = () => {
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Edad:</Text>
                 <Text style={perfilScreenStyles.value}>
-                    {calculateAge(user?.dateOfBirth ?? '')}
+                    {user?.dateOfBirth
+                        ? calculateAge(user.dateOfBirth).toString()
+                        : ''}
                 </Text>
             </View>
             <TouchableOpacity
@@ -237,7 +228,7 @@ const PerfilScreen = () => {
                 onPress={scheduleNotification}
             >
                 <Text style={perfilScreenStyles.buttonText}>
-                    Schedule Notification
+                    Programar notificación
                 </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -246,7 +237,7 @@ const PerfilScreen = () => {
             >
                 <Text style={perfilScreenStyles.buttonText}>Cerrar sesión</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 

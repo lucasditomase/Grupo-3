@@ -10,13 +10,17 @@ const sendUploadImageRequest = async (
     image: string
 ) => {
     const formData = new FormData();
-    const file = {
+    // If you are using React Native, append as follows:
+    formData.append('profile_picture', {
         uri: image,
         type: 'image/jpeg',
-        name: `profile_picture.jpg`,
-    };
+        name: 'profile_picture.jpg',
+    } as any);
 
-    formData.append('profile_picture', file);
+    // If you are in a web environment, use Blob:
+    // const response = await fetch(image);
+    // const blob = await response.blob();
+    // formData.append('profile_picture', blob, 'profile_picture.jpg');
     return await fetch(SERVER_URL + '/upload-profile-picture', {
         method: 'POST',
         headers: {

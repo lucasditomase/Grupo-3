@@ -6,10 +6,33 @@ type HabitoItem = {
     category: string;
     frequency: string;
     completion?: boolean;
+
+    priority: 'ALTA' | 'MEDIA' | 'BAJA';
+
+    progress?: number;
+    goal?: number;
+
     icon?: string;
+    streak?: number;
+    lastCompletionDate?: string;
 };
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
+
+const mapPriority = (value: any): 'ALTA' | 'MEDIA' | 'BAJA' => {
+    if (typeof value === 'string') {
+        const upper = value.toUpperCase();
+        if (upper === 'ALTA' || upper === 'MEDIA' || upper === 'BAJA') {
+            return upper as 'ALTA' | 'MEDIA' | 'BAJA';
+        }
+    }
+    if (typeof value === 'number') {
+        if (value === 0) return 'ALTA';
+        if (value === 1) return 'MEDIA';
+        if (value === 2) return 'BAJA';
+    }
+    return 'MEDIA';
+};
 
 export const habitosEnBaseDeDatos = async (token: string) => {
     try {
@@ -36,13 +59,19 @@ export const habitosEnBaseDeDatos = async (token: string) => {
                 category: habit.categoria || 'Sin Categoría', // Default category
                 completion: habit.completado || false, // Default completion status
                 frequency: habit.frequencia || 'Desconocida', // Default frequency
+
+                priority: mapPriority(habit.prioridad),
+
+
+                progress: habit.progreso || 0,
+                goal: habit.objetivo || 1,
+
                 icon: 'event', // Default icon
             }));
-        //console.log('Habitos y caca:', habits);
         return habits;
     } catch (error) {
         console.error('Error fetching habits:', error);
-        Alert.alert('Error', 'Failed to load habits. Please try again.');
+        Alert.alert('Error', 'No se pudieron cargar los hábitos. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -57,6 +86,7 @@ export const crearHabitoEnBaseDeDatos = async (
                 nombre: habito.text,
                 frequencia: habito.frequency,
                 categoria: habito.category,
+                prioridad: habito.priority.toUpperCase(),
             })
         );
         const response = await fetch(SERVER_URL + '/crear-habito', {
@@ -69,6 +99,13 @@ export const crearHabitoEnBaseDeDatos = async (
                 nombre: habito.text,
                 frequencia: habito.frequency,
                 categoria: habito.category,
+
+                prioridad: habito.priority.toUpperCase(),
+
+
+                objetivo: habito.goal ?? 1,
+                progreso: habito.progress ?? 0,
+
             }),
         });
 
@@ -81,7 +118,7 @@ export const crearHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error creating habit:', error);
-        Alert.alert('Error', 'Failed to create habit. Please try again.');
+        Alert.alert('Error', 'No se pudo crear el hábito. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -113,7 +150,7 @@ export const eliminarHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error deleting habit:', error);
-        Alert.alert('Error', 'Failed to delete habit. Please try again.');
+        Alert.alert('Error', 'No se pudo eliminar el hábito. Inténtalo de nuevo.');
         return null;
     }
 };
@@ -134,6 +171,8 @@ export const actualizarHabitoEnBaseDeDatos = async (
                 },
                 body: JSON.stringify({
                     completado: habito.completion,
+                    progreso: habito.progress,
+                    objetivo: habito.goal,
                 }),
             }
         );
@@ -148,7 +187,7 @@ export const actualizarHabitoEnBaseDeDatos = async (
         return responseData;
     } catch (error) {
         console.error('Error updating habit:', error);
-        Alert.alert('Error', 'Failed to update habit. Please try again.');
+        Alert.alert('Error', 'No se pudo actualizar el hábito. Inténtalo de nuevo.');
         return null;
     }
 };

@@ -16,6 +16,13 @@ const habitosScreenStyles = StyleSheet.create({
         shadowRadius: 3,
         elevation: 4, // For Android shadow
     },
+    activeSortButton: {
+        backgroundColor: '#062F2F',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 6,
+    },
     buttonText: {
         color: 'white',
         fontSize: 18,
@@ -63,6 +70,42 @@ const habitosScreenStyles = StyleSheet.create({
     frequencyText: {
         fontSize: 14,
         color: '#555',
+    },
+
+    progressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    progressText: {
+        marginHorizontal: 5,
+        fontSize: 14,
+        color: '#555',
+    },
+    streakText: {
+        fontSize: 16,
+        color: 'orange',
+        fontWeight: 'bold',
+        marginTop: 2,
+
+    },
+
+    streakContainer: {
+        backgroundColor: '#FFF8E1',
+        borderRadius: 10,
+        padding: 10,
+        marginHorizontal: 10,
+        marginTop: 10,
+    },
+    streakTitle: {
+        fontWeight: 'bold',
+        fontSize: 16,
+        marginBottom: 5,
+        color: '#FF8C00',
+    },
+    streakItem: {
+        fontSize: 14,
+        color: '#FF8C00',
     },
 
     // Styles for the SwipeListView
@@ -114,6 +157,29 @@ const habitosScreenStyles = StyleSheet.create({
         backgroundColor: '#0E6E6D',
         color: 'white',
         borderColor: 'transparent',
+    },
+
+    contextMenuOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    contextMenu: {
+        position: 'absolute',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        elevation: 5,
+    },
+    contextMenuItem: {
+        paddingVertical: 10,
+        alignItems: 'center',
     },
 });
 
