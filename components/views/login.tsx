@@ -43,7 +43,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
 
             setErrorMessage('');
             if (onLoginSuccess) {
-            onLoginSuccess();
+                onLoginSuccess();
             }
 
             router.replace('/');

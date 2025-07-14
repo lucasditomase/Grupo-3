@@ -70,9 +70,8 @@ const handleLoginResponse = async (
         const errorData = await response.json();
         return {
             success: false,
-            message: `Error ${response.status}: ${
-                errorData.message || 'Ocurrió un error'
-            }`,
+            message: `Error ${response.status}: ${errorData.message || 'Ocurrió un error'
+                }`,
         };
     }
 };

@@ -592,15 +592,15 @@ const HabitosScreen = () => {
                                         style={[
                                             habitosScreenStyles.buttonPart,
                                             selectedFrequency === frequency &&
-                                                habitosScreenStyles.selected,
+                                            habitosScreenStyles.selected,
                                         ]}
                                         onPress={() =>
                                             handleFrequencyChange(frequency)
                                         }
                                     >
                                         <Text
-                                        numberOfLines={1}
-                adjustsFontSizeToFit={true}
+                                            numberOfLines={1}
+                                            adjustsFontSizeToFit={true}
                                         >{frequency}</Text>
                                     </Pressable>
                                 )
@@ -616,7 +616,7 @@ const HabitosScreen = () => {
                                     style={[
                                         habitosScreenStyles.buttonPart,
                                         selectedPriority === priority &&
-                                            habitosScreenStyles.selected,
+                                        habitosScreenStyles.selected,
                                     ]}
 
                                     onPress={() =>

@@ -44,38 +44,38 @@ export default function TabLayout() {
 
     return (
 
-            <Tabs
-                screenOptions={{
-                    // Active tab tint color based on the current color scheme
-                    tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        <Tabs
+            screenOptions={{
+                // Active tab tint color based on the current color scheme
+                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
 
-                    // Header configuration
-                    headerShown: true,
-                    headerStyle: {
-                        backgroundColor: 'teal',
-                    },
-                    headerTintColor: 'white',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
-                }}
-            >
-                {tabs.map(({ name, title, iconFocused, iconDefault }) => (
-                    <Tabs.Screen
-                        key={name}
-                        name={name}
-                        options={{
-                            title,
-                            tabBarIcon: ({ color, focused }) => (
-                                <TabBarIcon
-                                    name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
-                                    color={color}
-                                />
-                            ),
-                            headerRight: HeaderRight,
-                        }}
-                    />
-                ))}
-            </Tabs>
+                // Header configuration
+                headerShown: true,
+                headerStyle: {
+                    backgroundColor: 'teal',
+                },
+                headerTintColor: 'white',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            }}
+        >
+            {tabs.map(({ name, title, iconFocused, iconDefault }) => (
+                <Tabs.Screen
+                    key={name}
+                    name={name}
+                    options={{
+                        title,
+                        tabBarIcon: ({ color, focused }) => (
+                            <TabBarIcon
+                                name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
+                                color={color}
+                            />
+                        ),
+                        headerRight: HeaderRight,
+                    }}
+                />
+            ))}
+        </Tabs>
     );
 }

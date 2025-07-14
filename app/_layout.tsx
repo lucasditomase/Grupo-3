@@ -37,18 +37,18 @@ export default function RootLayout() {
 
   return (
     <GlobalProvider>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        {/* Tab-based navigation */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack>
+          {/* Tab-based navigation */}
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        {/* Login screen */}
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+          {/* Login screen */}
+          <Stack.Screen name="login" options={{ headerShown: false }} />
 
-        {/* Additional screens */}
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+          {/* Additional screens */}
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ThemeProvider>
     </GlobalProvider>
   );
 }
