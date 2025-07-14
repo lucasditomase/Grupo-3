@@ -17,13 +17,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 import { signOut, uploadImageToDatabase } from '../../components/api';
 import { calculateAge } from '../../components/api';
-import { useRouter, useRootNavigationState } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
 
 const PerfilScreen = () => {
     const router = useRouter();
-    const rootNavigation = useRootNavigationState();
     const { user, setUser } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
@@ -37,8 +36,6 @@ const PerfilScreen = () => {
     };
 
     useEffect(() => {
-        if (!rootNavigation?.key) return;
-
         if (!user) {
             router.replace('/login');
             return;
@@ -72,7 +69,7 @@ const PerfilScreen = () => {
 
         requestPermissions();
         checkServerImage();
-    }, [user, rootNavigation]);
+    }, [user]);
 
     const pickImage = async () => {
         try {

@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 import { useIsFocused } from '@react-navigation/native';
-import { useRouter, useRootNavigationState } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import getProgresoStyles from '../../components/styles/progresoStyles';
 import themeDark from '../../components/themes/themeDark';
@@ -85,7 +85,6 @@ const ProgresoScreen = () => {
     const { user, setUser, habitos, setHabitos } = useGlobalContext();
     const isFocused = useIsFocused();
     const router = useRouter();
-    const rootNavigation = useRootNavigationState();
     const [progressData, setProgressData] = useState<ProgressData[]>([]);
     const [isLoading, setIsLoading] = useState(true); // Loading state
     const colorScheme = useColorScheme();
@@ -111,10 +110,10 @@ const ProgresoScreen = () => {
             }
         };
 
-        if (isFocused && rootNavigation?.key) {
+        if (isFocused) {
             checkUser();
         }
-    }, [isFocused, rootNavigation]);
+    }, [isFocused]);
 
     useEffect(() => {
         const fetchHabits = async () => {
@@ -133,10 +132,10 @@ const ProgresoScreen = () => {
             }
         };
 
-        if (isFocused && rootNavigation?.key && user) {
+        if (isFocused && user) {
             fetchHabits();
         }
-    }, [isFocused, user, rootNavigation]);
+    }, [isFocused, user]);
 
     const fetchHabits = async () => {
         const token = user?.token;
