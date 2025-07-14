@@ -389,11 +389,12 @@ const HabitosScreen = () => {
                     </Text>
 
 
-                    {item.streak && item.streak > 0 && (
+                    {typeof item.streak === 'number' && item.streak > 0 && (
                         <Text style={habitosScreenStyles.streakText}>
                             🔥 {item.streak}
                         </Text>
                     )}
+
 
 
 
