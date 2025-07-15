@@ -1,48 +1,50 @@
-# 🧠📱 Grupo-3 — App y Servidor
+# Welcome to your Expo app 👋
 
-Proyecto fullstack desarrollado por estudiantes del Grupo 3. Consta de una app móvil desarrollada con **Expo SDK 51** y un servidor backend con **Node.js**, **npm** y **Docker**.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## 🚀 Instrucciones para ejecutar el proyecto completo
+## Get started
 
-### 📱 Aplicación móvil (Expo)
+1. Install dependencies
 
-Esta app fue desarrollada con **Expo SDK 51** y **no es compatible con versiones posteriores**.
+   ```bash
+   npm install
+   ```
 
-#### ⚠️ Compatibilidad
+2. Start the app
 
-- **iPhone (iOS físico):** ❌ No compatible. Expo Go en la App Store solo soporta SDK 53.
-- **Android físico:** ✅ Compatible instalando manualmente el **APK de Expo Go versión 51**.
-- **Simulador iOS (Xcode):** ✅ Compatible.
-- **Navegador web:** ✅ Compatible.
+   ```bash
+    npx expo start
+   ```
 
-> ⚠️ **IMPORTANTE**: Si vas a correr la app en un **dispositivo físico (Android)**, recordá **reemplazar `localhost` en el archivo `.env` (si no se encuentra presente, agregarlo manualmente en la carpeta principal) por la IP local de la computadora** donde está corriendo el servidor. Esto es necesario para que la app móvil pueda comunicarse correctamente con el backend.
->```bash
->EXPO_PUBLIC_SERVER_URL = 'http://localhost:3000'
->```
+In the output, you'll find options to open the app in a
 
-#### Requisitos
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-- [Node.js y npm](https://nodejs.org/)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/)
-- Expo Go versión 51 (APK descargable para Android)
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-#### Pasos para ejecutar la app
+## Get a fresh project
+
+When you're ready, run:
 
 ```bash
-npm install       # Instala dependencias
-npx expo start    # Inicia la app
+npm run reset-project
 ```
 
-### 📂 Desarrollo y ejecución
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-Podés abrir la app en:
+## Learn more
 
-- Emulador Android o iOS  
-- Expo Go (**solo versión 51**, disponible para Android)  
-- Navegador web  
+To learn more about developing your project with Expo, look at the following resources:
 
-## 👨‍💻 Alumnos
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-- Cortina, Tomás  
-- Di Tomase, Lucas  
-- Sarapura, Tomás
+## Join the community
+
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.

@@ -1,88 +1,88 @@
 import React, { useEffect, useState } from 'react';
-import perfilScreenStyles from '../../components/styles/perfilStyles';
-import themeDark from '../../components/themes/themeDark';
-import themeLight from '../../components/themes/themeLight';
 import {
+    Alert,
+    Button,
     Image,
     Text,
     View,
     useColorScheme,
-    Alert,
-    ActivityIndicator,
-    TouchableOpacity,
-    ScrollView,
 } from 'react-native';
+
+// Styles
+import perfilScreenStyles from '../../components/styles/perfilStyles';
+import themeDark from '../../components/themes/themeDark';
+import themeLight from '../../components/themes/themeLight';
+
+// Libraries
 import * as Notifications from 'expo-notifications';
 import * as ImagePicker from 'expo-image-picker';
-import { useGlobalContext } from '../../components/contexts/useGlobalContext';
-import {
-    signOut,
-    uploadImageToDatabase,
-    scheduleNotification,
-    calculateAge,
-} from '../../components/api';
-import { useRouter } from 'expo-router';
+import * as FileSystem from 'expo-file-system';
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-    }),
-});
+// Contexts
+import { useGlobalContext } from '@/components/contexts/useGlobalContext';
 
-const SERVER_URL = process.env.EXPO_PUBLIC_SERVER_URL;
-
+/**
+ * The PerfilScreen component displays user profile information and provides
+ * functionalities like image selection, upload, and local notifications.
+ */
 const PerfilScreen = () => {
-    const router = useRouter();
-    const { user, setUser } = useGlobalContext();
+    const { user } = useGlobalContext();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
+
     const [image, setImage] = useState<string | null>(null);
-    const [serverImage, setServerImage] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
 
-    const handleSignOut = () => {
-        signOut(setUser);
+    /**
+     * Calculates the user's age based on their date of birth.
+     */
+    const calculateAge = (birthDate: string): number => {
+        const birthDateObj = new Date(birthDate);
+        const today = new Date();
+
+        let age = today.getFullYear() - birthDateObj.getFullYear();
+
+        const monthDiff = today.getMonth() - birthDateObj.getMonth();
+        const dayDiff = today.getDate() - birthDateObj.getDate();
+
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+        }
+
+        return age;
     };
 
     useEffect(() => {
-        if (!user) {
-            router.replace('/login');
-            return;
-        }
-
+        // Request notification permissions on component mount
         const requestPermissions = async () => {
             const { status } = await Notifications.getPermissionsAsync();
             if (status !== 'granted') {
                 await Notifications.requestPermissionsAsync();
             }
         };
-
-        const checkServerImage = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch(
-                    `${SERVER_URL}/uploads/${user?.userId}.jpg`
-                );
-                if (response.ok) {
-                    setServerImage(`${SERVER_URL}/uploads/${user?.userId}.jpg`);
-                } else {
-                    setServerImage(null);
-                }
-            } catch (error) {
-                console.error('Error checking server image:', error);
-                setServerImage(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         requestPermissions();
-        checkServerImage();
-    }, [user]);
+    }, []);
 
+    /**
+     * Schedules a local notification.
+     */
+    const scheduleNotification = async () => {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: 'Hello!',
+                body: 'This is a local notification.',
+                data: { extraData: 'Some data' },
+            },
+            trigger: {
+                seconds: 5,
+                repeats: false,
+            },
+        });
+    };
+
+    /**
+     * Opens the image picker to select an image from the gallery.
+     */
     const pickImage = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
@@ -94,119 +94,90 @@ const PerfilScreen = () => {
 
             if (!result.canceled) {
                 setImage(result.assets[0].uri);
+            } else {
+                Alert.alert(
+                    'Delete',
+                    'Are you sure you want to delete the image?',
+                    [
+                        { text: 'Yes', onPress: () => setImage(null) },
+                        { text: 'No' },
+                    ]
+                );
             }
         } catch (error) {
-            console.error('Error selecting image:', error);
+            console.error('Error reading an image:', error);
         }
     };
 
-    const cancelUpload = () => {
-        setImage(null); // Clear the selected image
+    /**
+     * Converts a file URI to a Base64 string.
+     */
+    const convertUriToBase64 = async (uri: string): Promise<string> => {
+        try {
+            return await FileSystem.readAsStringAsync(uri, {
+                encoding: FileSystem.EncodingType.Base64,
+            });
+        } catch (error) {
+            console.error('Error converting file to Base64:', error);
+            throw error;
+        }
     };
 
+    /**
+     * Uploads the selected image (currently displays Base64 for demonstration).
+     */
     const uploadImage = async (): Promise<void> => {
         if (!image) {
-            Alert.alert(
-                'No se seleccionó ninguna imagen',
-                'Selecciona una imagen antes de subirla.'
-            );
+            Alert.alert('No image selected', 'Please select an image before uploading.');
             return;
         }
 
         try {
             setUploading(true);
 
-            await uploadImageToDatabase(user?.token, image);
-            setServerImage(image); // Use the local image URI for immediate display
-            setImage(null); // Clear the local image
+            const base64Image = await convertUriToBase64(image);
+
+            // Placeholder: display Base64 string as an alert
+            Alert.alert('Base64 Image', base64Image);
         } catch (error) {
             console.error('Upload failed:', error);
             Alert.alert(
-                'Error al subir',
-                'Ocurrió un error al subir la imagen.'
+                'Upload failed',
+                'Something went wrong while uploading the image.'
             );
         } finally {
             setUploading(false);
         }
     };
 
-
-    if (loading) {
-        return (
-            <View style={perfilScreenStyles.container}>
-                <ActivityIndicator size="large" color="#4caf50" />
-            </View>
-        );
-    }
-
     return (
-        <ScrollView
-
+        <View
             style={[
-                isDarkMode
-                    ? themeDark.darkBackground
-                    : themeLight.lightBackground,
+                perfilScreenStyles.container,
+                isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
             ]}
-            contentContainerStyle={perfilScreenStyles.scrollContainer}
-
         >
+            {/* Profile Image Section */}
             <View style={perfilScreenStyles.profileImageContainer}>
-                {!serverImage && !image && (
+                {image ? (
+                    <>
+                        <Image source={{ uri: image }} style={perfilScreenStyles.image} />
+                        <Button
+                            title={uploading ? 'Uploading...' : 'Upload Image'}
+                            onPress={uploadImage}
+                            disabled={uploading}
+                        />
+                    </>
+                ) : (
                     <Image
                         source={require('../../assets/images/user.png')}
                         style={perfilScreenStyles.profileImage}
                     />
                 )}
-
-                {serverImage && !image && (
-                    <Image
-                        source={{
-                            uri: serverImage,
-                        }}
-                        style={perfilScreenStyles.image}
-                    />
-                )}
-                {image && (
-                    <Image
-                        source={{ uri: image }}
-                        style={perfilScreenStyles.image}
-                    />
-                )}
-
-                {image && (
-                    <View style={perfilScreenStyles.actionContainer}>
-                        <TouchableOpacity
-                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
-                            onPress={uploadImage}
-                            disabled={uploading}
-                        >
-                            <Text style={perfilScreenStyles.buttonText}>
-                                {uploading ? 'Subiendo...' : 'Subir imagen'}
-                            </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[perfilScreenStyles.button, perfilScreenStyles.actionButton]}
-                            onPress={cancelUpload}
-                        >
-                            <Text style={perfilScreenStyles.buttonText}>
-                                Cancelar Subida
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-
-                {!image && (
-                    <TouchableOpacity
-                        style={perfilScreenStyles.button}
-                        onPress={pickImage}
-                    >
-                        <Text style={perfilScreenStyles.buttonText}>
-                            Elegir una imagen de la galería
-                        </Text>
-                    </TouchableOpacity>
-                )}
+                <Button title="Pick an image from gallery" onPress={pickImage} />
             </View>
 
+            {/* User Information Section */}
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Usuario:</Text>
                 <Text style={perfilScreenStyles.value}>{user?.username}</Text>
@@ -218,26 +189,13 @@ const PerfilScreen = () => {
             <View style={perfilScreenStyles.infoContainer}>
                 <Text style={perfilScreenStyles.label}>Edad:</Text>
                 <Text style={perfilScreenStyles.value}>
-                    {user?.dateOfBirth
-                        ? calculateAge(user.dateOfBirth).toString()
-                        : ''}
+                    {calculateAge(user?.dateOfBirth ?? '')}
                 </Text>
             </View>
-            <TouchableOpacity
-                style={perfilScreenStyles.button}
-                onPress={scheduleNotification}
-            >
-                <Text style={perfilScreenStyles.buttonText}>
-                    Programar notificación
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={perfilScreenStyles.button}
-                onPress={handleSignOut}
-            >
-                <Text style={perfilScreenStyles.buttonText}>Cerrar sesión</Text>
-            </TouchableOpacity>
-        </ScrollView>
+
+            {/* Notification Button */}
+            <Button title="Schedule Notification" onPress={scheduleNotification} />
+        </View>
     );
 };
 

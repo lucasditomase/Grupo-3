@@ -1,161 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    Animated,
-    StyleSheet,
-} from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useGlobalContext } from '../../components/contexts/useGlobalContext';
+import loginScreenStyles from '../../components/styles/loginStyles';
 import { registerUser, loginUser } from '../../components/authService';
+import { useGlobalContext } from '../../components/contexts/useGlobalContext';
 
 interface LoginScreenProps {
-    onLoginSuccess?: () => void;
+    onClose: () => void;
+    onLoginSuccess: () => void;
 }
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
-    const [emailUser, setEmailUser] = useState('');
-    const [emailDomain, setEmailDomain] = useState('');
-    const [isLogin, setIsLogin] = useState(true);
+/**
+ * LoginScreen Component:
+ * Handles user login and registration with input validation and routing.
+ */
+const LoginScreen: React.FC<LoginScreenProps> = ({
+    onLoginSuccess,
+}) => {
+    const [email, setEmail] = useState('');
+    const [isLogin, setIsLogin] = useState(false);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [nacimientoDia, setDay] = useState('');
     const [nacimientoMes, setMonth] = useState('');
     const [nacimientoAnio, setYear] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
     const { setUser } = useGlobalContext();
 
-    const [logoOpacity] = useState(new Animated.Value(0));
-
-    useEffect(() => {
-        Animated.timing(logoOpacity, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-        }).start();
-    }, []);
-
+    /**
+     * Handles user login process.
+     */
     const handleLogin = async () => {
-        const fullEmail = `${emailUser}@${emailDomain}.com`;
-        const response = await loginUser(fullEmail, password, setUser);
-        if (response.success) {
-
-            setErrorMessage('');
-            if (onLoginSuccess) {
-                onLoginSuccess();
-            }
-
-            router.replace('/');
-        } else {
-            setErrorMessage(response.message);
+        const response = await loginUser(email, password, setUser);
+        if (!response.success) {
+            Alert.alert('Error', response.message);
+            return;
         }
+        onLoginSuccess();
+        router.replace('/'); // Navigate back to the main tab screen
     };
 
+    /**
+     * Handles user registration process.
+     */
     const handleSignUp = async () => {
-        const fullEmail = `${emailUser}@${emailDomain}.com`;
         const success = await registerUser(
             username,
-            fullEmail,
+            email,
             password,
             nacimientoDia,
             nacimientoMes,
             nacimientoAnio
         );
         if (success) {
-            handleLogin();
+            handleLogin(); // Perform login after successful signup
         }
     };
 
     return (
-        <View style={styles.container}>
-            {/* Animated Logo */}
-            <Animated.Image
-                source={require('../../assets/images/logoRedondeado.png')}
-                style={[styles.logo, { opacity: logoOpacity }]}
-                resizeMode="contain"
-            />
-
-            {/* Form */}
+        <View style={loginScreenStyles.container}>
             {isLogin ? (
+                // Login Form
                 <View>
-                    <Text style={styles.welcomeText}>
-                        ¡Bienvenido de nuevo! 🎉
-                    </Text>
-                    <Text style={styles.subtitle}>
-                        Inicia sesión para continuar y alcanzar tus metas.
-                    </Text>
-                    <View style={styles.emailContainer}>
-                        <TextInput
-                            style={[styles.input, styles.emailInput]}
-                            placeholder="usuario"
-                            placeholderTextColor="#aaa"
-                            value={emailUser}
-                            onChangeText={setEmailUser}
-                            autoCapitalize="none"
-                        />
-                        <Text style={styles.emailText}>@</Text>
-                        <TextInput
-                            style={[styles.input, styles.emailInput]}
-                            placeholder="dominio"
-                            placeholderTextColor="#aaa"
-                            value={emailDomain}
-                            onChangeText={setEmailDomain}
-                            autoCapitalize="none"
-                        />
-                        <Text style={styles.emailText}>.com</Text>
-                    </View>
-                    <View style={styles.passwordContainer}>
-                        <TextInput
-                            style={[styles.input, { paddingRight: 40 }]}
-                            placeholder="Tu contraseña"
-                            placeholderTextColor="#aaa"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!showPassword}
-                        />
-                        <TouchableOpacity
-                            style={styles.showPasswordButton}
-                            onPress={() => setShowPassword(!showPassword)}
-                        >
-                            <Ionicons
-                                name={showPassword ? 'eye-off' : 'eye'}
-                                size={24}
-                                color="gray"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleLogin}
-                    >
-                        <Text style={styles.buttonText}>Iniciar sesión</Text>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <View>
-                    <Text style={styles.welcomeText}>
-                        ¡Un nuevo comienzo! 🌟
-                    </Text>
-                    <Text style={styles.subtitle}>
-                        Regístrate para personalizar tu experiencia.
+                    <Text style={loginScreenStyles.title}>
+                        Debes autenticarte para continuar
                     </Text>
                     <TextInput
-                        style={styles.input}
-                        placeholder="Elige un nombre de usuario"
+                        style={loginScreenStyles.input}
+                        placeholder="Correo"
+                        placeholderTextColor="#aaa"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={loginScreenStyles.input}
+                        placeholder="Clave"
+                        placeholderTextColor="#aaa"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={true}
+                    />
+                    <View style={loginScreenStyles.buttonContainer}>
+                        <Button title="Iniciar sesión" onPress={handleLogin} />
+                    </View>
+                </View>
+            ) : (
+                // Registration Form
+                <View>
+                    <Text style={loginScreenStyles.title}>
+                        Necesitas una cuenta para continuar
+                    </Text>
+                    <TextInput
+                        style={loginScreenStyles.input}
+                        placeholder="Usuario"
                         placeholderTextColor="#aaa"
                         value={username}
                         onChangeText={setUsername}
                         autoCapitalize="none"
                     />
-                    <Text style={styles.sectionTitle}>Fecha de nacimiento</Text>
-                    <View style={styles.birthdateContainer}>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>
+                        Fecha de nacimiento
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                        }}
+                    >
                         <TextInput
-                            style={[styles.input, styles.birthdateInput]}
+                            style={[loginScreenStyles.input, { flex: 1, marginRight: 5 }]}
                             placeholder="Día"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
@@ -164,7 +120,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                             maxLength={2}
                         />
                         <TextInput
-                            style={[styles.input, styles.birthdateInput]}
+                            style={[loginScreenStyles.input, { flex: 1, marginHorizontal: 5 }]}
                             placeholder="Mes"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
@@ -173,7 +129,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                             maxLength={2}
                         />
                         <TextInput
-                            style={[styles.input, styles.birthdateInput]}
+                            style={[loginScreenStyles.input, { flex: 1, marginLeft: 5 }]}
                             placeholder="Año"
                             placeholderTextColor="#aaa"
                             keyboardType="numeric"
@@ -182,175 +138,38 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
                             maxLength={4}
                         />
                     </View>
-                    <View style={styles.emailContainer}>
-                        <TextInput
-                            style={[styles.input, styles.emailInput]}
-                            placeholder="usuario"
-                            placeholderTextColor="#aaa"
-                            value={emailUser}
-                            onChangeText={setEmailUser}
-                            autoCapitalize="none"
-                        />
-                        <Text style={styles.emailText}>@</Text>
-                        <TextInput
-                            style={[styles.input, styles.emailInput]}
-                            placeholder="dominio"
-                            placeholderTextColor="#aaa"
-                            value={emailDomain}
-                            onChangeText={setEmailDomain}
-                            autoCapitalize="none"
-                        />
-                        <Text style={styles.emailText}>.com</Text>
+                    <TextInput
+                        style={loginScreenStyles.input}
+                        placeholder="Correo"
+                        placeholderTextColor="#aaa"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={loginScreenStyles.input}
+                        placeholder="Clave"
+                        placeholderTextColor="#aaa"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={true}
+                    />
+                    <View style={loginScreenStyles.buttonContainer}>
+                        <Button title="Registrarse" onPress={handleSignUp} />
                     </View>
-                    <View style={styles.passwordContainer}>
-                        <TextInput
-                            style={[styles.input, { paddingRight: 40 }]}
-                            placeholder="Crea una contraseña segura"
-                            placeholderTextColor="#aaa"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry={!showPassword}
-                        />
-                        <TouchableOpacity
-                            style={styles.showPasswordButton}
-                            onPress={() => setShowPassword(!showPassword)}
-                        >
-                            <Ionicons
-                                name={showPassword ? 'eye-off' : 'eye'}
-                                size={24}
-                                color="gray"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={handleSignUp}
-                    >
-                        <Text style={styles.buttonText}>Registrarme</Text>
-                    </TouchableOpacity>
                 </View>
             )}
-
-            {errorMessage !== '' && (
-                <Text style={styles.errorText}>{errorMessage}</Text>
-            )}
-
-            <TouchableOpacity
-                onPress={() => {
-                    setIsLogin(!isLogin);
-                    setErrorMessage('');
-                }}
-            >
-                <Text style={styles.switchText}>
-                    {isLogin
-                        ? '¿No tienes cuenta? Regístrate aquí'
-                        : '¿Ya tienes cuenta? Inicia sesión aquí'}
-                </Text>
-            </TouchableOpacity>
+            <Button
+                title={
+                    isLogin
+                        ? '¿No tienes cuenta? Regístrate'
+                        : '¿Ya tienes cuenta? Inicia sesión'
+                }
+                onPress={() => setIsLogin(!isLogin)}
+            />
         </View>
     );
 };
 
 export default LoginScreen;
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#f8f8f8',
-    },
-    logo: {
-        width: 120,
-        height: 120,
-        alignSelf: 'center',
-        marginBottom: 30,
-    },
-    welcomeText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginBottom: 10,
-        color: '#333',
-    },
-    subtitle: {
-        fontSize: 16,
-        textAlign: 'center',
-        marginBottom: 20,
-        color: '#555',
-    },
-    input: {
-        height: 48,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 10,
-        paddingLeft: 10,
-        paddingRight: 40,
-        marginBottom: 15,
-        backgroundColor: '#fff',
-    },
-
-    passwordContainer: {
-        marginBottom: 15,
-        justifyContent: 'center',
-    },
-    showPasswordButton: {
-        position: 'absolute',
-        right: 10,
-        top: 12,
-        height: 24,
-        width: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    button: {
-        backgroundColor: 'teal',
-        padding: 15,
-        borderRadius: 10,
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-        marginTop: 10,
-    },
-    switchText: {
-        marginTop: 10,
-        textAlign: 'center',
-        color: 'teal',
-        textDecorationLine: 'underline',
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#333',
-    },
-    birthdateContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    birthdateInput: {
-        flex: 1,
-        marginHorizontal: 5,
-    },
-    emailContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 15,
-    },
-    emailInput: {
-        flex: 1,
-        marginHorizontal: 2,
-    },
-    emailText: {
-        fontSize: 18,
-        marginHorizontal: 2,
-    },
-});

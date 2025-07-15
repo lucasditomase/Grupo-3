@@ -1,7 +1,5 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 // Constants
 import { Colors } from '@/constants/Colors';
@@ -12,6 +10,9 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 // Hooks
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+// Contexts
+import { GlobalProvider } from '../../components/contexts/globalContext';
+
 /**
  * The main layout component for the Tab-based navigation in the app.
  * Provides global context and consistent styling across all tabs.
@@ -20,62 +21,66 @@ export default function TabLayout() {
     // Determine the current color scheme (light or dark)
     const colorScheme = useColorScheme();
 
-    const tabs = [
-        { name: 'index', title: 'Progreso', iconFocused: 'checkmark-circle', iconDefault: 'checkmark-circle-outline' },
-        { name: 'habitos', title: 'Hábitos', iconFocused: 'heart', iconDefault: 'heart-outline', },
-        { name: 'perfil', title: 'Perfil', iconFocused: 'person', iconDefault: 'person-outline', },
-    ];
+    return (
+        <GlobalProvider>
+            <Tabs
+                screenOptions={{
+                    // Active tab tint color based on the current color scheme
+                    tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
 
-    const HeaderRight = () => {
-        const navigation = useNavigation();
-        return (
-            <TouchableOpacity
-                onPress={() => {
-                    (navigation as any).navigate('index'); // Cambia según la ruta destino
+                    // Header configuration
+                    headerShown: true,
+                    headerStyle: {
+                        backgroundColor: 'teal',
+                    },
+                    headerTintColor: 'white',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
                 }}
             >
-                <Image
-                    source={require('../../assets/images/logoRedondeado.png')}
-                    style={{ width: 30, height: 30, marginRight: 10 }}
-                />
-            </TouchableOpacity>
-        );
-    };
-
-    return (
-
-        <Tabs
-            screenOptions={{
-                // Active tab tint color based on the current color scheme
-                tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-
-                // Header configuration
-                headerShown: true,
-                headerStyle: {
-                    backgroundColor: 'teal',
-                },
-                headerTintColor: 'white',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-            }}
-        >
-            {tabs.map(({ name, title, iconFocused, iconDefault }) => (
+                {/* Progress Tab */}
                 <Tabs.Screen
-                    key={name}
-                    name={name}
+                    name="index"
                     options={{
-                        title,
+                        title: 'Progreso',
                         tabBarIcon: ({ color, focused }) => (
                             <TabBarIcon
-                                name={focused ? iconFocused as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline" : iconDefault as "checkmark-circle" | "checkmark-circle-outline" | "heart" | "heart-outline" | "person" | "person-outline"}
+                                name={focused ? 'checkmark-circle' : 'checkmark-circle-outline'}
                                 color={color}
                             />
                         ),
-                        headerRight: HeaderRight,
                     }}
                 />
-            ))}
-        </Tabs>
+
+                {/* Habits Tab */}
+                <Tabs.Screen
+                    name="habitos"
+                    options={{
+                        title: 'Hábitos',
+                        tabBarIcon: ({ color, focused }) => (
+                            <TabBarIcon
+                                name={focused ? 'heart' : 'heart-outline'}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+
+                {/* Profile Tab */}
+                <Tabs.Screen
+                    name="perfil"
+                    options={{
+                        title: 'Perfil',
+                        tabBarIcon: ({ color, focused }) => (
+                            <TabBarIcon
+                                name={focused ? 'person' : 'person-outline'}
+                                color={color}
+                            />
+                        ),
+                    }}
+                />
+            </Tabs>
+        </GlobalProvider>
     );
 }

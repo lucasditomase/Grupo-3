@@ -1,6 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+/**
+ * Styles for modals in the application.
+ */
 const modalStyles = StyleSheet.create({
+    // Input field styles
     input: {
         borderColor: 'gray',
         borderRadius: 5,
@@ -8,51 +12,36 @@ const modalStyles = StyleSheet.create({
         height: 40,
         marginBottom: 20,
         paddingHorizontal: 10,
-        backgroundColor: '#f9f9f9',
     },
+
+    // Label text styles
     label: {
         fontSize: 18,
         marginBottom: 10,
-        fontWeight: '500',
-        color: 'gray',
     },
+
+    // Container for the modal overlay
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
+
+    // View styles for the modal content
     modalView: {
         width: '80%',
         padding: 20,
-        backgroundColor: '#fff',
-        borderRadius: 12,
+        backgroundColor: 'white',
+        borderRadius: 10,
         elevation: 5,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-    },
-    closeButton: {
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: '#FF5C5C',
-        borderRadius: 5,
-        alignItems: 'center',
-        width: '100%',
-    },
-    saveButton: {
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: '#28a745',
-        borderRadius: 5,
-        alignItems: 'center',
-        width: '100%',
-    },
-    closeButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
 
