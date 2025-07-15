@@ -1,11 +1,13 @@
 // Required imports
 import 'react-native-reanimated';
 import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { GlobalProvider } from '../components/contexts/globalContext';
 
 // Prevent the splash screen from hiding automatically
 SplashScreen.preventAutoHideAsync();
@@ -35,14 +37,21 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        {/* Tab-based navigation */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GlobalProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            {/* Tab-based navigation */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        {/* Additional screens */}
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+            {/* Login screen */}
+            <Stack.Screen name="login" options={{ headerShown: false }} />
+
+            {/* Additional screens */}
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </ThemeProvider>
+      </GlobalProvider>
+    </GestureHandlerRootView>
   );
 }
