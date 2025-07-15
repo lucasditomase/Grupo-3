@@ -15,7 +15,10 @@ Esta app fue desarrollada con **Expo SDK 51** y **no es compatible con versiones
 - **Simulador iOS (Xcode):** ✅ Compatible.
 - **Navegador web:** ✅ Compatible.
 
-> ⚠️ **IMPORTANTE**: Si vas a correr la app en un **dispositivo físico (Android)**, recordá **reemplazar `localhost` en el archivo `.env` por la IP local de la computadora** donde está corriendo el servidor. Esto es necesario para que la app móvil pueda comunicarse correctamente con el backend.
+> ⚠️ **IMPORTANTE**: Si vas a correr la app en un **dispositivo físico (Android)**, recordá **reemplazar `localhost` en el archivo `.env` (si no se encuentra presente, agregarlo manualmente en la carpeta principal) por la IP local de la computadora** donde está corriendo el servidor. Esto es necesario para que la app móvil pueda comunicarse correctamente con el backend.
+>```bash
+>EXPO_PUBLIC_SERVER_URL = 'http://localhost:3000'
+>```
 
 #### Requisitos
 
