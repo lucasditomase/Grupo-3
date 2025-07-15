@@ -8,6 +8,7 @@ import {
     TextInput,
     View,
     useColorScheme,
+    StyleSheet,
 } from 'react-native';
 
 // Styles
@@ -111,9 +112,10 @@ const HabitosScreen = () => {
     const [sortOrder, setSortOrder] = useState<'PRIORITY' | 'STREAK' | null>(null);
 
 
+
     const handleFrequencyChange = (frequency: string) => {
         setSelectedFrequency(frequency);
-    };
+
 
 
     const handlePriorityChange = (priority: 'ALTA' | 'MEDIA' | 'BAJA') => {
@@ -673,6 +675,7 @@ const HabitosScreen = () => {
                                 />
                             ))}
                         </Picker>
+
                         <Text style={modalStyles.label}>Objetivo (cantidad)</Text>
                         <TextInput
                             style={modalStyles.input}
@@ -753,6 +756,7 @@ const HabitosScreen = () => {
                                 Cerrar
                             </Text>
                         </Pressable>
+
                     </View>
                 </View>
             </Modal>
@@ -813,3 +817,22 @@ const HabitosScreen = () => {
 };
 
 export default HabitosScreen;
+
+const styles = StyleSheet.create({
+    buttonContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
+    },
+    buttonPart: {
+        flex: 1,
+        padding: 10,
+        textAlign: 'center',
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    selected: {
+        backgroundColor: '#0E6E6D',
+        color: 'white',
+    },
+
+});
