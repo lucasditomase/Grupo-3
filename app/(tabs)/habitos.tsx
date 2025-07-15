@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
     Alert,
     Button,
@@ -6,6 +6,7 @@ import {
     Pressable,
     Text,
     TextInput,
+    TouchableOpacity,
     View,
     useColorScheme,
     StyleSheet,
@@ -26,214 +27,100 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 // Icons
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-// Navigation
-import { useRouter } from 'expo-router';
-
-// Context
-import { useGlobalContext } from '../../components/contexts/useGlobalContext';
-import {
-    habitosEnBaseDeDatos,
-    crearHabitoEnBaseDeDatos,
-    eliminarHabitoEnBaseDeDatos,
-    actualizarHabitoEnBaseDeDatos,
-    updateHabitStreak,
-    getStreaks,
-} from '../../components/api';
-
 // Types
 type HabitoItem = {
     key: string;
     text: string;
     category: string;
     frequency: string;
-    completion: boolean;
-
-    priority: 'ALTA' | 'MEDIA' | 'BAJA';
-
-    progress: number;
-    goal: number;
-
-    icon?: string;
-    streak?: number;
-    lastCompletionDate?: string;
-};
-type HabitoItemDB = {
-    text: string;
-    category: string;
-    frequency: string;
-
-    priority: 'ALTA' | 'MEDIA' | 'BAJA';
-
-
-    goal: number;
-    progress: number;
-
-
-
+    icon: string;
 };
 
+/**
+ * Screen component for managing and displaying habits.
+ */
 const HabitosScreen = () => {
-    const router = useRouter();
     const [inputText, setInputText] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState<
-        string | undefined
-    >();
-    const [goalInput, setGoalInput] = useState('1');
+    const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
     const colorScheme = useColorScheme();
     const isDarkMode = colorScheme === 'dark';
-    const swipeTriggered = useRef<{ [key: string]: boolean }>({});
-    const listViewRef = useRef<any>(null);
-    const { user, habitos, setHabitos } = useGlobalContext();
-    const categories = [
-        'SALUD',
-        'DEPORTE',
-        'ESTUDIO',
-        'TRABAJO',
-        'OCIO',
-        'OTROS',
+    const swipeTriggered = useRef<{ [key: string]: boolean }>({}); // Keeps track of whether a swipe action has been triggered for each item
+
+    const pokemons = ['Gimnasio', 'Meditación', 'Pagos', 'Agenda', 'Alimentos'];
+
+    // Sample data for the SwipeListView
+    const data: HabitoItem[] = [
+        { key: '1', text: 'Llamar a mi mama', category: 'Relación', frequency: 'Diario', icon: 'favorite' },
+        { key: '2', text: 'Salir a correr', category: 'Deporte', frequency: 'Semanal', icon: 'directions-run' },
     ];
-    const categoryIcons: { [key: string]: string } = {
-        SALUD: 'local-hospital',
-        DEPORTE: 'sports-soccer',
-        ESTUDIO: 'school',
-        TRABAJO: 'work',
-        OCIO: 'movie',
-        OTROS: 'category',
-    };
-
-    const [selectedFrequency, setSelectedFrequency] = useState('DIARIA');
-
-    const [selectedPriority, setSelectedPriority] = useState<'ALTA' | 'MEDIA' | 'BAJA'>('MEDIA');
-
-    const [contextMenuVisible, setContextMenuVisible] = useState(false);
-    const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-    const [selectedHabit, setSelectedHabit] = useState<HabitoItem | null>(null);
-    const [sortOrder, setSortOrder] = useState<'PRIORITY' | 'STREAK' | null>(null);
 
 
-
-    const handleFrequencyChange = (frequency: string) => {
-        setSelectedFrequency(frequency);
-
-
-
-    const handlePriorityChange = (priority: 'ALTA' | 'MEDIA' | 'BAJA') => {
-
-        setSelectedPriority(priority);
-    };
-
-    useEffect(() => {
-        if (!user) {
-            router.replace('/login');
-        } else {
-            fetchHabits();
-        }
-    }, [user]);
-
-    const fetchHabits = async () => {
-        const token = user?.token;
-        if (token && user) {
-            const fetchedHabits = await habitosEnBaseDeDatos(token);
-            if (fetchedHabits) {
-                let streakData = await getStreaks(user.userId);
-
-                // Ensure completed habits are reflected in streaks
-                for (const habit of fetchedHabits as HabitoItem[]) {
-                    if (habit.completion && !streakData[habit.key]) {
-                        await updateHabitStreak(user.userId, habit.key, true);
-                    }
-                }
-
-                // Reload streaks in case they were updated above
-                streakData = await getStreaks(user.userId);
-                interface StreakData {
-                    [key: string]: {
-                        streak: number;
-                        lastCompleted: string;
-                    };
-                }
-
-                interface HabitWithStreak extends HabitoItem {
-                    streak: number;
-                    lastCompletionDate: string;
-                }
-
-                const streakDataTyped: StreakData = streakData;
-
-                const habitsWithStreak: HabitWithStreak[] = (fetchedHabits as HabitoItem[]).map((h: HabitoItem) => ({
-                    ...h,
-                    streak: streakDataTyped[h.key]?.streak || 0,
-                    lastCompletionDate: streakDataTyped[h.key]?.lastCompleted || '',
-                }));
-                setHabitos(habitsWithStreak);
-            }
-        }
+    const markAsCompleted = (item: HabitoItem) => {
+        Alert.alert(`Marked "${item.text}" as completed`);
     };
 
     const deleteHabit = (item: HabitoItem) => {
+        Alert.alert(`Deleted "${item.text}"`);
+    };
+
+    /**
+     * Handles showing the context menu for an item.
+     */
+    const handleLongPress = (item: HabitoItem) => {
         Alert.alert(
-            'Confirmar eliminación',
-            `¿Estás seguro de que deseas eliminar "${item.text}"?`,
+            'Options',
+            `Choose an action for "${item.text}"`,
             [
-                {
-                    text: 'Cancelar',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Eliminar',
-                    onPress: async () => {
-                        const token = user?.token;
-                        if (token) {
-                            await eliminarHabitoEnBaseDeDatos(token, item.key);
-                            setHabitos((prev) =>
-                                prev.filter((habit) => habit.key !== item.key)
-                            );
-                            setTimeout(() => {
-                                Alert.alert(`"${item.text}" eliminado`);
-                            }, 500);
-                            listViewRef.current?.closeAllOpenRows();
-                        } else {
-                            Alert.alert('Error', 'No se ha iniciado sesión');
-                        }
-                    },
-                    style: 'destructive',
-                },
-            ]
+                { text: 'Mark as Completed', onPress: () => markAsCompleted(item) },
+                { text: 'Delete', onPress: () => deleteHabit(item), style: 'destructive' },
+                { text: 'Cancel', style: 'cancel' },
+            ],
+            { cancelable: true }
         );
     };
 
-    const handleLongPress = (item: HabitoItem, event?: any) => {
-        if (event?.nativeEvent?.pageX) {
-            setContextMenuPosition({
-                x: event.nativeEvent.pageX,
-                y: event.nativeEvent.pageY,
-            });
-        }
-        setSelectedHabit(item);
-        setContextMenuVisible(true);
+    // State for the selected part of the habit
+    const [selectedPart, setSelectedPart] = useState('Diario');
+
+    const handlePartClick = (part: string) => {
+        setSelectedPart(part);
     };
 
-    const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
-        <View style={habitosScreenStyles.rowBack}>
-            <Pressable
-                style={habitosScreenStyles.completeButton}
-                onPress={() => toggleCompletion(item)} // Use toggleCompletion
+
+    /**
+     * Renders each habit item.
+     */
+    const renderItem = ({ item }: { item: HabitoItem }) => (
+        <Pressable onLongPress={() => handleLongPress(item)}>
+            <View
+                style={[
+                    habitosScreenStyles.habitosContainer,
+                    { flexDirection: 'row' },
+                ]}
             >
-                <Text style={habitosScreenStyles.backText}>
-                    {item.completion ? 'Descompletar' : 'Completar'}{' '}
-                    {/* Dynamic label */}
-                </Text>
-            </Pressable>
-            <Pressable
-                style={habitosScreenStyles.deleteButton}
-                onPress={() => deleteHabit(item)}
-            >
-                <Text style={habitosScreenStyles.backText}>Eliminar</Text>
-            </Pressable>
-        </View>
+                <View style={habitosScreenStyles.habitosIconContainer}>
+                    <MaterialIcons
+                        name={item.icon}
+                        size={50}
+                        color="black"
+                    />
+                </View>
+                <View style={habitosScreenStyles.habitosTextosContainer}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+                        {item.text}
+                    </Text>
+                    <Text style={{ fontSize: 16 }}>
+                        Frecuencia: {item.frequency}
+                    </Text>
+                </View>
+            </View>
+        </Pressable>
     );
 
+    /**
+    * Handles swipe actions.
+    */
     const handleSwipeValueChange = ({
         key,
         value,
@@ -241,413 +128,67 @@ const HabitosScreen = () => {
         key: string;
         value: number;
     }) => {
-        const habit = habitos.find((item) => item.key === key);
-        if (!habit || swipeTriggered.current[key]) return;
+        const habit = data.find((item) => item.key === key); // Find the swiped habit
+        if (!habit) return;
 
-        if (value > 150) {
-            toggleCompletion(habit); // Use toggleCompletion
-            swipeTriggered.current[key] = true;
-            listViewRef.current?.closeAllOpenRows();
-        } else if (value < -150) {
+        // Check if a swipe action has already been triggered for this item
+        if (swipeTriggered.current[key]) return;
+
+        if (value > 50) {
+            // Trigger swipe-right action (Mark as Completed)
+            markAsCompleted(habit);
+            swipeTriggered.current[key] = true; // Set flag to true
+        } else if (value < -50) {
+            // Trigger swipe-left action (Delete)
             deleteHabit(habit);
-            swipeTriggered.current[key] = true;
-            listViewRef.current?.closeAllOpenRows();
+            swipeTriggered.current[key] = true; // Set flag to true
         }
     };
 
-    const toggleCompletion = async (item: HabitoItem) => {
-        const updatedCompletion = !item.completion;
-        setHabitos((prev) =>
-            prev.map((habit) =>
-                habit.key === item.key
-                    ? { ...habit, completion: updatedCompletion, progress: updatedCompletion ? habit.goal : 0 }
-                    : habit
-            )
-        );
-        listViewRef.current?.closeAllOpenRows();
-
-        const token = user?.token;
-        if (token && user) {
-            try {
-                await actualizarHabitoEnBaseDeDatos(token, {
-                    ...item,
-                    completion: updatedCompletion,
-                    progress: updatedCompletion ? item.goal : 0,
-                });
-                const newStreak = await updateHabitStreak(
-                    user.userId,
-                    item.key,
-                    updatedCompletion
-                );
-                setHabitos((prev) =>
-                    prev.map((habit) =>
-                        habit.key === item.key
-                            ? { ...habit, streak: newStreak }
-                            : habit
-                    )
-                );
-            } catch (error) {
-                console.error('Error updating habit completion:', error);
-                Alert.alert(
-                    'Error',
-                    'No se pudo actualizar el hábito. Inténtalo de nuevo.'
-                );
-            }
-        } else {
-            Alert.alert('Error', 'No se ha iniciado sesión');
-        }
+    /**
+     * Reset the swipe trigger when swipe is released.
+     */
+    const handleRowClose = (rowKey: string) => {
+        swipeTriggered.current[rowKey] = false; // Reset the swipe trigger for this item
     };
 
-    const updateProgress = async (item: HabitoItem, delta: number) => {
-        const newProgress = Math.min(
-            (item.goal || 1),
-            Math.max(0, (item.progress || 0) + delta)
-        );
-        const completed = newProgress >= (item.goal || 1);
-        setHabitos((prev) =>
-            prev.map((habit) =>
-                habit.key === item.key
-                    ? { ...habit, progress: newProgress, completion: completed }
-                    : habit
-            )
-        );
-        const token = user?.token;
-        if (token) {
-            try {
-                await actualizarHabitoEnBaseDeDatos(token, {
-                    ...item,
-                    progress: newProgress,
-                    completion: completed,
-                });
-            } catch (error) {
-                console.error('Error updating habit progress:', error);
-                Alert.alert('Error', 'No se pudo actualizar el progreso.');
-            }
-        }
-    };
-
-    const renderItem = ({ item }: { item: HabitoItem }) => (
-        <Pressable
-            onLongPress={(e) => handleLongPress(item, e)}
-        >
-            <View
-                style={[
-                    habitosScreenStyles.habitosContainer,
-                    isDarkMode && {
-                        backgroundColor: '#1E1E1E',
-                        shadowColor: 'transparent',
-                        elevation: 0,
-                    },
-                ]}
-            >
-                <View style={habitosScreenStyles.habitosIconContainer}>
-                    <MaterialIcons
-                        name={categoryIcons[item.category] || 'help-outline'}
-                        size={30}
-                        color="teal"
-                    />
-                </View>
-                <View style={habitosScreenStyles.habitosTextosContainer}>
-                    <Text
-                        style={[
-                            habitosScreenStyles.habitosText,
-                            isDarkMode && themeDark.primaryText,
-                        ]}
-                    >
-                        {item.text}
-                    </Text>
-                    <Text
-                        style={[
-                            habitosScreenStyles.frequencyText,
-                            isDarkMode && themeDark.secondaryText,
-                        ]}
-                        numberOfLines={1}
-                        adjustsFontSizeToFit
-                    >
-                        Frecuencia: {item.frequency}
-                    </Text>
-
-
-                    {item.goal > 1 && (
-                        <View style={habitosScreenStyles.progressContainer}>
-                            <Pressable onPress={() => updateProgress(item, -1)}>
-                                <MaterialIcons
-                                    name="remove-circle-outline"
-                                    size={20}
-                                    color="teal"
-                                />
-                            </Pressable>
-                            <Text style={habitosScreenStyles.progressText}>
-                                {item.progress}/{item.goal}
-                            </Text>
-                            <Pressable onPress={() => updateProgress(item, 1)}>
-                                <MaterialIcons
-                                    name="add-circle-outline"
-                                    size={20}
-                                    color="teal"
-                                />
-                            </Pressable>
-                        </View>
-                    )}
-
-
-
-                    <Text
-                        style={[
-                            habitosScreenStyles.frequencyText,
-                            isDarkMode && themeDark.secondaryText,
-                        ]}
-                        numberOfLines={1}
-                        adjustsFontSizeToFit
-                    >
-                        Prioridad: {item.priority}
-                    </Text>
-
-
-                    {typeof item.streak === 'number' && item.streak > 0 && (
-                        <Text style={habitosScreenStyles.streakText}>
-                            🔥 {item.streak}
-                        </Text>
-                    )}
-
-
-
-
-                </View>
-                <MaterialIcons
-                    name={
-                        item.completion
-                            ? 'check-circle'
-                            : 'radio-button-unchecked'
-                    }
-                    size={24}
-                    color={item.completion ? 'green' : 'gray'}
-                    style={{ marginLeft: 'auto', marginRight: 10 }}
-                    onPress={() => toggleCompletion(item)}
-                />
-            </View>
-        </Pressable>
+    /**
+     * Renders hidden actions for the SwipeListView.
+     */
+    const renderHiddenItem = ({ item }: { item: HabitoItem }) => (
+        <View style={habitosScreenStyles.rowBack}>
+            <Text style={habitosScreenStyles.backText}>Complete</Text>
+            <Text style={habitosScreenStyles.backText}>Delete</Text>
+        </View>
     );
 
-    const handleRowClose = (rowKey: string) => {
-        // Delay resetting the swipe trigger to avoid multiple
-        // `onSwipeValueChange` events firing while the row closes.
-        // This prevents the complete/delete actions from
-        // executing repeatedly when a swipe gesture finishes.
-        setTimeout(() => {
-            swipeTriggered.current[rowKey] = false;
-        }, 300); // allow close animation to finish
-    };
+    /**
+     * Handles closing the modal.
+     */
+    const handleCloseModal = () => setModalVisible(false);
 
-    const handleAddHabit = async () => {
-        console.log('Adding habit');
-        if (!inputText) {
-            Alert.alert('Error', 'El nombre no puede estar vacío');
-            return;
-        }
-        if (habitos.find((habit) => habit.text === inputText)) {
-            Alert.alert('Error', 'El hábito ya existe');
-            return;
-        }
-
-        if (!/^\d+$/.test(goalInput)) {
-            Alert.alert('Error', 'El objetivo debe ser un n\u00famero entero');
-            return;
-        }
-
-        const goalValue = parseInt(goalInput, 10);
-
-        const newHabit: HabitoItemDB = {
-            text: inputText,
-            category: selectedCategory || 'OTROS',
-            frequency: selectedFrequency,
-
-
-            priority: selectedPriority,
-
-
-            goal: goalValue || 1,
-            progress: 0,
-
-        };
-
-        const token = user?.token;
-        if (!token) {
-            Alert.alert('Error', 'No se ha iniciado sesión');
-            return;
-        }
-
-        try {
-            // Add habit to the database
-            await crearHabitoEnBaseDeDatos(token, newHabit);
-
-            // Fetch updated habitos from the database
-            await fetchHabits();
-
-            // Reset the form and close the modal
-            setInputText('');
-
-            setSelectedPriority('MEDIA');
-
-            setGoalInput('1');
-
-            setModalVisible(false);
-        } catch (error) {
-            console.error('Error adding habit:', error);
-            Alert.alert('Error', 'Hubo un problema al agregar el hábito.');
-        }
-    };
-
-    const sortHabitsByPriority = async () => {
-        if (sortOrder === 'PRIORITY') {
-            setSortOrder(null);
-            await fetchHabits();
-            return;
-        }
-        const order: Record<'ALTA' | 'MEDIA' | 'BAJA', number> = {
-            ALTA: 1,
-            MEDIA: 2,
-            BAJA: 3,
-        };
-        setHabitos((prev) =>
-            [...prev].sort(
-                (a, b) => (order[a.priority] ?? 4) - (order[b.priority] ?? 4)
-            )
-        );
-        setSortOrder('PRIORITY');
-    };
-
-    const sortHabitsByStreak = async () => {
-        if (sortOrder === 'STREAK') {
-            setSortOrder(null);
-            await fetchHabits();
-            return;
-        }
-        setHabitos((prev) =>
-            [...prev].sort((a, b) => (b.streak || 0) - (a.streak || 0))
-        );
-        setSortOrder('STREAK');
-    };
-
-    const deleteAllHabits = () => {
-        Alert.alert(
-            'Confirmar eliminación',
-            '¿Estás seguro de que deseas eliminar todos los hábitos?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                {
-                    text: 'Eliminar todos',
-                    style: 'destructive',
-                    onPress: async () => {
-                        const token = user?.token;
-                        if (token) {
-                            try {
-                                for (const habit of habitos) {
-                                    await eliminarHabitoEnBaseDeDatos(
-                                        token,
-                                        habit.key
-                                    );
-                                }
-                                setHabitos([]);
-                                listViewRef.current?.closeAllOpenRows();
-                                Alert.alert('Hábitos eliminados');
-                            } catch (error) {
-                                console.error(
-                                    'Error deleting all habits:',
-                                    error
-                                );
-                                Alert.alert(
-                                    'Error',
-                                    'No se pudieron eliminar los hábitos. Inténtalo de nuevo.'
-                                );
-                            }
-                        } else {
-                            Alert.alert('Error', 'No se ha iniciado sesión');
-                        }
-                    },
-                },
-            ]
-        );
-    };
-
-    const renderHeader = () => (
-        <View>
+    return (
+        <View style={{ flex: 1 }}>
+            {/* Header Section */}
             <View
                 style={[
-                    isDarkMode
-                        ? themeDark.darkBackground
-                        : themeLight.lightBackground,
+                    isDarkMode ? themeDark.darkBackground : themeLight.lightBackground,
                 ]}
             >
                 <Pressable
                     style={habitosScreenStyles.button}
                     onPress={() => setModalVisible(true)}
                 >
-                    <Text style={habitosScreenStyles.buttonText}>
-                        Agregar nuevo hábito
-                    </Text>
-                </Pressable>
-                <Pressable
-                    style={[
-                        habitosScreenStyles.button,
-                        sortOrder === 'PRIORITY' &&
-                        habitosScreenStyles.activeSortButton,
-                    ]}
-                    onPress={sortHabitsByPriority}
-                >
-                    <Text style={habitosScreenStyles.buttonText}>
-                        Ordenar por prioridad
-                    </Text>
-                </Pressable>
-                <Pressable
-                    style={[
-                        habitosScreenStyles.button,
-                        sortOrder === 'STREAK' &&
-                        habitosScreenStyles.activeSortButton,
-                    ]}
-                    onPress={sortHabitsByStreak}
-                >
-                    <Text style={habitosScreenStyles.buttonText}>
-                        Ordenar por racha
-                    </Text>
-                </Pressable>
-                <Pressable
-                    style={habitosScreenStyles.button}
-                    onPress={deleteAllHabits}
-                >
-                    <Text style={habitosScreenStyles.buttonText}>
-                        Borrar todos
-                    </Text>
+                    <Text style={habitosScreenStyles.buttonText}>Agregar nuevo hábito</Text>
                 </Pressable>
             </View>
 
-            {habitos.filter((h) => (h.streak || 0) > 0).length > 0 && (
-                <View style={habitosScreenStyles.streakContainer}>
-                    <Text style={habitosScreenStyles.streakTitle}>
-                        Rachas activas
-                    </Text>
-                    {habitos
-                        .filter((h) => (h.streak || 0) > 0)
-                        .map((h) => (
-                            <Text
-                                key={h.key}
-                                style={habitosScreenStyles.streakItem}
-                            >
-                                🔥 {h.text}: {h.streak}
-                            </Text>
-                        ))}
-                </View>
-            )}
-        </View>
-    );
-
-    return (
-        <View style={{ flex: 1 }}>
+            {/* Modal for adding a new habit */}
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
+                onRequestClose={handleCloseModal}
             >
                 <View style={modalStyles.modalContainer}>
                     <View style={modalStyles.modalView}>
@@ -658,160 +199,56 @@ const HabitosScreen = () => {
                             onChangeText={setInputText}
                             placeholder="Nombre del hábito"
                         />
-                        <Text style={modalStyles.label}>
-                            Selecciona categoría
-                        </Text>
+                        <Text style={modalStyles.label}>Selecciona categoría</Text>
                         <Picker
                             selectedValue={selectedCategory}
-                            onValueChange={(itemValue) =>
-                                setSelectedCategory(itemValue)
-                            }
+                            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
                         >
-                            {categories.map((category) => (
-                                <Picker.Item
-                                    key={category}
-                                    label={category}
-                                    value={category}
-                                />
+                            {pokemons.map((pokemon) => (
+                                <Picker.Item key={pokemon} label={pokemon} value={pokemon} />
                             ))}
                         </Picker>
-
-                        <Text style={modalStyles.label}>Objetivo (cantidad)</Text>
-                        <TextInput
-                            style={modalStyles.input}
-                            keyboardType="numeric"
-                            value={goalInput}
-                            onChangeText={setGoalInput}
-                            placeholder="Ej. 10"
-                        />
-                        <Text style={modalStyles.label}>
-                            Selecciona frecuencia
-                        </Text>
-                        <View style={habitosScreenStyles.buttonContainer}>
-                            {['DIARIA', 'SEMANAL', 'MENSUAL'].map(
-                                (frequency) => (
-                                    <Pressable
-                                        key={frequency}
-                                        style={[
-                                            habitosScreenStyles.buttonPart,
-                                            selectedFrequency === frequency &&
-                                            habitosScreenStyles.selected,
-                                        ]}
-                                        onPress={() =>
-                                            handleFrequencyChange(frequency)
-                                        }
-                                    >
-                                        <Text
-                                            numberOfLines={1}
-                                            adjustsFontSizeToFit={true}
-                                        >{frequency}</Text>
-                                    </Pressable>
-                                )
-                            )}
+                        <Text style={modalStyles.label}>Seleccione frecuencia</Text>
+                        <View style={styles.buttonContainer}>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Diario' && styles.selected]}
+                                onPress={() => handlePartClick('Diario')}
+                            >
+                                 <Text style={{ textAlign: 'center' }}>Diario</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Semanal' && styles.selected]}
+                                onPress={() => handlePartClick('Semanal')}
+                            >
+                                <Text style={{ textAlign: 'center' }}>Semanal</Text>
+                            </Pressable>
+                            <Pressable
+                                style={[styles.buttonPart, selectedPart === 'Mensual' && styles.selected]}
+                                onPress={() => handlePartClick('Mensual')}
+                            >
+                                 <Text style={{ textAlign: 'center' }}>Mensual</Text>
+                            </Pressable>
                         </View>
-                        <Text style={modalStyles.label}>
-                            Selecciona prioridad
-                        </Text>
-                        <View style={habitosScreenStyles.buttonContainer}>
-                            {['ALTA', 'MEDIA', 'BAJA'].map((priority) => (
-                                <Pressable
-                                    key={priority}
-                                    style={[
-                                        habitosScreenStyles.buttonPart,
-                                        selectedPriority === priority &&
-                                        habitosScreenStyles.selected,
-                                    ]}
-
-                                    onPress={() =>
-                                        handlePriorityChange(
-                                            priority as 'ALTA' | 'MEDIA' | 'BAJA'
-                                        )
-                                    }
-                                >
-                                    <Text
-                                        numberOfLines={1}
-                                        adjustsFontSizeToFit={true}
-                                    >
-                                        {priority}
-                                    </Text>
-
-                                </Pressable>
-                            ))}
-                        </View>
-                        <Pressable
-                            style={modalStyles.saveButton}
-                            onPress={handleAddHabit}
-                        >
-                            <Text style={modalStyles.closeButtonText}>
-                                Guardar
-                            </Text>
-                        </Pressable>
-
-                        {/* Add a Close Button */}
-                        <Pressable
-                            style={modalStyles.closeButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={modalStyles.closeButtonText}>
-                                Cerrar
-                            </Text>
-                        </Pressable>
-
+                        <Button title="Guardar" onPress={handleCloseModal} />
                     </View>
                 </View>
             </Modal>
 
+            {/* SwipeListView for habits */}
             <SwipeListView
-                ref={listViewRef}
-                data={habitos}
+                data={data}
                 renderItem={renderItem}
                 renderHiddenItem={renderHiddenItem}
-                leftOpenValue={150}
-                rightOpenValue={-150}
-                onSwipeValueChange={handleSwipeValueChange}
-                onRowClose={handleRowClose}
-                ListHeaderComponent={renderHeader}
+                leftOpenValue={75} // Define swipe threshold for "Mark as Completed"
+                rightOpenValue={-75} // Define swipe threshold for "Delete"
+                onSwipeValueChange={(swipeData) =>
+                    handleSwipeValueChange({
+                        key: swipeData.key as string, // Explicitly cast key as string
+                        value: swipeData.value,
+                    })
+                }
+                onRowClose={(rowKey) => handleRowClose(rowKey as string)} // Cast rowKey explicitly
             />
-
-            {contextMenuVisible && selectedHabit && (
-                <Pressable
-                    style={habitosScreenStyles.contextMenuOverlay}
-                    onPress={() => setContextMenuVisible(false)}
-                >
-                    <View
-                        style={[
-                            habitosScreenStyles.contextMenu,
-                            {
-                                top: contextMenuPosition.y,
-                                left: contextMenuPosition.x,
-                            },
-                        ]}
-                    >
-                        <Pressable
-                            style={habitosScreenStyles.contextMenuItem}
-                            onPress={() => {
-                                toggleCompletion(selectedHabit);
-                                setContextMenuVisible(false);
-                            }}
-                        >
-                            <Text>
-                                {selectedHabit.completion
-                                    ? 'Marcar como incompleto'
-                                    : 'Marcar como completado'}
-                            </Text>
-                        </Pressable>
-                        <Pressable
-                            style={habitosScreenStyles.contextMenuItem}
-                            onPress={() => {
-                                deleteHabit(selectedHabit);
-                                setContextMenuVisible(false);
-                            }}
-                        >
-                            <Text>Eliminar</Text>
-                        </Pressable>
-                    </View>
-                </Pressable>
-            )}
         </View>
     );
 };

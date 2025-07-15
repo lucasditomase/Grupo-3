@@ -1,83 +1,66 @@
 import { StyleSheet } from 'react-native';
 
+/**
+ * Styles for the Perfil screen components.
+ */
 const perfilScreenStyles = StyleSheet.create({
+    // Main container for the profile screen
     container: {
-        flexGrow: 1,
+        flex: 1,
         padding: 20,
-        backgroundColor: '#f5f5f5',
     },
-    scrollContainer: {
-        flexGrow: 1,
-        padding: 20,
-        backgroundColor: '#f5f5f5',
-    },
+
+    // Profile image styles
     profileImage: {
         alignSelf: 'center',
-        borderRadius: 60, // Increased for more rounded corners
-        height: 120,
-        width: 120,
-        marginBottom: 30, // Added more space below the image
-        borderWidth: 3, // Increased border width for more visibility
-        borderColor: '#008080', // Teal color
+        borderRadius: 50,
+        height: 100,
+        width: 100,
+        marginBottom: 20,
     },
+
+    // Container for user information sections
     infoContainer: {
         flexDirection: 'row',
         backgroundColor: '#ffffff',
-        borderRadius: 12,
-        padding: 15,
+        borderRadius: 10,
+        padding: 10,
         marginBottom: 15,
-        elevation: 3,
+        elevation: 2,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
     },
+
+    // Label text styles (e.g., "Username:", "Email:")
     label: {
-        color: '#37474f',
+        color: '#004d40',
         fontSize: 18,
         fontWeight: 'bold',
         width: 120,
     },
+
+    // Value text styles (e.g., the username or email itself)
     value: {
-        color: '#37474f',
+        color: '#004d40',
         fontSize: 18,
     },
-    button: {
-        backgroundColor: '#008080',
-        borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        marginTop: 20,
-        marginBottom: 25, // Added more space between buttons and other elements
+
+    // Main container for the profile image
+    profileImageContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
     },
-    actionButton: {
-        width: '80%',
-        marginTop: 10,
-        marginBottom: 10,
-    },
-    buttonText: {
-        color: '#ffffff',
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
+
+    // Image styles
     image: {
         width: 200,
         height: 200,
-        borderRadius: 20,
+        borderRadius: 10,
         marginTop: 20,
-        alignSelf: 'center',
-    },
-    // Main container for the profile image
-    profileImageContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 40,
-    },
-    actionContainer: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginTop: 10,
     },
 });
 
