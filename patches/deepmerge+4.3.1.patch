@@ -1,0 +1,93 @@
+diff --git a/node_modules/deepmerge/dist/cjs.js b/node_modules/deepmerge/dist/cjs.js
+index 7c36cbd..b26baf9 100644
+--- a/node_modules/deepmerge/dist/cjs.js
++++ b/node_modules/deepmerge/dist/cjs.js
+@@ -61,6 +61,10 @@ function getKeys(target) {
+ 	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
+ }
+ 
++function isUnsafeKey(key) {
++	return key === '__proto__' || key === 'constructor' || key === 'prototype'
++}
++
+ function propertyIsOnObject(object, property) {
+ 	try {
+ 		return property in object
+@@ -80,11 +84,14 @@ function mergeObject(target, source, options) {
+ 	var destination = {};
+ 	if (options.isMergeableObject(target)) {
+ 		getKeys(target).forEach(function(key) {
++			if (isUnsafeKey(key)) {
++				return
++			}
+ 			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+ 		});
+ 	}
+ 	getKeys(source).forEach(function(key) {
+-		if (propertyIsUnsafe(target, key)) {
++		if (isUnsafeKey(key) || propertyIsUnsafe(target, key)) {
+ 			return
+ 		}
+ 
+diff --git a/node_modules/deepmerge/dist/umd.js b/node_modules/deepmerge/dist/umd.js
+index 4071e7c..c458575 100644
+--- a/node_modules/deepmerge/dist/umd.js
++++ b/node_modules/deepmerge/dist/umd.js
+@@ -65,6 +65,10 @@
+ 		return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
+ 	}
+ 
++	function isUnsafeKey(key) {
++		return key === '__proto__' || key === 'constructor' || key === 'prototype'
++	}
++
+ 	function propertyIsOnObject(object, property) {
+ 		try {
+ 			return property in object
+@@ -84,11 +88,14 @@
+ 		var destination = {};
+ 		if (options.isMergeableObject(target)) {
+ 			getKeys(target).forEach(function(key) {
++				if (isUnsafeKey(key)) {
++					return
++				}
+ 				destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+ 			});
+ 		}
+ 		getKeys(source).forEach(function(key) {
+-			if (propertyIsUnsafe(target, key)) {
++			if (isUnsafeKey(key) || propertyIsUnsafe(target, key)) {
+ 				return
+ 			}
+ 
+diff --git a/node_modules/deepmerge/index.js b/node_modules/deepmerge/index.js
+index 77968ae..53a41b7 100644
+--- a/node_modules/deepmerge/index.js
++++ b/node_modules/deepmerge/index.js
+@@ -36,6 +36,10 @@ function getKeys(target) {
+ 	return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target))
+ }
+ 
++function isUnsafeKey(key) {
++	return key === '__proto__' || key === 'constructor' || key === 'prototype'
++}
++
+ function propertyIsOnObject(object, property) {
+ 	try {
+ 		return property in object
+@@ -55,11 +59,14 @@ function mergeObject(target, source, options) {
+ 	var destination = {}
+ 	if (options.isMergeableObject(target)) {
+ 		getKeys(target).forEach(function(key) {
++			if (isUnsafeKey(key)) {
++				return
++			}
+ 			destination[key] = cloneUnlessOtherwiseSpecified(target[key], options)
+ 		})
+ 	}
+ 	getKeys(source).forEach(function(key) {
+-		if (propertyIsUnsafe(target, key)) {
++		if (isUnsafeKey(key) || propertyIsUnsafe(target, key)) {
+ 			return
+ 		}
+ 
